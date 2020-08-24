@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 
-<!-- attributaions:
+<!-- 
+you might find this code messy, and  you would be probably right, that's actually because idk neither css nor JS i just kept googling what i need 
+attributaions:
 face recongition by betaface API
 face animation by mug life
 original game by https://gist.github.com/straker/ff00b4b49669ad3dec890306d348adc4
 -->
+
 <html>
 <head>
 <title>Mahmou∂</title>
+<link rel="icon" href="s1.png">
 <style>
 
   body  {
@@ -35,7 +39,6 @@ div.b {
   position: fixed;
   left: 0;
   bottom: 0;
-  
   
 }
   
@@ -75,8 +78,8 @@ var grid = 15;
 var count = 0;
   
 var snake = {
-  x: 150,
-  y: 150,
+  x: 15,
+  y: 0,
   
   // snake velocity. moves one grid length every frame in either the x or y direction
   dx: grid,
@@ -90,7 +93,7 @@ var snake = {
 };
 var apple = {
   x: 300,
-  y: 300
+  y: 0
 };
 
 // get random whole numbers in a specific range
@@ -164,8 +167,8 @@ function loop() {
       
       // snake occupies same space as a body part. reset game
       if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-        snake.x = 150;
-        snake.y = 150;
+        snake.x = 15;
+        snake.y = 0;
         snake.cells = [];
         snake.maxCells = 4;
         snake.dx = grid;
@@ -217,6 +220,4 @@ requestAnimationFrame(loop);
  
  </body>
 </html>
-<!-- image copyrights to https://roboticsconference.org-->
-
 
