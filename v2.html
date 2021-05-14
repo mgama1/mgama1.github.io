@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+
+<html>
+<head>
+<title>Mahmou∂</title>
+<link rel="icon" href="s1.png">
+<style>
+
+  body  {
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+</style>
+
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
+</head>
+
+<body>
+ 
+<h3 style="text-align: left;"><br /><span style="color: #000000;">
+<h2 style="text-align: left;"><span style="color: #69b5db;">Mahmoud Gamal</span> </h2>
+
+<img src="me.png" alt="Mahmoud Gamal" style="float:left;width:200px;height:200px;">
+
+
+My name is <span style="color:#5dbcd2;">Mahmoud Gamal</span> , I'm a Mechatronics Undergrad and i'm in love with
+ <span style="color:#5dbcd2;"> Robotics</span>, <span style="color:#5dbcd2;">Coding </span> and <span style="color:#5dbcd2;">Making<span>.</span>
+ <br /><br /><span style="color: #000000;">Wanna get to know me better? you can check my <strong><a style="color: #69b5db;" 
+ href="https://twitter.com/MgamalR" target="_blank" rel="noopener">tweets</a></strong> , <strong><a style="color: #69b5db;" 
+ href="https://github.com/mgama1" target="_blank" rel="noopener">projects</a></strong> or <a style="color: #69b5db;" 
+ href="https://www.linkedin.com/in/mgama1/" target="_blank" rel="noopener">more</a>!</span><br /><span style="color: #000000;">
+ Have questions or thoughts want to discuss? Say <a style="color: #69b5db;" href="mailto:mg1488@fayoum.edu.eg" target="_blank" rel="noopener">Hi</a>!</span></h3>
+
+	<div id='myDiv'> 
+	<script>
+
+	data = [{
+  type: 'scatterpolar',
+  r: [70, 78, 70, 74, 66],
+  theta: ['Machine learning','Data visualization','Software engineering', 'control theory', 'image processing'],
+  fill: 'toself'
+}]
+
+layout = {
+  polar: {
+    radialaxis: {
+      visible: true,
+      range: [0, 100]
+    }
+  },
+  showlegend: false
+}
+
+Plotly.newPlot("myDiv", data, layout)
+</script>
+
+
+
+
+
+  
+
+ 
+ </body>
+</html>
