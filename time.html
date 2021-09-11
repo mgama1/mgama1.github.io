@@ -6,6 +6,31 @@
 <head>
 <style>
 
+
+
+.two__columns {
+  overflow: hidden;
+  padding: 4em;
+  padding-top: 0;
+    display: flex;
+
+}
+.two__main {
+  float: left;
+  width: 50%;
+  padding-right: 6em;
+}
+.two__side {
+  float: left;
+  width: 50%;
+padding-top:15em;
+}
+
+
+
+
+
+
 table,th,td
   {
     border:.5px solid black;
@@ -237,22 +262,15 @@ text-align: center;
 
 </div>
 
+ <div class="two__columns">
 
 
 
+<div class=two__main>
 
-
-<div id="css-script-menu">
-
-
-  <div class="css-script-center">
-    
-   
-    <div class="css-script-clear"></div>
-  </div>
-</div>
 
 <h1>studying countdown</h1>
+
 <div class="container">
   <div class="setters">
     <div class="minutes-set">
@@ -278,8 +296,26 @@ text-align: center;
   <div class="controlls">
     <div class="display-remain-time">00:30</div>
     <button class="play" id="pause"></button>
+	
+	
   </div>
+  
+  
+  
 </div>
+
+
+</div>
+
+<div class="two__side">
+
+<iframe src="https://open.spotify.com/embed/playlist/37i9dQZEVXbpG2cHBy9wGo?theme=0" width="50%" height="380" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+
+</div>
+
+
+</div>
+
 <script>
 //circle start
 let progressBar = document.querySelector('.e-c-progress');
@@ -394,7 +430,14 @@ function displayTimeLeft (timeLeft){ //displays time on the input
 
 pauseBtn.addEventListener('click',pauseTimer);
 
+
+
+
 </script>
+
+
+
+
 
 
 </body>
