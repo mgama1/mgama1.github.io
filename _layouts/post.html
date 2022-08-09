@@ -12,6 +12,8 @@ layout: default
   <div class="date">
     Written on {{ page.date | date: "%B %e, %Y" }}
   </div>
+        {% include navbar.html %}
+        {%- include footer.html -%}
 
   {% include disqus.html %}
 </article>
