@@ -4,12 +4,8 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
-
-### More Information
-
-A place to include any other types of information that you'd like to include about yourself.
+## A mechatronics engineer with broad interest in robotics, machine learning and control systems.
 
 ### Contact me
 
-[email@domain.com](mailto:email@domain.com)
+[mg1488@fayoum.edu.eg](mailto:mg1488@fayoum.edu.eg)
