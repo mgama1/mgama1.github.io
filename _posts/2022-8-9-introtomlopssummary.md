@@ -15,3 +15,6 @@ let's take a peek of the other components that are in an ML infrastructure
 [D. Sculley et. al. NIPS 2015: Hidden Technical Debt in Machine Learning Systems]
 
 just as software engineers have [SDLC](https://www.synopsys.com/glossary/what-is-sdlc.html#:~:text=The%20Software%20Development%20Life%20Cycle%20(SDLC)%20is%20a%20structured%20process,all%20customer%20expectations%20and%20demands.]) to help them with the production process we also have  Machine Learning development Lifecycle.
+First you have to define the project you are working on, what does it solve and how does it solve it. then you have to collect the data, selct a model and evaluate it then finally you deploy it into production. but as of the iterative nature of machine learning projects you might have to go back to collect more data or selcting other model and fine tune it.
+
+![image](https://user-images.githubusercontent.com/40968723/186568227-2e125949-5557-41d7-99cd-2217db6c12c2.png)
