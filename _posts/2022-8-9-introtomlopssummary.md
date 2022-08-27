@@ -33,7 +33,8 @@ a great example of this is the change of behaviour of people after the pandemic.
 another example is the change of prices of houses after inflation; changing the mapping between the size of a house and its price.
 
 data drift is when the data distribuition changes rather than the relationship of input to output. the perfromance degrades because the model receives data on which it hasn't trained enough.
-> notice : there's a confusion about the terminology across different resources. you might find different definition of each drift type elsewhere
+> notice : there's a confusion about the terminology across different resources. you might find different definition of each drift type elsewhere.
+
 ## Software engineering issues
 the specific application and its requirements define how will the system be deployed 
 - does it have to be processed in real time or processed in a batch after all data is received?
@@ -41,4 +42,4 @@ the specific application and its requirements define how will the system be depl
 - how much Compute resources (CPU/GPU/memory) do we need?
 - what is the acceptable latency and how many queries per second are we expecting?
 - should you log all the user data to use it for performence measuring or retrainig your model?
-- 
+
