@@ -19,7 +19,12 @@ First you have to define the project you are working on, what does it solve and 
 
 ![image](https://user-images.githubusercontent.com/40968723/186568227-2e125949-5557-41d7-99cd-2217db6c12c2.png)
 
-# Deployment 
+- [Deployment](#deployment)
+    - [Concept drift and Data drift](Concept-drift-and-Data-drift)
+
+    
+
+## Deployment 
 at this stage you are ready to deploy. and you did! congrats! but don't just celebrate yet. we are only half the way through. after deployment you still have to monitor and maintin it and with this come <b> key challanges </b>
 ## Deployment key challanges
 
@@ -42,4 +47,3 @@ the specific application and its requirements define how will the system be depl
 - how much Compute resources (CPU/GPU/memory) do we need?
 - what is the acceptable latency and how many queries per second are we expecting?
 - should you log all the user data to use it for performence measuring or retrainig your model?
-
