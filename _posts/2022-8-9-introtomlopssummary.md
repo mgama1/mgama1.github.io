@@ -30,4 +30,5 @@ concept drift refers to the change in the relationships between input and output
 a great example of this is the change of behaviour of people after the pandemic.people suddenly bought more frquantly online which caused many false positives in  anti fraud detection systems.
 another example is the change of prices of houses after inflation; changing the mapping between the size of a house and its price.
 
-data drift is when the data distribuition  changes rather than the relationship of input to output
+data drift is when the data distribuition changes rather than the relationship of input to output. the perfromance degrades because the model receives data on which it hasn't trained enough.
+> notice : there's a confusion about the terminology across different resources. you might find different definition of each drift type elsewhere
