@@ -19,7 +19,9 @@ First you have to define the project you are working on, what does it solve and 
 
 ![image](https://user-images.githubusercontent.com/40968723/186568227-2e125949-5557-41d7-99cd-2217db6c12c2.png)
 
-# Deployment key challanges
+# Deployment 
+at this stage you are ready to deploy. and you did! congrats! but don't just celebrate yet. we are only half the way through. after deployment you still have to monitor and maintin it and with this come <b> key challanges </b>
+## Deployment key challanges
 
 ## Concept drift and Data drift
 Data constantly change over time. which can degrade the performance of our model's prediction which was trained on older data. some times the change is slowl like in a language's vocabulary and sometimes suddenly like the change of people's behaviour after covid pandemic.
@@ -32,3 +34,11 @@ another example is the change of prices of houses after inflation; changing the 
 
 data drift is when the data distribuition changes rather than the relationship of input to output. the perfromance degrades because the model receives data on which it hasn't trained enough.
 > notice : there's a confusion about the terminology across different resources. you might find different definition of each drift type elsewhere
+## Software engineering issues
+the specific application and its requirements define how will the system be deployed 
+- does it have to be processed in real time or processed in a batch after all data is received?
+- should it be on the cloud or on an edge device or a browser?
+- how much Compute resources (CPU/GPU/memory) do we need?
+- what is the acceptable latency and how many queries per second are we expecting?
+- should you log all the user data to use it for performence measuring or retrainig your model?
+- 
