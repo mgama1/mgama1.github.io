@@ -18,3 +18,16 @@ just as software engineers have [SDLC](https://www.synopsys.com/glossary/what-is
 First you have to define the project you are working on, what does it solve and how does it solve it. then you have to collect the data, selct a model and evaluate it then finally you deploy it into production. but as of the iterative nature of machine learning projects you might have to go back to collect more data or selcting other model and fine tune it.
 
 ![image](https://user-images.githubusercontent.com/40968723/186568227-2e125949-5557-41d7-99cd-2217db6c12c2.png)
+
+# Deployment key challanges
+
+## Concept drift and Data drift
+Data constantly change over time. which can degrade the performance of our model's prediction which was trained on older data. some times the change is slowl like in a language's vocabulary and sometimes suddenly like the change of people's behaviour after covid pandemic.
+
+then what is the difference between concept drift and data drift?
+
+concept drift refers to the change in the relationships between input and output data. meaning how we map (x --> y)
+a great example of this is the change of behaviour of people after the pandemic.people suddenly bought more frquantly online which caused many false positives in  anti fraud detection systems.
+another example is the change of prices of houses after inflation; changing the mapping between the size of a house and its price.
+
+data drift is when the data distribuition  changes rather than the relationship of input to output
