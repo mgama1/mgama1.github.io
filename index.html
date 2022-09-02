@@ -15,8 +15,20 @@
 }
 
 
+.container-grid {
+  display: grid;
+  grid-template-columns: 15% 65% 20%; /*columns widths*/
+  height: 40vh;
+}
 
+.col-1 {
+  
+}
 
+.col-2 {
+}
+.col-3 {
+}
 
 .bubble {
   position: relative;
@@ -234,16 +246,31 @@ div.desc {
 
 
 
+  <div class="container-grid">
+
+    <div class="col col-1">
+
 
 <img src="./media/me.png" alt="Mahmoud Gamal" style="float:left;width:200px;height:200px;">
-
+</div>
 
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
+<div class="col col-2">
 
-<h2 >Hey there! welcome to my personal space you can get to know me better by checking my github, linkedin or even twitter! you can also find below
-  my highlighted projects 
+<h2  >Hi! since you are here you are probably wondering, who am i? I'm mahmoud and i'm a mechatronics undergraduate. 
+  I'm generally interested in various robotics topics but i'm particularly interested in computer vision.<br><br>
+  
+  i'm fascinated by the idea of how can a machine see the world and make decisions based on it.<br>
+   I love going low with C and fight my way through bits and bytes and i love going high with
+  python and just relax and focus on how to solve the problem itself without getting my hands dirty<br><br>
+  
+  on your right you can see an unpractical radar chart of my skills that 
+  i thought was cool so i just used anyway. below you can find my selected projects and of course if you just wanna talk you can find my info up in the header 
 </h2>
+</div>
+
+<div class="col col-3">
 
 <div id='myDiv' style="display: flex; justify-content: flex-end"> 
 
@@ -303,11 +330,12 @@ Plotly.newPlot("myDiv", data, layout)
 
 </div>
 
-
+</div>
 
 
  
 
+</div>
 
 
 
