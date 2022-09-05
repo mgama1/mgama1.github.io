@@ -59,7 +59,13 @@ in a phone manufacrtion factory the phones are to be inspected for defects and a
 
 when automation is first introduced to a proccess one deployment pattern is common to be used is <b> shadow mode </b>
 in this mode the ml system shadows the human(works in parall with him) but the system's output is not used for any decisions in this phase. the purpose of this phase is to evaluate how good the learning algorithm is performing compared to a human.
+![image](https://user-images.githubusercontent.com/40968723/188463754-f1dbde6f-665f-4be4-ab07-9c34cbffaacc.png)
+
 
 when you think the learning algorithm is performing good enough now it's time to give it more responspility
 in <b> Canary deployment </b> the system is given a small fraction of the traffic initally (say 5%) that can make dections on them .that way if the system makes any mistake it will affect only a small fraction of the phones.
 then the system is monitored and the traffic is ramped up gradually as we are more confident that it's performing well.
+![image](https://user-images.githubusercontent.com/40968723/188463810-762ada42-c84a-4b05-b19d-6f565f085f55.png)
+
+in the case that an older ml system exists you might wanna consider the <b> Blue green deployment pattern </b> in this pattern the data is goes to a router that can route it to the old(blue) prediction server or the new(green) prediction server. this way you can easily rollback if anything goes wrong
+![image](https://user-images.githubusercontent.com/40968723/188463986-8b1ca798-9f3d-4f2c-8432-96df1be87cd6.png)
