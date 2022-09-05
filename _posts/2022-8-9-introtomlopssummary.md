@@ -47,3 +47,19 @@ the specific application and its requirements define how will the system be depl
 - how much Compute resources (CPU/GPU/memory) do we need?
 - what is the acceptable latency and how many queries per second are we expecting?
 - should you log all the user data to use it for performence measuring or retrainig your model?
+
+
+there are different reasons to deploy a machine learning model.some of the common ones are 
+- you are making a new product or capability that didn't exist before
+- you want to automate a task that was previously done manually
+- an older ML system already existed and you want to replace it with a better one
+## visusal inspection use case
+
+in a phone manufacrtion factory the phones are to be inspected for defects and an inspector does so manually.
+
+when automation is first introduced to a proccess one deployment pattern is common to be used is <b> shadow mode </b>
+in this mode the ml system shadows the human(works in parall with him) but the system's output is not used for any decisions in this phase. the purpose of this phase is to evaluate how good the learning algorithm is performing compared to a human.
+
+when you think the learning algorithm is performing good enough now it's time to give it more responspility
+in <b> Canary deployment </b> the system is given a small fraction of the traffic initally (say 5%) that can make dections on them .that way if the system makes any mistake it will affect only a small fraction of the phones.
+then the system is monitored and the traffic is ramped up gradually as we are more confident that it's performing well.
