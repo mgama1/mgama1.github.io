@@ -21,7 +21,7 @@ First you have to define the project you are working on, what does it solve and 
 
 - [Deployment](#deployment)
     - [Concept drift and Data drift](Concept-drift-and-Data-drift)
-
+   
     
 
 ## Deployment 
@@ -69,3 +69,34 @@ then the system is monitored and the traffic is ramped up gradually as we are mo
 
 in the case that an older ml system exists you might wanna consider the <b> Blue green deployment pattern </b> in this pattern the data is goes to a router that can route it to the old(blue) prediction server or the new(green) prediction server. this way you can easily rollback if anything goes wrong
 ![image](https://user-images.githubusercontent.com/40968723/188463986-8b1ca798-9f3d-4f2c-8432-96df1be87cd6.png)
+## Degrees of automation
+one thing to note is that automation is not a binary status either the process is automated or manual but it's rather degrees of automation. starting from human only(completly manual) to full automation where no human intervention is required 
+![image](https://user-images.githubusercontent.com/40968723/188472858-8ba46196-3165-4219-8d52-d0dddc526e80.png)
+
+## Monitoring
+as you already know building the model and deploying it isn't the finish line you still have to monitor it to enusre that the performance is good enough 
+but what should we monitor exactly? 
+we need to track anything that is indictaive of change whether it's input distribuiton or output change or resources consumed.tracking these changes is extremly handful in maintaining the system performence
+
+Detailed examples of these metrics
+
+- Software metrics
+    - Memory, compute, latency, throughput, server load
+ > network throughput is the amount of data moved successfully from one place to another in a given time period, and typically measured in bits per second (bps), as in megabits per second (Mbps) or gigabits per second (Gbps).
+ 
+- Input metrics
+    - Avg input length
+    - Avg input volume
+    - Num missing values
+    - Avg image brightness
+
+- Output metrics
+    - \# times return " " (null) (the model thinks that the user didn't say anything)
+    - \# times user redoes search (indictive that the initial search wasn't good enough)
+    - \# times user switches to typing (like the case of a user who got frustrated from the wrong speech recognition)
+    -  CTR 
+> (Clickthrough rate is ratio showing how often people who see your ad or free product listing end up clicking it. Clickthrough rate (CTR) can be used to gauge how well your keywords and ads, and free listings, are performing.
+
+![image](https://user-images.githubusercontent.com/40968723/188485448-9c1e5f30-a52b-4092-ae02-d28840a05e98.png)
+[the red lines are thresholds for alarms]
+
