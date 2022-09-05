@@ -26,6 +26,11 @@ First you have to define the project you are working on, what does it solve and 
 
 ## Deployment 
 at this stage you are ready to deploy. and you did! congrats! but don't just celebrate yet. we are only half the way through. after deployment you still have to monitor and maintin it and with this come <b> key challanges </b>
+
+we know that ml modeling is an iterative process, you have to collect the data,build the model , experiments it and perform error analysis and repeat again. deployment is also iterative. you deploy the model then monitor it, as more traffic comes you collect more data and perform error analysis and so on
+
+![image](https://user-images.githubusercontent.com/40968723/188486953-5c1cdda4-dd6b-4dc4-a8c3-f9e68118e4e3.png)
+
 ## Deployment key challanges
 
 ## Concept drift and Data drift
