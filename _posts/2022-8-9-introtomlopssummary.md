@@ -105,3 +105,31 @@ Detailed examples of these metrics
 ![image](https://user-images.githubusercontent.com/40968723/188485448-9c1e5f30-a52b-4092-ae02-d28840a05e98.png)
 [the red lines are thresholds for alarms]
 
+## modeling 
+![image](https://user-images.githubusercontent.com/40968723/190164542-fe830024-83dd-4f33-a77f-690617e41d86.png)
+There are milestones in model development
+
+first you have to do well on <b> training set</b> (usually measured by average training error) then you have to do well on <b>dev/test sets.</b> but as always just when we think the road ends here, it doesn't.
+you also have to make sure it does well on business metrics/project goals.
+
+so how can a model's test set not the ultimate metric?
+the keyword here is not just numbers matter, thing matter too, especially important things
+
+## Performance on disproportionately important examples
+
+Example: Rare classes5
+a great example of a model that <b>looks good but is actually bad is </b> if you have a Skewed data distribution of a rare disease in which 99% of the data is negative and 1% is positive
+you can acheive 99% acurracy by just outputting print("0").that's not a really good model if you ask me
+> of course you can use other metrics that will reflect the performance better for imbalanced data, but that's not the point
+
+Example: ML for loan approval
+
+models are only as good as the data it's fed if the data is dicrimantive in anyway the model will also be dicrimintive
+so make sure not to discriminate by ethnicity, gender, location, language or other protected attributes.
+
+Example: Product recommendations from retailers
+
+Be careful to treat fairly all major user, retailer, and product categories.
+even if the model has high avg test accuracy but for example it ignores the small busnisess and give all recommendations 
+from bigh retailer that could harm these bussinesses and of course you would lose these clients
+
