@@ -133,3 +133,6 @@ Be careful to treat fairly all major user, retailer, and product categories.
 even if the model has high avg test accuracy but for example it ignores the small busnisess and give all recommendations 
 from bigh retailer that could harm these bussinesses and of course you would lose these clients
 
+## Unfortunate conversation in many companies
+
+![meme](https://user-images.githubusercontent.com/40968723/190280869-503868f2-6cb0-464a-a11e-2411be24ed5e.jpg)
