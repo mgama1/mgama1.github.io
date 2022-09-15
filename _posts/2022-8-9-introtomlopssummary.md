@@ -21,11 +21,16 @@ First you have to define the project you are working on, what does it solve and 
 
 - [Deployment](#deployment)
     - [Concept drift and Data drift](Concept-drift-and-Data-drift)
-
+   
     
 
 ## Deployment 
 at this stage you are ready to deploy. and you did! congrats! but don't just celebrate yet. we are only half the way through. after deployment you still have to monitor and maintin it and with this come <b> key challanges </b>
+
+we know that ml modeling is an iterative process, you have to collect the data,build the model , experiments it and perform error analysis and repeat again. deployment is also iterative. you deploy the model then monitor it, as more traffic comes you collect more data and perform error analysis and so on
+
+![image](https://user-images.githubusercontent.com/40968723/188486953-5c1cdda4-dd6b-4dc4-a8c3-f9e68118e4e3.png)
+
 ## Deployment key challanges
 
 ## Concept drift and Data drift
@@ -47,3 +52,87 @@ the specific application and its requirements define how will the system be depl
 - how much Compute resources (CPU/GPU/memory) do we need?
 - what is the acceptable latency and how many queries per second are we expecting?
 - should you log all the user data to use it for performence measuring or retrainig your model?
+
+
+there are different reasons to deploy a machine learning model.some of the common ones are 
+- you are making a new product or capability that didn't exist before
+- you want to automate a task that was previously done manually
+- an older ML system already existed and you want to replace it with a better one
+## visusal inspection use case
+
+in a phone manufacrtion factory the phones are to be inspected for defects and an inspector does so manually.
+
+when automation is first introduced to a proccess one deployment pattern is common to be used is <b> shadow mode </b>
+in this mode the ml system shadows the human(works in parall with him) but the system's output is not used for any decisions in this phase. the purpose of this phase is to evaluate how good the learning algorithm is performing compared to a human.
+![image](https://user-images.githubusercontent.com/40968723/188463754-f1dbde6f-665f-4be4-ab07-9c34cbffaacc.png)
+
+
+when you think the learning algorithm is performing good enough now it's time to give it more responspility
+in <b> Canary deployment </b> the system is given a small fraction of the traffic initally (say 5%) that can make dections on them .that way if the system makes any mistake it will affect only a small fraction of the phones.
+then the system is monitored and the traffic is ramped up gradually as we are more confident that it's performing well.
+![image](https://user-images.githubusercontent.com/40968723/188463810-762ada42-c84a-4b05-b19d-6f565f085f55.png)
+
+in the case that an older ml system exists you might wanna consider the <b> Blue green deployment pattern </b> in this pattern the data is goes to a router that can route it to the old(blue) prediction server or the new(green) prediction server. this way you can easily rollback if anything goes wrong
+![image](https://user-images.githubusercontent.com/40968723/188463986-8b1ca798-9f3d-4f2c-8432-96df1be87cd6.png)
+## Degrees of automation
+one thing to note is that automation is not a binary status either the process is automated or manual but it's rather degrees of automation. starting from human only(completly manual) to full automation where no human intervention is required 
+![image](https://user-images.githubusercontent.com/40968723/188472858-8ba46196-3165-4219-8d52-d0dddc526e80.png)
+
+## Monitoring
+as you already know building the model and deploying it isn't the finish line you still have to monitor it to enusre that the performance is good enough 
+but what should we monitor exactly? 
+we need to track anything that is indictaive of change whether it's input distribuiton or output change or resources consumed.tracking these changes is extremly handful in maintaining the system performence
+
+Detailed examples of these metrics
+
+- Software metrics
+    - Memory, compute, latency, throughput, server load
+ > network throughput is the amount of data moved successfully from one place to another in a given time period, and typically measured in bits per second (bps), as in megabits per second (Mbps) or gigabits per second (Gbps).
+ 
+- Input metrics
+    - Avg input length
+    - Avg input volume
+    - Num missing values
+    - Avg image brightness
+
+- Output metrics
+    - \# times return " " (null) (the model thinks that the user didn't say anything)
+    - \# times user redoes search (indictive that the initial search wasn't good enough)
+    - \# times user switches to typing (like the case of a user who got frustrated from the wrong speech recognition)
+    -  CTR 
+> (Clickthrough rate is ratio showing how often people who see your ad or free product listing end up clicking it. Clickthrough rate (CTR) can be used to gauge how well your keywords and ads, and free listings, are performing.
+
+![image](https://user-images.githubusercontent.com/40968723/188485448-9c1e5f30-a52b-4092-ae02-d28840a05e98.png)
+[the red lines are thresholds for alarms]
+
+## modeling 
+![image](https://user-images.githubusercontent.com/40968723/190164542-fe830024-83dd-4f33-a77f-690617e41d86.png)
+There are milestones in model development
+
+first you have to do well on <b> training set</b> (usually measured by average training error) then you have to do well on <b>dev/test sets.</b> but as always just when we think the road ends here, it doesn't.
+you also have to make sure it does well on business metrics/project goals.
+
+so how can a model's test set not the ultimate metric?
+the keyword here is not just numbers matter, thing matter too, especially important things
+
+## Performance on disproportionately important examples
+
+Example: Rare classes5
+a great example of a model that <b>looks good but is actually bad is </b> if you have a Skewed data distribution of a rare disease in which 99% of the data is negative and 1% is positive
+you can acheive 99% acurracy by just outputting print("0").that's not a really good model if you ask me
+> of course you can use other metrics that will reflect the performance better for imbalanced data, but that's not the point
+
+Example: ML for loan approval
+
+models are only as good as the data it's fed if the data is dicrimantive in anyway the model will also be dicrimintive
+so make sure not to discriminate by ethnicity, gender, location, language or other protected attributes.
+
+Example: Product recommendations from retailers
+
+Be careful to treat fairly all major user, retailer, and product categories.
+even if the model has high avg test accuracy but for example it ignores the small busnisess and give all recommendations 
+from bigh retailer that could harm these bussinesses and of course you would lose these clients
+
+## Unfortunate conversation in many companies
+
+![meme](https://user-images.githubusercontent.com/40968723/190280869-503868f2-6cb0-464a-a11e-2411be24ed5e.jpg)
