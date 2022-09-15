@@ -2,6 +2,7 @@
 layout: post
 title: my terminal commands
 ---
+![image](https://user-images.githubusercontent.com/40968723/190434983-54fdc8fe-6904-4d06-a5ae-c55095450a0b.png)
 
 
  obtain information specific to your Linux distribution.
