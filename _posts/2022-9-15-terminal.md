@@ -1,10 +1,8 @@
 ---
 layout: post
 title: my terminal commands
-is_series: true
-series_title: "posts"
 ---
-![image](https://user-images.githubusercontent.com/40968723/190434983-54fdc8fe-6904-4d06-a5ae-c55095450a0b.png)
+![image](https://user-images.githubusercontent.com/40968723/190875717-d998e11e-8155-45b3-9c03-8ec4e74aaabe.png)
 
 <h3> As a daily linux user but not a sys admin or anything related, i thought to group all the commands that i find useful as a user </h3>  
 my best friends are whois and alias. the first tells me a short describtion of a command that i'm not familliar with and the latter saves my time by shortening long complicated commands.
