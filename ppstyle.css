@@ -45,7 +45,7 @@
 }
 
 #base {
-  position: fixed;
+  position: relative;
   top: 40%;
   left: -50px;  
   width: 200px;
@@ -118,7 +118,7 @@
   position: absolute;
   bottom: -80px;
   left: 60px;
-  width: 100%;
+  width: 125%;
   height: 300px;
   border-radius: 10px;
 }
@@ -128,9 +128,9 @@
   margin: auto;
   top: 6%;
   width: 95%;
-  height: 90%;
+  height: 93%;
   background-color: #0d0c0c;
-  background-image: url("me.jpg");
+  background-image: url("mepixled.jpg");
   background-position: center;
   background-size: cover;
 }
