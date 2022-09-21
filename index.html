@@ -3,13 +3,15 @@
 
 <html>
 <head>
-	
+	<link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+
 <style>
     body  {
   background-color: #212121;
   color: #ffffff;
   align-items: center;
   margin: 0;
+  cursor: default;
 
   
 }
@@ -203,13 +205,18 @@ div.desc {
 	
 <title>Mahmou∂</title>
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="./media/s1.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="./ppstyle.css">
+<link rel="stylesheet" href="./nespackage/scss/nes.scss">
 
 
+
+
+ 
 
 </head>
 
@@ -300,6 +307,8 @@ div.desc {
 
 <div class="col col-2">
 
+   
+
 	<h2><b>Hi!</b> since you are here you are probably wondering, who am i? I'm mahmoud and i'm a mechatronics undergraduate. 
   I'm generally interested in various robotics topics but i'm particularly interested in computer vision.<br><br>
   
@@ -314,61 +323,17 @@ div.desc {
 
 <div class="col col-3">
 
-<div id='myDiv' style="display: flex; justify-content: flex-end"> 
-
-<script>
-
-	data = [{
-  type: 'scatterpolar',
-  r: [90, 60, 70, 60, 90],
-  theta: ['Machine learning','Embedded systeems','Software engineering', 'Control systems', 'Deep learning'],
-  fill: 'toself'
-
-
-}]
-
-layout = {
-  
-  title: 'Global Font',
-
- paper_bgcolor: 'rgba(0,0,0,0)',
- plot_bgcolor:"#ff0000",
-
-  autosize: false,
-  width: 400,
-  height: 400,
-  
-  margin: {
-    l: 100,
-    r: 100,
-    b: 100,
-    t: 0,
-    pad: 0
-  },
-  font: {
-
-color: '#ffffff'
-
-}
-
-,
-
-  polar: {
-
-    bgcolor: '#212121'
-,
-    radialaxis: {
-      
-      visible: true,
-      range: [0, 100],
-    }
-  },
-  showlegend: false
-}
-
-Plotly.newPlot("myDiv", data, layout)
-
-</script>
+  <div class="nes-container with-title is-centered is-dark is-rounded">
+    <p class="title">I know..</p>
+ 
+<p>Machine learning</p>
+  <progress class="nes-progress is-success" value="85" max="100"></progress>
+  <p>Deep learning</p>
+  <progress class="nes-progress is-success" value="85" max="100"></progress>
+  <p>embedded systems</p>
+  <progress class="nes-progress is-success" value="60" max="100"></progress>
+  <p>software engineering</p>
+  <progress class="nes-progress is-success" value="60" max="100"></progress>
 
 </div>
 
@@ -392,7 +357,10 @@ Plotly.newPlot("myDiv", data, layout)
     <div class="desc"><b> pyctrl</b> <br>
 	open source python library for modern control, including functions such as: conversion
 between State Space and Transfer Function, solutions of state space systems, step response, pole
-placement, checking for stability, controllability, observability</div>
+placement, checking for stability, controllability, observability
+
+
+</div>
   </div>
 </div>
 
