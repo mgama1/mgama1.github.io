@@ -35,7 +35,6 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: #212121;
 }
 #hover_cover:hover #bone01 {
   transform: rotate(-90deg);
@@ -47,8 +46,8 @@
 #base {
   position: relative;
   top: 40%;
-  left: -50px;  
-  width: 200px;
+  left: -18px;  
+  width: 200;
   height: 25px;
   background: #4D4D4D;
 }
