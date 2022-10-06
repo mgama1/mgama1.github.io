@@ -15,6 +15,27 @@
 
   
 }
+a:link {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+a:visited {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+.box {
+  border-radius: 25px;
+  border: 2px solid #2c93c7;
+  padding: 1%; 
+  width: 25%;
+  height: 30%;  
+}
+
+.box:hover {
+background-color:#2c93c7;
+}
 
 
 .container-grid {
@@ -373,6 +394,26 @@ div.desc {
   
 
 
+    <div class="responsive">
+
+      <div class="gallery">
+        
+        <a target="_blank" href="https://github.com/mgama1/pyctrl">
+          <img src="./media/fruit.jpeg" alt="pyctrl" width="600" height="400">
+        </a>
+        <div class="desc"><b> Automated fresh fruit sorting system</b> <br>
+          the system consists of a Convolutional neural network model that classify the
+          fruit and its condition eg rotten oranges or fresh apples. the model is then deployed using TensorFlow lite on raspberry
+          pi which controls a servo that removes the rotten fruit
+          <br>
+
+    
+          <span class="box"  > <a href ="https://huggingface.co/spaces/mgama1/fresh_rotten_fruit"> huggingFace demo</a> </span>
+
+    </div>
+
+      </div>
+      </div>
 
 </div>
 
