@@ -151,6 +151,7 @@ in machine learning it's important to establish a baseline to know where your mo
 for example if we have a speech recognition model that performs as following, you might notice that the lowest accuracy is low Bandwidth type(meaning the signal is weak and the voice not very clear) so you attempt to improve its performance on this type
 but before you do this you remember to establish a baseline first so you find that even the human level performance can't achieve any higher than this
 that's why it's important to establish a basline, because if you didn't you would have been wasting your time in a task that doesn't even have margin for improvement.
+
 ![image](https://user-images.githubusercontent.com/40968723/201443924-17ad720d-065b-48d1-b606-58d23e5fe15e.png)
 
 Ways to establish a baseline
