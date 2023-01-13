@@ -136,3 +136,28 @@ from bigh retailer that could harm these bussinesses and of course you would los
 ## Unfortunate conversation in many companies
 
 ![meme](https://user-images.githubusercontent.com/40968723/190280869-503868f2-6cb0-464a-a11e-2411be24ed5e.jpg)
+
+## Need for a baseline
+.
+.
+.
+.
+_____________________________________________________________________________
+
+What Is a Baseline? A baseline is a fixed point of reference that is used for comparison purposes.
+in machine learning it's important to establish a baseline to know where your model's performance stands compared to a human level performance or another deployed model
+
+### Speech recognition example
+for example if we have a speech recognition model that performs as following, you might notice that the lowest accuracy is low Bandwidth type(meaning the signal is weak and the voice not very clear) so you attempt to improve its performance on this type
+but before you do this you remember to establish a baseline first so you find that even the human level performance can't achieve any higher than this
+that's why it's important to establish a basline, because if you didn't you would have been wasting your time in a task that doesn't even have margin for improvement.
+
+![image](https://user-images.githubusercontent.com/40968723/201443924-17ad720d-065b-48d1-b606-58d23e5fe15e.png)
+
+Ways to establish a baseline
+- Human level performance (HLP) especially in unstructured data
+- Literature search for state-of-the-art/open source
+- Older system
+
+Baseline gives an estimate of the irreducible error / Bayes error and indicates
+what might be possible.
