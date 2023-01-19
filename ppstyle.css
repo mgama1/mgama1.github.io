@@ -46,7 +46,7 @@
 #base {
   position: relative;
   top: 40%;
-  left: -18px;  
+  left: -22%;  
   width: 200;
   height: 25px;
   background: #4D4D4D;
@@ -64,7 +64,7 @@
 
 #bone01 {
   top: 0;
-  left:200px ;
+  left:100% ;
   transform: rotate(-180deg);
 
 }
