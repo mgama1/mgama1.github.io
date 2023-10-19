@@ -18,4 +18,12 @@ layout: default
   {% for js in page.my_js_code %}
       <script type="text/javascript">{% include {{ js }} %}</script>
   {% endfor %}
+
+  {% if page.add_brython %}
+  {% for py in page.all_my_py_code %}
+  <script type="text/python">
+  {% include {{ py }} %}
+  </script>
+  {% endfor %}
+  {% endif %}
 </article>
