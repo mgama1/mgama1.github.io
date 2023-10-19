@@ -161,5 +161,6 @@ Ways to establish a baseline
 
 Baseline gives an estimate of the irreducible error / Bayes error and indicates
 what might be possible.
-
+<head>
 <script src='https://cdn.plot.ly/plotly-2.26.0.min.js'></script>
+</head>
