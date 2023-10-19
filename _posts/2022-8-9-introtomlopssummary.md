@@ -9,6 +9,7 @@ chart_html:         "piechart/piechart.html"
 
 
 {% include {{ page.chart_html }} %}
+<head>
 
 <script src='https://cdn.plot.ly/plotly-2.26.0.min.js'>
 
@@ -39,3 +40,4 @@ Plotly.newPlot('myDiv', data);
 
 </script>
 
+</head>
