@@ -2,6 +2,8 @@
 layout: post
 title: Summary of introduction to Machine Learning in Production
 comments: true
+my_js_code: js/awesome.js
+
 
 ---
 in machine learning understanding the theory is vital but it's not the end of journey, it's only the start.
