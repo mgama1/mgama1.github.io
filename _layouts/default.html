@@ -13,6 +13,7 @@
     <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}" href="{{ site.baseurl }}/feed.xml" />
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  {% include header.html %}
   </head>
   {% if page.add_brython %}
   <body onload="brython()">
@@ -50,6 +51,7 @@
         </footer>
       </div>
     </div>
+    {% include footer.html %}
 
     {% include analytics.html %}
   </body>
