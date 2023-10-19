@@ -7,12 +7,7 @@
 	</head>
 	<body>
 		<nav>
-    		<ul>
-        		<li><a href="/">Home</a></li>
-	        	<li><a href="/about">About</a></li>
-        		<li><a href="/docs">R&eacute;sum&eacute;</a></li>
-        		<li><a href="/blog">Blog</a></li>
-    		</ul>
+
 		</nav>
 		<div class="container">
 		
@@ -20,10 +15,7 @@
 		
 		</div><!-- /.container -->
 		<footer>
-    		<ul>
-        		<li><a href="mailto:sixtrolls@gmail.com">E-mail</a></li>
-        		<li><a href="https://github.com/coryburt/">Me on Github</a></li>
-			</ul>
+    	
 		</footer>
 	</body>
 </html>
