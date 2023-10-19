@@ -1,0 +1,14 @@
+{% if page.add_brython %}
+     <script src="{{ page.add_brython }}" type="text/javascript"></script>
+{% endif %}
+{% if page.add_brython_stdlib %}
+     <script src="{{ page.add_brython_stdlib }}" type="text/javascript"></script>
+{% endif %}
+{% if page.add_brython_modules %}
+     <script src="{{ page.add_brython_modules }}" type="text/javascript"></script>
+{% endif %}
+{% if page.all_my_code %}
+    <!-- Links go in here... -->
+{% else %}
+    <!-- Links to local and CDN javascript sources would appear here, if declared under "all_my_code" in the front matter of a post -->
+{% endif %}

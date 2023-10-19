@@ -1,29 +1,23 @@
 ---
 layout: default
 ---
+<h1>{{ page.title }}</h1>
+<p class="meta">{{ page.date | date_to_string }}</p>
 
-<article class="post">
-  <h1>{{ page.title }}</h1>
+<div class="post">
+  {{ content }}
+</div>
 
-  <div class="entry">
-    {{ content }}
-  </div>
+{% for code in page.all_my_js_code %}
+    <script type="text/javascript">
+        {% include {{ code }} %}
+    </script>
+{% endfor %}
 
-  <div class="date">
-    Written on {{ page.date | date: "%B %e, %Y" }}
-  </div>
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-  {% include disqus.html %}
-  {% include head.html %}
-  {% for js in page.my_js_code %}
-      <script type="text/javascript">{% include {{ js }} %}</script>
-  {% endfor %}
-
-  {% if page.add_brython %}
-  {% for py in page.all_my_py_code %}
-  <script type="text/python">
-  {% include {{ py }} %}
-  </script>
-  {% endfor %}
-  {% endif %}
-</article>
+{% if page.add_brython %}
+{% for code in page.all_my_py_code %}
+<script type="text/python">
+{% include {{ code }} %}
+</script>
+{% endfor %}
+{% endif %}
