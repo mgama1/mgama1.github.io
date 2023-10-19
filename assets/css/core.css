@@ -1,0 +1,27 @@
+.very-big {
+  font-size:  3.5em;
+}
+
+.very-small {
+  font-size:  0.75em;
+}
+
+.right-justify {
+  text-align: right;
+}
+
+.masthead {
+  padding-left: 10px;
+  padding-top:  10px;
+}
+
+.example {
+  margin: 0px 0px 15px;
+  background-color: #FFF;
+  border-color: #DDD;
+  border-width: 1px;
+  border-radius: 4px 4px 0px 0px;
+  border-style: solid;
+  box-shadow: none;
+  padding: 45px 15px 15px;
+}

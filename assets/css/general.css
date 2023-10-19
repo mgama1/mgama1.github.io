@@ -1,0 +1,214 @@
+/* General.css
+ * Dev & Demo Website-specific Elements
+----------------------------------------------------------------------------------------------------*/
+h1, h2, h3, h4
+{
+	font-variant:		small-caps;
+}
+
+iframe
+{
+	width:				100%;
+	height:				600px;
+}
+
+.masthead
+{
+	background:			Gainsboro;
+	width:				98%;
+	min-height:			25px;
+	border:				3px solid Gray;
+	border-radius:		5px;
+	margin:				5px;
+	padding:			2px;
+	text-decoration:	none;
+}
+
+.main-box
+{
+	border:				1px Silver Solid;
+	border-radius:		5px;
+	padding-bottom:		3px;
+}
+
+.diagnostic-box
+{
+	border:				1px Magenta Dashed;
+	border-radius:		5px;
+	padding:			6px;
+}
+
+.demo-box
+{
+	background-color:	Azure;
+	padding:			5px 1px;
+	border:				1px black solid;
+	border-color:		hsla(0, 0%, 0%, 0.5);
+	border-radius:		5px;
+}
+
+.menu-box
+{
+	font-size:			90%;
+	text-align:			left;
+	background-color:	Ivory;
+	padding-top:		3px;
+	padding-bottom:		3px;
+	padding-left:		3px;
+	border:				2px Silver solid;
+	border-radius:		5px;
+}
+
+.message-box
+{
+	background-color:	transparent;
+	padding:			3px;
+	border:				2px Silver solid;
+	border-radius:		5px;
+}
+
+.info-box
+{
+	background-color:	BlanchedAlmond;
+	padding:			2px 6px;
+	border:				2px Silver solid;
+	border-radius:		5px;
+	font-size:			0.9em;
+	font-style:			italic;
+}
+
+.center-text
+{
+	text-align:			center;
+}
+
+.middle
+{
+	margin:				auto;
+}
+
+.force-height
+{
+	height:				5em;
+}
+
+.invisible
+{
+	visibility:			hidden;
+}
+
+.italic
+{
+	font-style:			italic;
+}
+
+.big-font
+{
+	font-size:			1.2em;
+}
+
+.bigger-font
+{
+	font-size:			1.6em;
+}
+
+.small-font
+{
+	font-size:			0.85em;
+}
+
+.smaller-font
+{
+	font-size:			0.65em;
+}
+
+.linkish
+{
+	cursor:				pointer;
+}
+
+.linkish:hover
+{
+	color:				FireBrick;
+}
+
+a:link
+{
+	text-decoration:	none;
+	color:				Black;
+}
+
+a:visited
+{
+	text-decoration:	none;
+	color:				Black;
+}
+
+a:hover
+{
+	text-decoration:	none;
+	color:				FireBrick;
+}
+
+a:active
+{
+	text-decoration:	none;
+	color:				Black;
+}
+
+.printish
+{
+	color:				FireBrick;
+	background-color:	NavajoWhite;
+	border:				2px Black solid;
+	cursor:				pointer;
+}
+
+.wrap-word
+{
+	white-space: -moz-pre-wrap !important;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	white-space: pre-wrap;
+	word-break: hyphenate;
+	white-space: normal;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.black-text
+{
+	color:				Black;
+}
+
+.red-text
+{
+	color:				FireBrick;
+}
+
+/* Unordered list stuff for menus...
+----------------------------------------------------------------------------------------------------*/
+
+ul
+{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+li.menuHeader
+{
+	float:left;
+	padding: 0 3px;
+}
+
+ul.menuItem
+{
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.menuItem > li
+{
+	padding: 3px;
+}
