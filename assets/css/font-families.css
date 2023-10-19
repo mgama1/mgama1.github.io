@@ -1,0 +1,144 @@
+@font-face {
+  font-family: 'Champagne';
+  src: url('/fonts/cac_champagne.eot');
+  src: local('☺'), url('/fonts/cac_champagne.woff') format('woff'), url('/fonts/cac_champagne.ttf') format('truetype'), url('/fonts/cac_champagne.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Old_Script';
+  src: url('/fonts/old_script.eot');
+  src: local('☺'), url('/fonts/old_script.woff') format('woff'), url('/fonts/old_script.ttf') format('truetype'), url('/fonts/old_script.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GreatVibes';
+  src: url('/fonts/greatvibes-regular.eot');
+  src: local('☺'), url('/fonts/greatvibes-regular.woff') format('woff'), url('/fonts/greatvibes-regular.ttf') format('truetype'), url('/fonts/greatvibes-regular.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BubblegumSans';
+  src: url('/fonts/bubblegumsans-regular.eot');
+  src: local('☺'), url('/fonts/bubblegumsans-regular.woff') format('woff'), url('/fonts/bubblegumsans-regular.ttf') format('truetype'), url('/fonts/bubblegumsans-regular.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DancingScript';
+  src: url('/fonts/dancingscript-regular.eot');
+  src: local('☺'), url('/fonts/dancingscript-regular.woff') format('woff'), url('/fonts/dancingscript-regular.ttf') format('truetype'), url('/fonts/dancingscript-regular.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+	font-family:'Neou-Bold';
+	src: url('/fonts/Neou-Bold_gdi.eot');
+	src: url('/fonts/Neou-Bold_gdi.eot?#iefix') format('embedded-opentype'),
+		url('/fonts/Neou-Bold_gdi.woff') format('woff'),
+		url('/fonts/Neou-Bold_gdi.ttf') format('truetype'),
+		url('/fonts/Neou-Bold_gdi.svg#Neou-Bold') format('svg');
+	font-weight: 700;
+	font-style: normal;
+	font-stretch: normal;
+	unicode-range: U+000D-2030;
+}
+
+@font-face {
+	font-family:'Diploma-Regular';
+	src: url('/fonts/Diploma_gdi.eot');
+	src: url('/fonts/Diploma_gdi.eot?#iefix') format('embedded-opentype'),
+		url('/fonts/Diploma_gdi.woff') format('woff'),
+		url('/fonts/Diploma_gdi.ttf') format('truetype'),
+		url('/fonts/Diploma_gdi.svg#Diploma-Regular') format('svg');
+	font-weight: 5;
+	font-style: normal;
+	font-stretch: normal;
+	unicode-range: U+0020-25CA;
+}
+
+@font-face {
+  font-family:'InternationalSuperHero-Regular';
+  src: url('/fonts/InternationalSuperHero_gdi.eot');
+  src: url('/fonts/InternationalSuperHero_gdi.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/InternationalSuperHero_gdi.woff') format('woff'),
+    url('/fonts/InternationalSuperHero_gdi.ttf') format('truetype'),
+    url('/fonts/InternationalSuperHero_gdi.svg#InternationalSuperHero-Regular') format('svg');
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal;
+  unicode-range: U+0020-2026;
+}
+
+@font-face {
+  font-family:'JesterRegular-Regular';
+  src: url('/fonts/JesterRegular_gdi.eot');
+  src: url('/fonts/JesterRegular_gdi.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/JesterRegular_gdi.woff') format('woff'),
+    url('/fonts/JesterRegular_gdi.ttf') format('truetype'),
+    url('/fonts/JesterRegular_gdi.svg#JesterRegular-Regular') format('svg');
+  font-weight: 5;
+  font-style: normal;
+  font-stretch: normal;
+  unicode-range: U+0020-25CA;
+}
+
+@font-face {
+  font-family:'YardSale-Regular';
+  src: url('/fonts/YardSale_gdi.eot');
+  src: url('/fonts/YardSale_gdi.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/YardSale_gdi.woff') format('woff'),
+    url('/fonts/YardSale_gdi.ttf') format('truetype'),
+    url('/fonts/YardSale_gdi.svg#YardSale-Regular') format('svg');
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal;
+  unicode-range: U+0020-2044;
+}
+
+.yardsale {
+  font-family:  YardSale-Regular;
+}
+
+.jester {
+  font-family:  JesterRegular-Regular;
+}
+
+.superhero  {
+  font-family:  InternationalSuperHero-Regular;
+}
+
+.diploma  {
+  font-family:  Diploma-Regular;
+}
+
+.neou-bold {
+  font-family:  Neou-Bold;
+}
+
+.champagne {
+  font-family:  Champagne;
+}
+
+.old_script {
+  font-family:  Old_Script;
+}
+
+.greatvibes {
+  font-family:  GreatVibes;
+}
+
+.bubblegum {
+  font-family:  BubblegumSans;
+}
+
+.dancingscript {
+  font-family:  DancingScript;
+}
