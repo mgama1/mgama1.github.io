@@ -36,6 +36,6 @@ what we wanna do right now is reshape this tensor so that we have every pixel in
 pixels = np.reshape(image, (w * h, d))
 ```
 so this what we essentially have
-$$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = $$
+$$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} =\begin{bmatrix} R_{p_1} G_{p_1} B_{p_1}  \\ R_{p_2} G_{p_2} B_{p_2}  \\ \vdots \\ R_{p_{w*h} G_{p_{w*h}} B_{p_{w*h}} \end{bmatrix}  $$
 
 
