@@ -20,4 +20,16 @@ this is why in all image formats you will usually find 3 channels stacked over e
 
 [image from [ Sandeep Balachandran](https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png)]
 
+now that you are now familliar with what images look like let's have a look at arthur fleck after a long day at work
+![joker](https://github.com/mgama1/mgama1.github.io/assets/40968723/7fd1674e-c968-4ca0-92f6-128fc12cfe35)
+
+
+open the image and see what the dimensions look like
+```python
+image = mpimg.imread('../joker.jpg')
+h,w,d = tuple(image.shape)
+print(h,w,d)
+```
+turns out my image has 394 rows(height), 728 columns(width), and 3 channels(depth)
+
 
