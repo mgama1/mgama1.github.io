@@ -11,4 +11,4 @@ this is how all devices show colors but it would much harder to see with a high 
 and if you zoom back you will see the individual colors
 ![Screenshot from 2024-02-20 20-04-34](https://github.com/mgama1/mgama1.github.io/assets/40968723/ca3e116e-8679-49fe-a9ce-ce5e027721b5)
 
-you can try it yourself ![here](http://github.andrewt.net/mosaic/)
+you can try it yourself [here](http://github.andrewt.net/mosaic/)
