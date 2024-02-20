@@ -31,5 +31,11 @@ h,w,d = tuple(image.shape)
 print(h,w,d)
 ```
 turns out my image has 394 rows(height), 728 columns(width), and 3 channels(depth)
+what we wanna do right now is reshape this tensor so that we have every pixel in rows and each column is its R value, G value and G value in a row
+```python
+pixels = np.reshape(image, (w * h, d))
+```
+so this what we essentially have
+$$\begin{bmatrix} p_1 \\ p_2  \\.\\.\\.\\p_{w*h} \end{bmatrix} = $$
 
 
