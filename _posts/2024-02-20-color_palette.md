@@ -40,7 +40,9 @@ $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatri
 
 
 
-<div id="plot"></div><script>
+<div id="plot"></div>
+
+<script>
 const imageUrl = 'https://schloss-post.com/content/uploads/joker-official-images-19-600x324.jpeg';
 
 const image = new Image();
