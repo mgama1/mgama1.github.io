@@ -43,25 +43,66 @@ $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatri
 test
 <div id="myPlot"></div>
 <script>
-var trace = {
-  x: [1, 2, 3, 4],
-  y: [10, 15, 13, 17],
-  type: 'scatter'
-};
+const imageUrl = 'https://schloss-post.com/content/uploads/joker-official-images-19-600x324.jpeg';
 
-var layout = {
-  title: 'My Plot',
-  xaxis: {
-    title: 'X axis'
-  },
-  yaxis: {
-    title: 'Y axis'
+const image = new Image();
+image.crossOrigin = 'Anonymous';
+image.src = imageUrl;
+image.onload = () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(image, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  
+  const pixels = [];
+  for (let i = 0; i < imageData.length; i += 4) {
+    pixels.push([imageData[i], imageData[i + 1], imageData[i + 2]]);
   }
+  
+  const sampleIndices = [];
+  while (sampleIndices.length < 2000) {
+    const index = Math.floor(Math.random() * pixels.length);
+    if (!sampleIndices.includes(index)) {
+      sampleIndices.push(index);
+    }
+  }
+  
+  const sampledPixels = sampleIndices.map(index => pixels[index]);
+  
+  const colors = sampledPixels.map(rgb => `rgb(${rgb.join(',')})`);
+  
+  const rgbStrings = sampledPixels.map(rgb => `R: ${rgb[0]}, G: ${rgb[1]}, B: ${rgb[2]}`);
+  
+  const trace = {
+    x: sampledPixels.map(rgb => rgb[0]),
+    y: sampledPixels.map(rgb => rgb[1]),
+    z: sampledPixels.map(rgb => rgb[2]),
+    mode: 'markers',
+    marker: {
+      size: 3,
+      color: colors
+    },
+    text: rgbStrings,
+    type: 'scatter3d'
+  };
+  
+  const layout = {
+    scene: {
+      xaxis: { title: 'R' },
+      yaxis: { title: 'G' },
+      zaxis: { title: 'B' }
+    },
+    width: 800,
+    height: 800
+  };
+  
+  const data = [trace];
+  
+  Plotly.newPlot('plot', data, layout);
 };
 
-var data = [trace];
-
-Plotly.newPlot('myPlot', data, layout);
 </script>
 
 
