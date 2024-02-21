@@ -41,7 +41,6 @@ $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatri
 
 
 test
-<div id="myPlot"></div>
 <script>
 const imageUrl = 'https://schloss-post.com/content/uploads/joker-official-images-19-600x324.jpeg';
 
