@@ -26,7 +26,7 @@ now that you are now familliar with what images look like let's have a look at a
 
 open the image and see what the dimensions look like
 ```python
-image = mpimg.imread('../arthuer.jpg')
+image = mpimg.imread('../arthur.jpg')
 h,w,d = tuple(image.shape)
 print(h,w,d)
 ```
