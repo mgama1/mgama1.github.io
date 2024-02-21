@@ -39,3 +39,29 @@ so this what we essentially have
 $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatrix} R_{p_1} & G_{p_1} &  B_{p_1}  \\ R_{p_2} & G_{p_2} &  B_{p_2}  \\ \vdots  & \vdots & \vdots \\ R_{p_{w*h}} & G_{p_{w*h}} &  B_{p_{w*h}} \end{bmatrix}  $$
 
 
+
+test
+<div id="myPlot"></div>
+<script>
+var trace = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  type: 'scatter'
+};
+
+var layout = {
+  title: 'My Plot',
+  xaxis: {
+    title: 'X axis'
+  },
+  yaxis: {
+    title: 'Y axis'
+  }
+};
+
+var data = [trace];
+
+Plotly.newPlot('myPlot', data, layout);
+</script>
+
+
