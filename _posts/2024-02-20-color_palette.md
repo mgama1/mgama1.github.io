@@ -92,7 +92,7 @@ image.onload = () => {
     yaxis: { title: 'G' },
     zaxis: { title: 'B' },
     camera: {
-      eye: { x: 1, y: 1, z: 1 }, // Initial position of the camera
+      eye: { x: 0, y: -1, z: 0 }, // Initial position of the camera
       center: { x: 0, y: 0, z: 0 }, // Point the camera is looking at
       up: { x: 0, y: 0, z: 1 } // Up direction of the camera
     }
