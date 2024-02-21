@@ -40,6 +40,8 @@ so this what we essentially have
 $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatrix} R_{p_1} & G_{p_1} &  B_{p_1}  \\ R_{p_2} & G_{p_2} &  B_{p_2}  \\ \vdots  & \vdots & \vdots \\ R_{p_{w*h}} & G_{p_{w*h}} &  B_{p_{w*h}} \end{bmatrix}  $$
 
 
+to understand the colors of the image. let's go ahead and plot these pixels. since each pixel $$P^{(i)} \belongs to \mathbb{R}^3. we are gonna need a 3d plot where each axis represents R , G , B respectively 
+Upon exploring the plot we notice that there are distinct clusters of colors like orange that belongs to his jacket,teal that belongs to the bus and that shade of gray of the road.
 
 <div id="plot"></div>
 <script>
