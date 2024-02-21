@@ -41,13 +41,10 @@ $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatri
 
 
 <div id="plot"></div>
-
 <script>
-const imageUrl = 'https://schloss-post.com/content/uploads/joker-official-images-19-600x324.jpeg';
-
 const image = new Image();
-image.crossOrigin = 'Anonymous';
-image.src = imageUrl;
+image.src = 'https://i.imgur.com/BHsT2Un.jpg'; // Replace 'https://example.com/joker.jpg' with the actual URL of your image
+image.crossOrigin = 'Anonymous'; // Set crossOrigin to 'Anonymous' to allow access to the image's pixel data
 image.onload = () => {
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
@@ -104,5 +101,6 @@ image.onload = () => {
 };
 
 </script>
+
 
 
