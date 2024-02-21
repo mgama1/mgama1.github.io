@@ -5,11 +5,11 @@ title: Unlocking the Power of Colors Machine Learning for Image Scene Palettes
 Have you ever looked very close to an old tv and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
 this is how all devices show colors but it would much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
 ![Screenshot from 2024-02-21 17-01-30](https://github.com/mgama1/mgama1.github.io/assets/40968723/ee1f466f-bd78-45b0-822e-6a86d3ed2c5f)
-[James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)]
+[James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly et al. in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)]
 
 
 
-and if you zoom out you can see the individual colors
+and if you zoom in you can see the individual colors
 ![image](https://github.com/mgama1/mgama1.github.io/assets/40968723/b7ce6cbe-db60-4578-9a11-7bbba35be362)
 
 you can try it yourself [here](http://github.andrewt.net/mosaic/)
