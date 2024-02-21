@@ -23,7 +23,7 @@ this is why in all image formats you will usually find 3 channels stacked over e
 
 now that you are now familliar with what images look like let's have a look at arthur fleck after a long day at work
 ![joker](https://github.com/mgama1/mgama1.github.io/assets/40968723/7fd1674e-c968-4ca0-92f6-128fc12cfe35)
-
+[Joaquin Phoenix as arthur fleck in [joker(2019)](https://www.imdb.com/title/tt7286456/mediaviewer/rm2020643841/)]
 
 open the image and see what the dimensions look like
 ```python
@@ -32,7 +32,7 @@ h,w,d = tuple(image.shape)
 print(h,w,d)
 ```
 turns out my image has 394 rows(height), 728 columns(width), and 3 channels(depth)
-what we wanna do right now is reshape this tensor so that we have every pixel in rows and each column is its R value, G value and G value in a row
+what we wanna do right now is reshape this tensor so that we have every pixel in rows and each column is its R value, G value and B value in a row
 ```python
 pixels = np.reshape(image, (w * h, d))
 ```
