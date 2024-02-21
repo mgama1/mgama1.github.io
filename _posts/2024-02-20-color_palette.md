@@ -7,13 +7,10 @@ this is how all devices show colors but it would much harder to see with a high 
 ![Screenshot from 2024-02-21 17-01-30](https://github.com/mgama1/mgama1.github.io/assets/40968723/ee1f466f-bd78-45b0-822e-6a86d3ed2c5f)
 [James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)]
 
-![Screenshot from 2024-02-21 17-01-30](https://github.com/mgama1/mgama1.github.io/assets/40968723/ee1f466f-bd78-45b0-822e-6a86d3ed2c5f)
-  <figcaption> James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)  </figcaption>
 
 
-
-and if you zoom back you will see the individual colors
-![Screenshot from 2024-02-20 20-04-34](https://github.com/mgama1/mgama1.github.io/assets/40968723/ca3e116e-8679-49fe-a9ce-ce5e027721b5)
+and if you zoom out you can see the individual colors
+![image](https://github.com/mgama1/mgama1.github.io/assets/40968723/b7ce6cbe-db60-4578-9a11-7bbba35be362)
 
 you can try it yourself [here](http://github.andrewt.net/mosaic/)
 
