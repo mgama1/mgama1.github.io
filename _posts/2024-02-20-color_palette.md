@@ -119,3 +119,4 @@ given a set $$S = x^{(1)},x^{(2)}, \ldots , x^{(n)} ; x^{(i)} \in \mathbb{R}^d $
   - for every i, set $$C^{(i)} := argmin \| x^{(i)} -\mu _j \|^2 $$
   - for every j, set $$\mu _j := \frac{\sum_{i=1}^n 1 \{c^{(i)}=j\} x^{(i)} }{\sum_{i=1}^n 1 \{c^{(i)}=j\}} $$
 
+this is just a facncy way to say let every point to belong to the cluster with the nearest centroid then recalculate the cluster means. 
