@@ -359,6 +359,8 @@ plt.show()
 
 And although this is faster on my machine and probably on yours too, the flaw in this method is that we groups pixels based on their hue component only, not their full color representation. This could lead to less accurate results compared to the K-means clustering approach, which considers all three RGB components.
 
+
+
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -537,3 +539,5 @@ function showSlides(n) {
 
 </body>
 </html> 
+
+
