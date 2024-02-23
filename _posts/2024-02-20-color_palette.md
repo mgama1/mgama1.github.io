@@ -27,6 +27,10 @@ now that you are now familliar with what images look like let's have a look at a
 
 open the image and see what the dimensions look like
 ```python
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
 image = mpimg.imread('../arthur.jpg')
 h,w,d = tuple(image.shape)
 print(h,w,d)
@@ -119,4 +123,34 @@ given a set $$S = x^{(1)},x^{(2)}, \ldots , x^{(n)} ; x^{(i)} \in \mathbb{R}^d $
   - for every i, set $$C^{(i)} := argmin \| x^{(i)} -\mu _j \|^2 $$
   - for every j, set $$\mu _j := \frac{\sum_{i=1}^n 1 \{c^{(i)}=j\} x^{(i)} }{\sum_{i=1}^n 1 \{c^{(i)}=j\}} $$
 
-this is just a facncy way to say let every point to belong to the cluster with the nearest centroid then recalculate the cluster means. 
+this is just a facncy way to say let every point to belong to the cluster with the nearest centroid then recalculate the cluster means.
+you can check [statquest](https://www.youtube.com/watch?v=4b5d3muPQmA&t=113s) for an awesome explaination of the algorithm
+SO back to the code 
+all we have to do is fit the pixels to the K-means model, where the number of clusters is the number of colors in the palette that we want. and just like that their centroids are the colors of the palette
+for a more visually pleasing palette we will sort it by hue
+```python
+from sklearn.cluster import KMeans
+import colorsys
+
+def RGB2HSL(rgb):
+    r, g, b = rgb / 255.0
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    return [h, l, s]
+
+n_colors = 10
+model = KMeans(n_clusters=n_colors,random_state=42).fit(pixels)
+palette = np.uint8(model.cluster_centers_)
+palette_hsl = [RGB2HSL(color) for color in palette]
+palette_sorted = [color for _, color in sorted(zip([hsl[0] for hsl in palette_hsl], palette))]
+
+plt.imshow(image)
+plt.show()
+plt.imshow([palette_sorted])
+
+for i, color in enumerate(palette):
+    plt.text(i, 0, RGB2HEX(color), color='black', ha='center', va='center', fontsize=6)
+plt.show()
+```
+
+![palette](https://github.com/mgama1/mgama1.github.io/assets/40968723/d1219602-9ec8-4c7f-88c7-6ab0f26f3a66)
+
