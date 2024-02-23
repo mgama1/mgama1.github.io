@@ -200,6 +200,7 @@ img {vertical-align: middle;}
 /* Caption text */
 .text {
   color: #000000;
+  background-color:#ffffff;
   font-size: 15px;
   padding: 8px 12px;
   position: absolute;
