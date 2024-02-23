@@ -152,9 +152,8 @@ for i, color in enumerate(palette):
 plt.show()
 ```
 
-![palette](https://github.com/mgama1/mgama1.github.io/assets/40968723/d1219602-9ec8-4c7f-88c7-6ab0f26f3a66)
+And finally!
 
-<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -256,20 +255,26 @@ img {vertical-align: middle;}
 <div class="slideshow-container">
 
 <div class="mySlides fade">
-  <div class="numbertext">1 / 3</div>
-  <img src="https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png" style="width:100%">
+  <div class="numbertext">1 / 4</div>
+  <img src="https://i.imgur.com/tsSGlj2.jpg" style="width:100%">
   <div class="text">Caption Text</div>
 </div>
 
 <div class="mySlides fade">
-  <div class="numbertext">2 / 3</div>
-  <img src="https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png" style="width:100%">
+  <div class="numbertext">2 / 4</div>
+  <img src="https://i.imgur.com/zW1uBDA.png" style="width:100%">
   <div class="text">Capddddtion Two</div>
 </div>
 
 <div class="mySlides fade">
-  <div class="numbertext">3 / 3</div>
-  <img src="https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png" style="width:100%">
+  <div class="numbertext">3 / 4</div>
+  <img src="https://i.imgur.com/q2csYfT.png" style="width:100%">
+  <div class="text">Caption Three</div>
+</div>
+
+<div class="mySlides fade">
+  <div class="numbertext">4 / 4</div>
+  <img src="https://i.imgur.com/NSW1cal.png" style="width:100%">
   <div class="text">Caption Three</div>
 </div>
 
