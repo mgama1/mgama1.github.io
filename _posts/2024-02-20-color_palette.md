@@ -204,7 +204,7 @@ img {vertical-align: middle;}
   font-size: 15px;
   padding: 8px 12px;
   position: absolute;
-  bottom: 24px;
+  bottom: -14px;
   width: 100%;
   text-align: center;
 }
