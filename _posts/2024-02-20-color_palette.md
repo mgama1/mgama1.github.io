@@ -357,5 +357,4 @@ for i, color in enumerate(palette):
 plt.show()
 ```
 
-and although this is faster on my machine and probably on yours too, the flaw in this approach is that we are taking the mean of the pixels after grouping them using hue only not their the all 3 parameters (only hue in hsl) that define that particular color.
-while in the machine learning approach they are grouped by all their defining parameters, RGB so their mean is actually more meaningful 
+And although this is faster on my machine and probably on yours too, the flaw in this method is that we groups pixels based on their hue component only, not their full color representation. This could lead to less accurate results compared to the K-means clustering approach, which considers all three RGB components.
