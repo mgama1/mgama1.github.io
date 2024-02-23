@@ -199,7 +199,7 @@ img {vertical-align: middle;}
 
 /* Caption text */
 .text {
-  color: #f2f2f2;
+  color: #000000;
   font-size: 15px;
   padding: 8px 12px;
   position: absolute;
@@ -210,7 +210,7 @@ img {vertical-align: middle;}
 
 /* Number text (1/4 etc) */
 .numbertext {
-  color: #f2f2f2;
+  color: #000000;
   font-size: 12px;
   padding: 8px 12px;
   position: absolute;
@@ -257,31 +257,31 @@ img {vertical-align: middle;}
 <div class="mySlides fade">
   <div class="numbertext">1 / 5</div>
   <img src="https://i.imgur.com/tsSGlj2.jpg" style="width:100%">
-  <div class="text">Caption Text</div>
+  <div class="text">Joaquin Phoenix as arthur fleck in joker(2019)</div>
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">2 / 5</div>
   <img src="https://i.imgur.com/zW1uBDA.png" style="width:100%">
-  <div class="text">Capddddtion Two</div>
+  <div class="text">James McAvoy as The Horde in Glass (2019)</div>
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">3 / 5</div>
   <img src="https://i.imgur.com/q2csYfT.png" style="width:100%">
-  <div class="text">Caption Three</div>
+  <div class="text">Ana de Armas as Dani Miranda in The Gray Man (2022)</div>
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">4 / 5</div>
   <img src="https://i.imgur.com/NSW1cal.png" style="width:100%">
-  <div class="text">Caption Three</div>
+  <div class="text">Kara Hayward as Suzy Bishop in Moonrise Kingdom(2012)</div>
 </div>
 
 <div class="mySlides fade">
   <div class="numbertext">5 / 5</div>
   <img src="https://i.imgur.com/wWlOsEX.png" style="width:100%">
-  <div class="text">Caption Three</div>
+  <div class="text">Léa Seydoux as Madeleine Swann in No Time to Die (2021)</div>
 </div>
 
 
