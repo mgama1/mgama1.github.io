@@ -16,7 +16,7 @@ you can try it yourself [here](http://github.andrewt.net/mosaic/)
 
 
 this is why in all image formats you will usually find 3 channels stacked over each other and each channel is a 2d array 
-
+with pixel values ranging from 0 to 255.
 ![image](https://github.com/mgama1/mgama1.github.io/assets/40968723/6da8826d-e965-47f5-966d-3a23857f3c68)
 
 [image from [ Sandeep Balachandran](https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png)]
