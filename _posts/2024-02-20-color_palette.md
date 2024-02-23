@@ -332,3 +332,30 @@ function showSlides(n) {
 
 </body>
 </html> 
+so is this the only way?do i have to use machine learning to do this?
+well no, this is just the fun way, for example you can do it programmatically with a couple of line codes
+just sort the colors by hue, then take the mean of every 1/k of the sorted pixels 
+of course now the computationally expensive part is sorting the whole w*h pixels list
+
+```python
+pixels_hsl = [RGB2HSL(color) for color in pixels]
+pixels_sorted = np.array([color for _, color in sorted(zip([hsl[0] for hsl in pixels_hsl], pixels), key=lambda x: x[0])])
+
+palette = []
+step = len(pixels_sorted_np) // 10
+for i in range(9):
+    mean_color = pixels_sorted_np[i * step: (i + 1) * step].mean(axis=0)
+    mean_color_int = tuple(map(int, mean_color))
+    palette.append(mean_color_int)
+
+plt.imshow(image)
+plt.show()
+plt.imshow([palette])
+
+for i, color in enumerate(palette):
+    plt.text(i, 0, RGB2HEX(color), color='black', ha='center', va='center', fontsize=6)
+plt.show()
+```
+
+and although this is faster on my machine and probably on yours too, the flaw in this approach is that we are taking the mean of the pixels after grouping them using hue only not their the all 3 parameters (only hue in hsl) that define that particular color.
+while in the machine learning approach they are grouped by all their defining parameters, RGB so their mean is actually more meaningful 
