@@ -153,154 +153,158 @@ plt.show()
 ```
 
 And finally!
-
-<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 * {box-sizing: border-box}
 body {font-family: Verdana, sans-serif; margin:0}
-.mySlides {display: none}
+.mySlides, .mySlides2 {display: none}
 img {vertical-align: middle;}
 
 /* Slideshow container */
-.slideshow-container {
-  max-width: 1000px;
+.slideshow-container, .slideshow-container2 {
+  max-width:  1000px;
   position: relative;
   margin: auto;
 }
-
 /* Next & previous buttons */
-.prev, .next {
+.prev, .next, .prev2, .next2 {
   cursor: pointer;
   position: absolute;
-  top: 50%;
-  width: auto;
+  top: 0;
+  bottom: 0;
+  width: 10%;
   padding: 16px;
-  margin-top: -22px;
+  margin-top: 0;
   color: white;
   font-weight: bold;
   font-size: 18px;
   transition: 0.6s ease;
   border-radius: 0 3px 3px 0;
   user-select: none;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+
 /* Position the "next button" to the right */
-.next {
-  right: 0;
-  border-radius: 3px 0 0 3px;
+.next, .next2 {
+  right:  0;
+  border-radius:  3px  0  0  3px;
 }
 
 /* On hover, add a black background color with a little bit see-through */
-.prev:hover, .next:hover {
+.prev:hover, .next:hover, .prev2:hover, .next2:hover {
   background-color: rgba(0,0,0,0.8);
 }
 
 /* Caption text */
-.text {
+.text, .text2 {
   color: #000000;
   background-color:#ffffff;
-  font-size: 15px;
-  padding: 8px 12px;
+  font-size:  15px;
+  padding:  8px  12px;
   position: absolute;
   bottom: -14px;
-  width: 100%;
+  width:  100%;
   text-align: center;
 }
 
 /* Number text (1/4 etc) */
-.numbertext {
+.numbertext, .numbertext2 {
   color: #000000;
-  font-size: 12px;
-  padding: 8px 12px;
+  font-size:  12px;
+  padding:  8px  12px;
   position: absolute;
-  top: 0;
+  top:  0;
 }
 
 /* The dots/bullets/indicators */
-.dot {
+.dot, .dot2 {
   cursor: pointer;
-  height: 15px;
-  width: 15px;
-  margin: 0 2px;
+  height:  15px;
+  width:  15px;
+  margin:  0  2px;
   background-color: #bbb;
-  border-radius: 50%;
+  border-radius:  50%;
   display: inline-block;
-  transition: background-color 0.6s ease;
+  transition: background-color  0.6s ease;
 }
 
-.active, .dot:hover {
+.active, .dot:hover, .dot2:hover {
   background-color: #717171;
 }
 
 /* Fading animation */
 .fade {
   animation-name: fade;
-  animation-duration: 1.5s;
+  animation-duration:  1.5s;
 }
 
 @keyframes fade {
-  from {opacity: .4} 
-  to {opacity: 1}
+  from {opacity: .4}  
+  to {opacity:  1}
 }
 
 /* On smaller screens, decrease text size */
-@media only screen and (max-width: 300px) {
-  .prev, .next,.text {font-size: 11px}
+@media only screen and (max-width:  300px) {
+  .prev, .next,.text, .prev2, .next2,.text2 {font-size:  11px}
 }
 </style>
 </head>
 <body>
 
-<!-- First Slideshow -->
 <div class="slideshow-container">
+  <!-- Slides for the first slideshow -->
+  <div class="mySlides fade">
+    <div class="numbertext">1 /  5</div>
+    <img src="https://i.imgur.com/tsSGlj2.jpg" style="width:100%">
+    <div class="text">Joaquin Phoenix as Arthur Fleck in Joker (2019)</div>
+  </div>
 
-<div class="mySlides fade">
-  <div class="numbertext">1 / 5</div>
-  <img src="https://i.imgur.com/tsSGlj2.jpg" style="width:100%">
-  <div class="text">Joaquin Phoenix as Arthur Fleck in Joker (2019)</div>
+  <div class="mySlides fade">
+    <div class="numbertext">2 /  5</div>
+    <img src="https://i.imgur.com/zW1uBDA.png" style="width:100%">
+    <div class="text">James McAvoy as The Horde in Glass (2019)</div>
+  </div>
+
+  <div class="mySlides fade">
+    <div class="numbertext">3 /  5</div>
+    <img src="https://i.imgur.com/q2csYfT.png" style="width:100%">
+    <div class="text">Ana de Armas as Dani Miranda in The Gray Man (2022)</div>
+  </div>
+
+  <div class="mySlides fade">
+    <div class="numbertext">4 /  5</div>
+    <img src="https://i.imgur.com/NSW1cal.png" style="width:100%">
+    <div class="text">Kara Hayward as Suzy Bishop in Moonrise Kingdom (2012)</div>
+  </div>
+  <div class="mySlides fade">
+    <div class="numbertext">5 /  5</div>
+    <img src="https://i.imgur.com/wWlOsEX.png" style="width:100%">
+    <div class="text">Léa Seydoux as Madeleine Swann in No Time to Die (2021)</div>
+  </div>
+
+  <!-- Add more slides as needed -->
+
+  <a class="prev" onclick="plusSlides(-1,  1)">❮</a>
+  <a class="next" onclick="plusSlides(1,  1)">❯</a>
 </div>
-
-<div class="mySlides fade">
-  <div class="numbertext">2 / 5</div>
-  <img src="https://i.imgur.com/zW1uBDA.png" style="width:100%">
-  <div class="text">James McAvoy as The Horde in Glass (2019)</div>
-</div>
-
-<div class="mySlides fade">
-  <div class="numbertext">3 / 5</div>
-  <img src="https://i.imgur.com/q2csYfT.png" style="width:100%">
-  <div class="text">Ana de Armas as Dani Miranda in The Gray Man (2022)</div>
-</div>
-
-<div class="mySlides fade">
-  <div class="numbertext">4 / 5</div>
-  <img src="https://i.imgur.com/NSW1cal.png" style="width:100%">
-  <div class="text">Kara Hayward as Suzy Bishop in Moonrise Kingdom (2012)</div>
-</div>
-
-<div class="mySlides fade">
-  <div class="numbertext">5 / 5</div>
-  <img src="https://i.imgur.com/wWlOsEX.png" style="width:100%">
-  <div class="text">Léa Seydoux as Madeleine Swann in No Time to Die (2021)</div>
-</div>
-
-<a class="prev" onclick="plusSlides(-1)">❮</a>
-<a class="next" onclick="plusSlides(1)">❯</a>
-
-</div>
-<br>
 
 <div style="text-align:center">
-  <span class="dot" onclick="currentSlide(1)"></span> 
-  <span class="dot" onclick="currentSlide(2)"></span> 
-  <span class="dot" onclick="currentSlide(3)"></span> 
-  <span class="dot" onclick="currentSlide(4)"></span> 
-  <span class="dot" onclick="currentSlide(5)"></span> 
+  <span class="dot" onclick="currentSlide(1,  1)"></span>   
+  <span class="dot" onclick="currentSlide(2,  1)"></span>   
+  <span class="dot" onclick="currentSlide(3,  1)"></span>   
+  <span class="dot" onclick="currentSlide(4,  1)"></span>   
+  <span class="dot" onclick="currentSlide(5,  1)"></span>   
+
+  <!-- Add more dots as needed -->
 </div>
 
+<br>
 
 
 
@@ -337,96 +341,113 @@ And although this is faster on my machine and probably on yours too, the flaw in
 
 <html>
 <body>
-<!-- Second Slideshow -->
+
 <div class="slideshow-container2">
+  <!-- Slides for the second slideshow -->
+  <div class="mySlides2 fade">
+    <div class="numbertext2">1 /  5</div>
+    <img src="https://i.imgur.com/sCjH5mT.png" style="width:100%">
+    <div class="text2">Joaquin Phoenix as arthur fleck in joker(2019)</div>
+  </div>
 
-<div class="mySlides2 fade">
-  <div class="numbertext">1 / 3</div>
-  <img src="https://via.placeholder.com/600" style="width:100%">
-  <div class="text">Caption 1</div>
+ 
+    <div class="mySlides2 fade">
+      <div class="numbertext2"> 2/  5</div>
+      <img src="https://i.imgur.com/hfkeajH.png" style="width:100%">
+      <div class="text2">James McAvoy as The Horde in Glass</div>
+    </div>
+
+   
+      <div class="mySlides2 fade">
+        <div class="numbertext2"> 3/  5</div>
+        <img src="https://i.imgur.com/YJuDx51.png" style="width:100%">
+        <div class="text2">Ana de Armas as Dani Miranda in The Gray Man (2022)</div>
+      </div>
+
+
+        <div class="mySlides2 fade">
+          <div class="numbertext2"> 4/  5</div>
+          <img src="https://i.imgur.com/elsnYxn.png" style="width:100%">
+          <div class="text2">Kara Hayward as Suzy Bishop in Moonrise Kingdom(2012)</div>
+        </div>
+
+      
+          <div class="mySlides2 fade">
+            <div class="numbertext2">5/  5</div>
+            <img src="https://i.imgur.com/FTzMssy.png" style="width:100%">
+            <div class="text2">Léa Seydoux as Madeleine Swann in No Time to Die (2021)</div>
+          </div>
+
+
+  <!-- Add more slides as needed -->
+
+  <a class="prev2" onclick="plusSlides(-1,  2)">❮</a>
+  <a class="next2" onclick="plusSlides(1,  2)">❯</a>
 </div>
-
-<div class="mySlides2 fade">
-  <div class="numbertext">2 / 3</div>
-  <img src="https://via.placeholder.com/600" style="width:100%">
-  <div class="text">Caption 2</div>
-</div>
-
-<div class="mySlides2 fade">
-  <div class="numbertext">3 / 3</div>
-  <img src="https://via.placeholder.com/600" style="width:100%">
-  <div class="text">Caption 3</div>
-</div>
-
-<a class="prev" onclick="plusSlides2(-1)">❮</a>
-<a class="next" onclick="plusSlides2(1)">❯</a>
-
-</div>
-<br>
 
 <div style="text-align:center">
-  <span class="dot" onclick="currentSlide2(1)"></span> 
-  <span class="dot" onclick="currentSlide2(2)"></span> 
-  <span class="dot" onclick="currentSlide2(3)"></span> 
+  <span class="dot2" onclick="currentSlide(1,  2)"></span> 
+  <span class="dot2" onclick="currentSlide(2,  2)"></span>   
+  <span class="dot2" onclick="currentSlide(3,  2)"></span>   
+  <span class="dot2" onclick="currentSlide(4,  2)"></span>   
+  <span class="dot2" onclick="currentSlide(5,  2)"></span>   
+
+  <!-- Add more dots as needed -->
 </div>
 
 <script>
-let slideIndex = 1;
-showSlides(slideIndex);
+let slideIndex1 =  1;
+let slideIndex2 =  1;
+showSlides(slideIndex1, slideIndex2);
 
-function plusSlides(n) {
-  showSlides(slideIndex += n);
+function plusSlides(n, no) {
+  if (no ===  1) {
+    showSlides(slideIndex1 += n, slideIndex2);
+  } else if (no ===  2) {
+    showSlides(slideIndex1, slideIndex2 += n);
+  }
 }
 
-function currentSlide(n) {
-  showSlides(slideIndex = n);
+function currentSlide(n, no) {
+  if (no ===  1) {
+    showSlides(slideIndex1 = n, slideIndex2);
+  } else if (no ===  2) {
+    showSlides(slideIndex1, slideIndex2 = n);
+  }
 }
 
-function showSlides(n) {
+function showSlides(n1, n2) {
   let i;
-  let slides = document.getElementsByClassName("mySlides");
-  let dots = document.getElementsByClassName("dot");
-  if (n > slides.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";  
-  }
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex-1].style.display = "block";  
-  dots[slideIndex-1].className += " active";
-}
+  let slides1 = document.getElementsByClassName("mySlides");
+  let slides2 = document.getElementsByClassName("mySlides2");
+  let dots1 = document.getElementsByClassName("dot");
+  let dots2 = document.getElementsByClassName("dot2");
 
-// Second slideshow functions
-let slideIndex2 = 1;
-showSlides2(slideIndex2);
-
-function plusSlides2(n) {
-  showSlides2(slideIndex2 += n);
-}
-
-function currentSlide2(n) {
-  showSlides2(slideIndex2 = n);
-}
-
-function showSlides2(n) {
-  let i;
-  let slides = document.getElementsByClassName("mySlides2");
-  let dots = document.getElementsByClassName("dot");
-  if (n > slides.length) {slideIndex2 = 1}    
-  if (n < 1) {slideIndex2 = slides.length}
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";  
+  if (n1 > slides1.length) {slideIndex1 =  1}    
+  if (n1 <  1) {slideIndex1 = slides1.length}
+  for (i =  0; i < slides1.length; i++) {
+    slides1[i].style.display = "none";   
   }
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
+  for (i =  0; i < dots1.length; i++) {
+    dots1[i].className = dots1[i].className.replace(" active", "");
   }
-  slides[slideIndex2-1].style.display = "block";  
-  dots[slideIndex2-1].className += " active";
+  slides1[slideIndex1-1].style.display = "block";   
+  dots1[slideIndex1-1].className += " active";
+
+  if (n2 > slides2.length) {slideIndex2 =  1}    
+  if (n2 <  1) {slideIndex2 = slides2.length}
+  for (i =  0; i < slides2.length; i++) {
+    slides2[i].style.display = "none";   
+  }
+  for (i =  0; i < dots2.length; i++) {
+    dots2[i].className = dots2[i].className.replace(" active", "");
+  }
+  slides2[slideIndex2-1].style.display = "block";   
+  dots2[slideIndex2-1].className += " active";
 }
 </script>
 
 </body>
 </html>
+
 
