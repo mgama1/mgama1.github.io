@@ -4,11 +4,15 @@ title: "Understanding colors in visual storytelling : how to exctract color pale
 ---
 
 I want you to close your eyes and imagine two characters from star wars fighting, a hero and a villian. what are their lightsaber colors?what colors are their clothes?
-Colors are a powerful way to tell a story in a manner that words alone cannot.<span style="color: #146ba8;">they can set the tone by making it cold and depressing</span> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
+Colors are a powerful way to tell a story in a manner that words alone cannot.
+
+<span style="color: #146ba8;">they can set the tone by making it cold and depressing</span> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
 This effect can be as striking as the redness of the scene where Omni-Man destroys an entire planet, or as subtle as the moment when Walter White says he is "the one who knocks".
 Colors can also symbolize character traits, such as the darkness associated with the Dark Knight or <b><span style="color: #eb9f24;">the alerting yellow worn by The Bride</span> </b> in 'Kill Bill'.you may want to hear more about colors in storytelling from [Lewis Bond](https://www.youtube.com/watch?v=aXgFcNUWqX0).
 
 
+
+Before we go on and extract the color palettes. let's first revisit the nature of images.
 
 Have you ever looked very close to an old tv and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
 this is how all devices show colors but it would much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
