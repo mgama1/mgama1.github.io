@@ -10,7 +10,10 @@ Colors are a powerful way to tell a story in a manner that words alone cannot.
 This effect can be as striking as the redness of the scene where Omni-Man destroys an entire planet, or as subtle as the moment when Walter White says he is "the one who knocks".
 Colors can also symbolize character traits, such as the darkness associated with the Dark Knight or <b><span style="color: #eb9f24;">the alerting yellow worn by The Bride</span> </b> in 'Kill Bill'.you may want to hear more about colors in storytelling from [Lewis Bond](https://www.youtube.com/watch?v=aXgFcNUWqX0).
 
-
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+    <iframe src="https://www.youtube.com/embed/hJ9UUnYybfw?autoplay=1&controls=0&showinfo=0&start=163&end=213" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen="allowfullscreen"></iframe>
+</div>
+[Omni-Man asking the Flaxans nicely to not take his stuff]
 
 Before we go on and extract the color palettes. let's first revisit the nature of images.
 
