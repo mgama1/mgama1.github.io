@@ -144,8 +144,10 @@ given a set $$S = x^{(1)},x^{(2)}, \ldots , x^{(n)} ; x^{(i)} \in \mathbb{R}^d $
 
 this is just a fancy way to say let every point to belong to the cluster with the nearest centroid then recalculate the cluster means.
 you can check [statquest](https://www.youtube.com/watch?v=4b5d3muPQmA&t=113s) for an awesome explanation of the algorithm
-SO back to the code 
-all we have to do is fit the pixels to the K-means model, where the number of clusters is the number of colors in the palette that we want. and just like that their centroids are the colors of the palette
+
+So back to the code 
+
+All we have to do is fit the pixels to the K-means model, where the number of clusters is the number of colors in the palette that we want. and just like that, their centroids are the colors of the palette
 for a more visually pleasing palette we will sort it by hue
 ```python
 from sklearn.cluster import KMeans
@@ -155,10 +157,14 @@ def RGB2HSL(rgb):
     r, g, b = rgb / 255.0
     h, l, s = colorsys.rgb_to_hls(r, g, b)
     return [h, l, s]
+def RGB2HEX(rgb):
+    hex_color = "#{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2])
+    return hex_color
 
 n_colors = 10
 model = KMeans(n_clusters=n_colors,random_state=42).fit(pixels)
 palette = np.uint8(model.cluster_centers_)
+#sort the color palette by hue for a more visually pleasing outcome
 palette_hsl = [RGB2HSL(color) for color in palette]
 palette_sorted = [color for _, color in sorted(zip([hsl[0] for hsl in palette_hsl], palette))]
 
@@ -332,8 +338,10 @@ img {vertical-align: middle;}
 </body>
 </html> 
 so is this the only way?do i have to use machine learning to do this?
-well no, this is just the fun way, for example you can do it programmatically with a couple of line codes
-just sort the colors by hue, then take the mean of every 1/k of the sorted pixels 
+well no, this is just the fun way, for example you can do it programmatically with a couple of lines of code.
+
+just sort the colors by hue, then take the mean of every 1/k of the sorted pixels.
+
 of course now the computationally expensive part is sorting the whole w*h pixels list
 
 ```python
