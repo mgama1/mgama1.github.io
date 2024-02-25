@@ -16,7 +16,7 @@ Colors can also symbolize character traits, such as the darkness associated with
 </div>
 [Omni-Man explaining nicely why the Flaxans should leave earth alone]
 
-Before we go on and extract the color palettes. let's first revisit the nature of images.
+Before we get into the technical aspects of extracting color palettes, let's first revisit the nature of images and how they represent colors.
 
 Have you ever looked very close to an old tv and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
 this is how all devices show colors but it would be much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
