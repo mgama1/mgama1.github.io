@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Understanding colors in visual storytelling : how to exctract color palettes"
+title: "Understanding colors in visual storytelling : how to extract color palettes"
 ---
 
-I want you to close your eyes and imagine two characters from star wars fighting, a hero and a villain. what are their lightsaber colors?what colors are their clothes?
+I want you to close your eyes and imagine two characters from star wars fighting, a hero and a villain. what are their lightsaber colors? what colors are their clothes?
 Colors are a powerful way to tell a story in a manner that words alone cannot.
 
 <b><span style="color: #146ba8;">they can set the tone by making it cold and depressing</span></b> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
@@ -18,7 +18,7 @@ Colors can also symbolize character traits, such as the darkness associated with
 
 Before we get into the technical aspects of extracting color palettes, let's first revisit the nature of images and how they represent colors.
 
-Have you ever looked very close to an old tv and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
+Have you ever looked very close to an old TV and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
 this is how all devices show colors but it would be much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
 ![Screenshot from 2024-02-21 17-01-30](https://github.com/mgama1/mgama1.github.io/assets/40968723/ee1f466f-bd78-45b0-822e-6a86d3ed2c5f)
 [James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly et al. in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)]
