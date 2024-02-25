@@ -3,7 +3,7 @@ layout: post
 title: "Understanding colors in visual storytelling : how to exctract color palettes"
 ---
 
-I want you to close your eyes and imagine two characters from star wars fighting, a hero and a villian. what are their lightsaber colors?what colors are their clothes?
+I want you to close your eyes and imagine two characters from star wars fighting, a hero and a villain. what are their lightsaber colors?what colors are their clothes?
 Colors are a powerful way to tell a story in a manner that words alone cannot.
 
 <b><span style="color: #146ba8;">they can set the tone by making it cold and depressing</span></b> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
@@ -37,7 +37,7 @@ with pixel values ranging from 0 to 255.
 
 [image from [ Sandeep Balachandran](https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png)]
 
-now that you are now familliar with what images look like let's have a look at arthur fleck after a long day at work
+now that you are now familiar with what images look like let's have a look at arthur fleck after a long day at work
 ![joker](https://github.com/mgama1/mgama1.github.io/assets/40968723/7fd1674e-c968-4ca0-92f6-128fc12cfe35)
 [Joaquin Phoenix as arthur fleck in [joker(2019)](https://www.imdb.com/title/tt7286456/mediaviewer/rm2020643841/)]
 
@@ -133,15 +133,15 @@ image.onload = () => {
 
 if only we can identify these clusters and maybe take the mean of the of each cluster to get the average cluster color ...hey wait that's K-means clustering! 
 if you are not familiar with k-means or need a refresher,
-k-means is an unsupervised learning algorithm meaning that we don't have labels to out input, just like our pixels, generally speaking,
+k-means is an unsupervised learning algorithm meaning that we don't have labels to our input, just like our pixels, generally speaking,
 given a set $$S = x^{(1)},x^{(2)}, \ldots , x^{(n)} ; x^{(i)} \in \mathbb{R}^d $$ 
 - initialize cluster centroids(means) $$ \mu _1,\mu _2, \ldots ,\mu _k \in \mathbb{R}^d $$ randomly
 - then Repeat until convergence:
   - for every i, set $$C^{(i)} := argmin \| x^{(i)} -\mu _j \|^2 $$
   - for every j, set $$\mu _j := \frac{\sum_{i=1}^n 1 \{c^{(i)}=j\} x^{(i)} }{\sum_{i=1}^n 1 \{c^{(i)}=j\}} $$
 
-this is just a facncy way to say let every point to belong to the cluster with the nearest centroid then recalculate the cluster means.
-you can check [statquest](https://www.youtube.com/watch?v=4b5d3muPQmA&t=113s) for an awesome explaination of the algorithm
+this is just a fancy way to say let every point to belong to the cluster with the nearest centroid then recalculate the cluster means.
+you can check [statquest](https://www.youtube.com/watch?v=4b5d3muPQmA&t=113s) for an awesome explanation of the algorithm
 SO back to the code 
 all we have to do is fit the pixels to the K-means model, where the number of clusters is the number of colors in the palette that we want. and just like that their centroids are the colors of the palette
 for a more visually pleasing palette we will sort it by hue
