@@ -135,6 +135,7 @@ image.onload = () => {
 if only we can identify these clusters and maybe take the mean of the of each cluster to get the average cluster color ...hey wait that's K-means clustering! 
 if you are not familiar with k-means or need a refresher,
 k-means is an unsupervised learning algorithm meaning that we don't have labels to our input, just like our pixels, generally speaking,
+
 given a set $$S = x^{(1)},x^{(2)}, \ldots , x^{(n)} ; x^{(i)} \in \mathbb{R}^d $$ 
 - initialize cluster centroids(means) $$ \mu _1,\mu _2, \ldots ,\mu _k \in \mathbb{R}^d $$ randomly
 - then Repeat until convergence:
