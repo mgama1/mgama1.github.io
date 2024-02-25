@@ -13,7 +13,7 @@ Colors can also symbolize character traits, such as the darkness associated with
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
     <iframe src="https://www.youtube.com/embed/hJ9UUnYybfw?autoplay=1&controls=0&showinfo=0&start=163&end=213" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen="allowfullscreen"></iframe>
 </div>
-[Omni-Man asking the Flaxans nicely to not take his stuff]
+[Omni-Man explaining nicely why the Flaxans should leave earth alone]
 
 Before we go on and extract the color palettes. let's first revisit the nature of images.
 
