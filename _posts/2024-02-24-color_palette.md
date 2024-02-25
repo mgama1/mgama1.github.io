@@ -345,15 +345,30 @@ just sort the colors by hue, then take the mean of every 1/k of the sorted pixel
 of course now the computationally expensive part is sorting the whole w*h pixels list
 
 ```python
-pixels_hsl = [RGB2HSL(color) for color in pixels]
-pixels_sorted = np.array([color for _, color in sorted(zip([hsl[0] for hsl in pixels_hsl], pixels), key=lambda x: x[0])])
+import numpy as np
+import matplotlib.pyplot as plt
+import colorsys
+
+def RGB2HSL(rgb):
+    r, g, b = rgb / 255.0
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    return [h, l, s]
+
+def RGB2HEX(rgb):
+    """Convert RGB to hex color code."""
+    hex_color = "#{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2])
+    return hex_color
+
+pixels_hsl = np.array([RGB2HSL(color) for color in pixels])
+pixels = np.array(pixels)
+sorted_indices = np.argsort(pixels_hsl[:, 0])
+pixels_sorted = pixels[sorted_indices]
 
 palette = []
-step = len(pixels_sorted_np) // 10
+step = len(pixels_sorted) // 10
 for i in range(9):
-    mean_color = pixels_sorted_np[i * step: (i + 1) * step].mean(axis=0)
-    mean_color_int = tuple(map(int, mean_color))
-    palette.append(mean_color_int)
+    mean_color = pixels_sorted[i * step: (i + 1) * step].mean(axis=0).astype(int)
+    palette.append(mean_color)
 
 plt.imshow(image)
 plt.show()
@@ -362,6 +377,7 @@ plt.imshow([palette])
 for i, color in enumerate(palette):
     plt.text(i, 0, RGB2HEX(color), color='black', ha='center', va='center', fontsize=6)
 plt.show()
+
 ```
 
 And although this is faster on my machine and probably on yours too, the flaw in this method is that we groups pixels based on their hue component only, not their full color representation. This could lead to less accurate results compared to the K-means clustering approach, which considers all three RGB components.
