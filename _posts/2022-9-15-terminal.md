@@ -2,7 +2,7 @@
 layout: post
 title: my terminal commands
 ---
-![image](https://user-images.githubusercontent.com/40968723/190875717-d998e11e-8155-45b3-9c03-8ec4e74aaabe.png)
+![image](https://github.com/mgama1/mgama1.github.io/assets/40968723/333cdb18-d79e-410a-992f-e21bb90bd8c0)
 
 <h3> As a daily linux user but not a sys admin or anything related, i thought to group all the commands that i find useful as a user </h3>  
 my best friends are whois and alias. the first tells me a short describtion of a command that i'm not familliar with and the latter saves my time by shortening long complicated commands.
