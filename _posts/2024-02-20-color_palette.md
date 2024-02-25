@@ -6,7 +6,7 @@ title: "Understanding colors in visual storytelling : how to exctract color pale
 I want you to close your eyes and imagine two characters from star wars fighting, a hero and a villian. what are their lightsaber colors?what colors are their clothes?
 Colors are a powerful way to tell a story in a manner that words alone cannot.
 
-<span style="color: #146ba8;">they can set the tone by making it cold and depressing</span> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
+<b><span style="color: #146ba8;">they can set the tone by making it cold and depressing</span></b> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
 This effect can be as striking as the redness of the scene where Omni-Man destroys an entire planet, or as subtle as the moment when Walter White says he is "the one who knocks".
 Colors can also symbolize character traits, such as the darkness associated with the Dark Knight or <b><span style="color: #eb9f24;">the alerting yellow worn by The Bride</span> </b> in 'Kill Bill'.you may want to hear more about colors in storytelling from [Lewis Bond](https://www.youtube.com/watch?v=aXgFcNUWqX0).
 
