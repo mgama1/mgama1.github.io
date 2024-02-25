@@ -360,7 +360,6 @@ def RGB2HEX(rgb):
     return hex_color
 
 pixels_hsl = np.array([RGB2HSL(color) for color in pixels])
-pixels = np.array(pixels)
 sorted_indices = np.argsort(pixels_hsl[:, 0])
 pixels_sorted = pixels[sorted_indices]
 
