@@ -8,6 +8,7 @@ Colors are a powerful way to tell a story in a manner that words alone cannot.
 
 <b><span style="color: #146ba8;">they can set the tone by making it cold and depressing</span></b> <b><span style="color: #d52d2e;">or evoke feelings of anger and danger.</span></b>
 This effect can be as striking as the redness of the scene where Omni-Man destroys an entire planet, or as subtle as the moment when Walter White says he is ["the one who knocks"](https://www.youtube.com/watch?v=Ca3kPemW2CE).
+
 Colors can also symbolize character traits, such as the darkness associated with the Dark Knight or <b><span style="color: #eb9f24;">the alerting yellow worn by The Bride</span> </b> in 'Kill Bill'.you may want to hear more about colors in storytelling from [Lewis Bond](https://www.youtube.com/watch?v=aXgFcNUWqX0).
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
@@ -18,7 +19,7 @@ Colors can also symbolize character traits, such as the darkness associated with
 Before we go on and extract the color palettes. let's first revisit the nature of images.
 
 Have you ever looked very close to an old tv and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
-this is how all devices show colors but it would much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
+this is how all devices show colors but it would be much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
 ![Screenshot from 2024-02-21 17-01-30](https://github.com/mgama1/mgama1.github.io/assets/40968723/ee1f466f-bd78-45b0-822e-6a86d3ed2c5f)
 [James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly et al. in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)]
 
@@ -51,7 +52,7 @@ h,w,d = tuple(image.shape)
 print(h,w,d)
 ```
 turns out my image has 394 rows(height), 728 columns(width), and 3 channels(depth)
-what we wanna do right now is reshape this tensor so that we have every pixel in rows and each column is its R value, G value and B value in a row
+what we wanna do right now is reshape this tensor so that we have a pixel at every row and each column is its R value, G value and B value respectively.
 ```python
 pixels = np.reshape(image, (w * h, d))
 ```
@@ -60,6 +61,7 @@ $$\begin{bmatrix} p_1 \\ p_2  \\ \vdots \\ p_{w*h} \end{bmatrix} = \begin{bmatri
 
 
 to understand the colors of the image. let's go ahead and plot these pixels. since each pixel $$P^{(i)} \in \mathbb{R}^3$$. we are gonna need a 3d plot where each axis represents R , G , B respectively 
+
 Upon exploring the plot we notice that there are distinct clusters of colors like orange that belongs to his jacket,teal that belongs to the bus and that shade of gray of the road.
 
 <div id="plot"></div>
