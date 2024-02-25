@@ -19,7 +19,8 @@ Colors can also symbolize character traits, such as the darkness associated with
 Before we get into the technical aspects of extracting color palettes, let's first revisit the nature of images and how they represent colors.
 
 Have you ever looked very close to an old TV and saw the individual pixels or subpixels that make up the image? you will notice that it's  not a solid source of light that gives you the color that you would see from afar but actually very small and very close but still separated red, blue and green light sources.
-this is how all devices show colors but it would be much harder to see with a high resolution monitor and if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
+-this is how all devices show colors but it would be much harder to see with a high resolution monitor- 
+And if you don't believe it look at this image. this is not a screenshot of a jpeg or png or any other image format that you are used to. it's in fact a spreadsheet and every pixel is represented by three colored cells next to each other
 ![Screenshot from 2024-02-21 17-01-30](https://github.com/mgama1/mgama1.github.io/assets/40968723/ee1f466f-bd78-45b0-822e-6a86d3ed2c5f)
 [James McAvoy as Patricia, Dennis, Hedwig, The Beast, Barry, Heinrich, Jade, Ian, Mary Reynolds, Norma, Jalin, Kat, B.T., Kevin Wendell Crumb, Mr. Pritchard, Felida, Luke, Goddard, Samuel, Polly et al. in [Glass (2019)](https://www.imdb.com/title/tt6823368/mediaviewer/rm1132094464?ft0=name&fv0=nm0564215&ft1=image_type&fv1=still_frame&ref_=tt_ch)]
 
@@ -37,7 +38,7 @@ with pixel values ranging from 0 to 255.
 
 [image from [ Sandeep Balachandran](https://res.cloudinary.com/practicaldev/image/fetch/s--BXoVOWNw--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.ibb.co/yyDtW47/own2d.png)]
 
-now that you are now familiar with what images look like let's have a look at arthur fleck after a long day at work
+now that you are familiar with what images look like let's have a look at arthur fleck after a long day at work
 ![joker](https://github.com/mgama1/mgama1.github.io/assets/40968723/7fd1674e-c968-4ca0-92f6-128fc12cfe35)
 [Joaquin Phoenix as arthur fleck in [joker(2019)](https://www.imdb.com/title/tt7286456/mediaviewer/rm2020643841/)]
 
