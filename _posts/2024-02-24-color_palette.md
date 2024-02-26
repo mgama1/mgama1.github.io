@@ -166,7 +166,7 @@ model = KMeans(n_clusters=n_colors,random_state=42).fit(pixels)
 palette = np.uint8(model.cluster_centers_)
 #sort the color palette by hue for a more visually pleasing outcome
 palette_hsl = [RGB2HSL(color) for color in palette]
-palette_sorted = [color for _, color in sorted(zip([hsl[0] for hsl in palette_hsl], palette))]
+palette_sorted = [color for _, color in sorted(zip([hsl[0] for hsl in palette_hsl], palette), key=lambda x: x[0])]
 
 plt.imshow(image)
 plt.show()
