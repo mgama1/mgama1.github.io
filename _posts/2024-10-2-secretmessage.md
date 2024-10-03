@@ -44,58 +44,37 @@ Now buckle up because things are going to get more technical
 As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be represented by 8bits in binary system, so what we did is just modifying the least significant bit
 
 
-
-<html>
-<head>
-    <style>
-        .container {
-            display: flex;
-            gap: 10px;
-        }
-        .square {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 2px solid black;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .black {
-            color: black;
-        }
-        .red {
-            color: red;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="square black">1</div>
-    <div class="square black">0</div>
-    <div class="square black">1</div>
-    <div class="square black">0</div>
-    <div class="square black">1</div>
-    <div class="square black">0</div>
-    <div class="square black">1</div>
-    <div class="square red">0</div>
-</div>
-<br>
-
-<div class="container">
-    <div class="square black">1</div>
-    <div class="square black">0</div>
-    <div class="square black">1</div>
-    <div class="square black">0</div>
-    <div class="square black">1</div>
-    <div class="square black">0</div>
-    <div class="square black">1</div>
-    <div class="square red">1</div>
+<div class="bit-sequence-container">
+    <div class="bit-square black">1</div>
+    <div class="bit-square black">0</div>
+    <div class="bit-square black">1</div>
+    <div class="bit-square black">0</div>
+    <div class="bit-square black">1</div>
+    <div class="bit-square black">0</div>
+    <div class="bit-square black">1</div>
+    <div class="bit-square red">0</div>
 </div>
 
-
-</body>
-</html>
+<style>
+    .bit-sequence-container {
+        display: flex;
+        gap: 10px;
+    }
+    .bit-square {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid black;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .bit-square.black {
+        color: black;
+    }
+    .bit-square.red {
+        color: red;
+    }
+</style>
 
