@@ -22,7 +22,11 @@ Since then we have come a long way, from hiding messages on a literal man's head
 
 
 But what if you don't have a slave to write on his head or can't craft a seemingly innocent essay that perfectly fits the message in its correct place?
-Well you are in luck
+Well you are in luck, since the age of computers, now we don't have to hide messages in physical items, we can embed messages in countless formats like images, videos, or sound files, in this article we will discuss how to hide a secret message subtly in any image,
+but before we start let's refresh some concepts
+
+let's have a look on this samurai dog
+![img](https://cdna.artstation.com/p/assets/images/images/037/395/606/large/gabriel-lopes-silence-ok.jpg?1620257854)
 
 
 
