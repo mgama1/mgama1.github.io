@@ -25,11 +25,19 @@ But what if you don't have a slave to write on his head or can't craft a seeming
 Well you are in luck, since the age of computers, now we don't have to hide messages in physical items, we can embed messages in countless formats like images, videos, or sound files, in this article we will discuss how to hide a secret message subtly in any image,
 but before we start let's refresh some concepts
 
-let's have a look on this samurai dog
-![img](https://cdna.artstation.com/p/assets/images/images/037/395/606/large/gabriel-lopes-silence-ok.jpg?1620257854)
+let's zoom in all the way to one pixel of this samurai image
+![img](https://i.imgur.com/1jbilJc.jpeg)
 
 
+it's kind of pink, right?
 
+As you probably know, most images consist of three channels, red, green and blue, and these values add up give you some unique color, most images are also 8bit, meaning that every pixel can have a value from 0 to 255.
+one of these squares is identical to our chosen pixel above and the other i have altered its red channel by 1,can you tell which is which?
 
+![img](https://i.imgur.com/uDYktMP.jpeg)
+
+i'm guessing here that you don't have superpowers and that you can't, especially without the zoom in, so we can actually leverage this to 
+to easily embed a secret message in any digital image without raisng suspicions, probably....
+> Disclaimer: changing the values of pixels can change the image's statstical distributions, so if the change is big enough and/or a steganalyst is clever enough, it can be detected 
 
 
