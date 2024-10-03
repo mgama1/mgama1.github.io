@@ -40,8 +40,8 @@ i'm guessing here that you don't have superpowers and that you can't, especially
 to easily embed a secret message in any digital image without raisng suspicions, probably....
 > Disclaimer: changing the values of pixels can change the image's statstical distributions, so if the change is big enough and/or a steganalyst is clever enough, it can be detected 
 
-Now buckle up because things are going to get more technical
-As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be represented by 8bits in binary system, so what we did is just modifying the least significant bit
+Now buckle up because things are going to get more technical,
+As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be represented by 8 bits in binary system, so we can modify the least significant bit and all will happen is an imperceptible change by one
 
 
 <div class="bit-sequence-container">
@@ -55,7 +55,7 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
     <div class="bit-square red">0</div>
 </div>
 
-
+<br>
 <div class="bit-sequence-container">
     <div class="bit-square black">1</div>
     <div class="bit-square black">0</div>
