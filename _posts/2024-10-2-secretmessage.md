@@ -55,6 +55,18 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
     <div class="bit-square red">0</div>
 </div>
 
+
+<div class="bit-sequence-container">
+    <div class="bit-square black">1</div>
+    <div class="bit-square black">0</div>
+    <div class="bit-square black">1</div>
+    <div class="bit-square black">0</div>
+    <div class="bit-square black">1</div>
+    <div class="bit-square black">0</div>
+    <div class="bit-square black">1</div>
+    <div class="bit-square red">1</div>
+</div>
+
 <style>
     .bit-sequence-container {
         display: flex;
