@@ -45,9 +45,8 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
 
 
 
-
+<html>
 <head>
-    <meta charset="UTF-8">
     <style>
         .container {
             display: flex;
