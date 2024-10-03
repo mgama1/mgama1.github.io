@@ -46,11 +46,8 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
 
 
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         .container {
             display: flex;
@@ -73,7 +70,6 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
             color: red;
         }
     </style>
-    <title>Bit Sequence</title>
 </head>
 <body>
 
