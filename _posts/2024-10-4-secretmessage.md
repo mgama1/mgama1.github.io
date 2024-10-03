@@ -15,7 +15,9 @@ This unusual method of concealing a message is considered the first recorded use
 
 Since then we have come a long way, from hiding messages on a literal man's head to writing with invisible ink (thankfully on paper) or encapsulating the secret message in the first letter of every word, more generally known as null cipher
 
-![img](https://i.imgur.com/5fnUjMQ.png)
+<div style="text-align:center">
+  <img src="https://i.imgur.com/5fnUjMQ.png" alt="img"/>
+</div>
 
 
 
