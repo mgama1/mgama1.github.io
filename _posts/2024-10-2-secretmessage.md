@@ -90,3 +90,10 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
     }
 </style>
 
+Now enough chitchating and let's fire up an interpreter
+
+<blockquote>
+    talk is cheap, show me the code
+    <footer>- linus torvalds</footer>
+</blockquote>
+
