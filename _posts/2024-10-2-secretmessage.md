@@ -40,4 +40,67 @@ i'm guessing here that you don't have superpowers and that you can't, especially
 to easily embed a secret message in any digital image without raisng suspicions, probably....
 > Disclaimer: changing the values of pixels can change the image's statstical distributions, so if the change is big enough and/or a steganalyst is clever enough, it can be detected 
 
+Now buckle up because things are going to get more technical
+As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be represented by 8bits in binary system, so what we did is just modifying the least significant bit
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container {
+            display: flex;
+            gap: 10px;
+        }
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid black;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .black {
+            color: black;
+        }
+        .red {
+            color: red;
+        }
+    </style>
+    <title>Bit Sequence</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="square black">1</div>
+    <div class="square black">0</div>
+    <div class="square black">1</div>
+    <div class="square black">0</div>
+    <div class="square black">1</div>
+    <div class="square black">0</div>
+    <div class="square black">1</div>
+    <div class="square red">0</div>
+</div>
+<br>
+
+<div class="container">
+    <div class="square black">1</div>
+    <div class="square black">0</div>
+    <div class="square black">1</div>
+    <div class="square black">0</div>
+    <div class="square black">1</div>
+    <div class="square black">0</div>
+    <div class="square black">1</div>
+    <div class="square red">1</div>
+</div>
+
+
+</body>
+</html>
 
