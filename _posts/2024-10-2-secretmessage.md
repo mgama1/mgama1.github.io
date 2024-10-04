@@ -119,3 +119,22 @@ def binary_to_ascii(binary_msg):
     ascii_msg=bytes(bytes_list).decode('ascii')
     return ascii_msg
 ```
+
+As we mentioned before, the fundamental method for embedding the message involves replacing the least significant bit (LSB) of a pixel. Let’s create a function to abstract this process:
+```python
+def replace_LSB(binary_str, new_bit):
+    return binary_str[:-1] + new_bit
+```
+
+Next, we need a way to determine where the hidden message ends. Without a clear endpoint, we would have to assume the entire image contains the message, which could result in either errors or the display of meaningless text. To solve this, we’ll append a specific sequence of bits at the end of the message, which serves as a marker. During decoding, we’ll search for this pattern to identify the end of the message.
+
+In this case, we'll use the binary representation of the ASCII sequence '\eom' (End of Message) as our marker:
+```python
+def get_eom_index(binary_msg,s=0):
+    '''find the end of message position'''
+    index=binary_msg.find(ascii_to_binary('\eom'),s)
+    if index!=-1:
+        return index
+    return False
+```
+This function searches for the binary pattern representing '\eom' starting from position s. If the pattern is found, the function returns its index, marking the end of the message. Otherwise, it returns False, indicating that the end marker wasn’t found.
