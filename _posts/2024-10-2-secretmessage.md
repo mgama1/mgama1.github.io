@@ -138,3 +138,19 @@ def get_eom_index(binary_msg,s=0):
     return False
 ```
 This function searches for the binary pattern representing '\eom' starting from position s. If the pattern is found, the function returns its index, marking the end of the message. Otherwise, it returns False, indicating that the end marker wasn’t found.
+
+Finally that we have all the tools that we need, let's read an image and find out its dimensions
+```python
+img=cv2.imread('puppy.jpg')
+height=img.shape[0]
+width=img.shape[1]
+print(img.shape)
+```
+```
+(1280, 1024, 3)
+```
+They say a picture is worth a thousand word, but i think we can do better, so let's calculate how much better exactly!
+the image i'm working with is 1280x1024 and has three channels, that means that we can theoretically put a 3932160 bit message or 491520 byte (character), this averages out with more than 82 thousand word, so it's 82 times better!
+
+
+to simplify things we are going to write only on the first channel (red channel)
