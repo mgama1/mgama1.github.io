@@ -154,3 +154,15 @@ the image i'm working with is 1280x1024 and has three channels, that means that 
 
 
 to simplify things we are going to write only on the first channel (red channel)
+
+```python
+i=0
+j=0
+for k, msg_bit in enumerate(binary_msg):
+    i=k//height # #rows
+    j=k%width #wrap around #cols
+    pixel_bin=bin(img[:, :, 0][i,j]) # pixel value in binary @ i,j
+    pixel_bin_encoded=replace_LSB(pixel_bin,msg_bit)
+    img[:, :, 0][i,j]=int(pixel_bin_encoded,2)
+cv2.imwrite('x.jpg',img)
+```
