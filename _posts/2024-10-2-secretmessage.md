@@ -90,12 +90,14 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
     }
 </style>
 
-Now enough chitchating and let's fire up an interpreter
-> talk is cheap, show me the code
->
-> — linus torvalds
+Now enough chit chatting and let's fire up an interpreter
+First things first, let's get our tools setup
 
-<blockquote>
-talk is cheap, show me the code<footer>- linus torvalds</footer>
-</blockquote>
+we will need opencv to process images, and textwrap because i hate for loops
 
+```python
+import cv2
+import textwrap
+```
+
+to embed text into images we need to convert it to ascii and then use it's binary representation, 
