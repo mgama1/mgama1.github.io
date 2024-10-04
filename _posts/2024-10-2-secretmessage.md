@@ -99,5 +99,23 @@ we will need opencv to process images, and textwrap because i hate for loops
 import cv2
 import textwrap
 ```
+To embed text into images, we first need to convert the text into ASCII character encoding, and then translate it into its binary representation. Each ASCII character is represented as a byte, which conveniently fits into an 8-bit binary format.
 
-to embed text into images we need to convert it to ascii and then use it's binary representation, 
+The ord() function retrieves the ASCII value of each character as an integer, while the format() function converts this integer into its binary form. We use the format specifier '08b', which ensures that the binary string is always 8 bits long by padding with leading zeros if necessary.
+
+Here's a Python function that performs this conversion:
+
+```python
+def ascii_to_binary(s):
+    return ''.join(format(ord(char), '08b') for char in s)
+```
+When decoding the image, we need to reverse the process by converting the binary back to ASCII. The textwrap.wrap() function splits the binary string into chunks of 8 bits, with each chunk representing one byte, which corresponds to an ASCII character. After converting these 8-bit chunks into integers, we can form a list of ASCII values, convert them into a bytes object, and finally decode it back to readable text.
+
+Here’s the function that handles the conversion from binary to ASCII:
+
+```python
+def binary_to_ascii(binary_msg):
+    bytes_list=[int(byte, 2) for byte in textwrap.wrap(binary_msg,8)]
+    ascii_msg=bytes(bytes_list).decode('ascii')
+    return ascii_msg
+```
