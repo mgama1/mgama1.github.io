@@ -3,7 +3,7 @@ layout: post
 title: "Hiding in plain sight: An introduction into Steganography"
 ---
 
-More than 24 centuries ago, a Greek ruler named Histiaeus needed to send a secret message to his ally, Aristagoras. A pigeon wasn't going to cut it, so he got a little creative. He summoned his most loyal slave, shaved the man’s head, and wrote the message on his scalp. After bandaging the slave's head, Histiaeus waited until the hair grew back, then sent him on his way to deliver the message.
+More than 24 centuries ago, a Greek ruler named Histiaeus needed to send a secret message to his ally, Aristagoras. A pigeon wasn't going to cut it, so he got a little creative. He summoned his most loyal slave, shaved his head, and wrote the message on his scalp. After bandaging the slave's head, Histiaeus waited until the hair grew back, then sent him on his way to deliver the message.
 
 
 This unusual method of concealing a message is considered the first recorded use of steganography. From that point onward, our methods only grew more creative. As new forms of media emerged, the techniques for hiding messages in plain sight has evolved right alongside them.
@@ -22,23 +22,22 @@ Since then we have come a long way, from hiding messages on a literal man's head
 
 
 But what if you don't have a slave to write on his head or can't craft a seemingly innocent essay that perfectly fits the message in its correct place?
-Well you are in luck, since the age of computers, now we don't have to hide messages in physical items, we can embed messages in countless formats like images, videos, or sound files, in this article we will discuss how to hide a secret message subtly in any image,
-but before we start let's refresh some concepts
+Well you are in luck, since the age of computers, We don't have to hide messages in physical items anymore, we can embed them in countless formats like images, videos, or sound files, in this article we will discuss how to hide a secret message subtly in any image.
 
-let's zoom in all the way to one pixel of this samurai image
+As you probably know, most images consist of three channels, red, green and blue, and these values add up to give you some unique color, most images are also 8bit, meaning that every pixel in a channel has a value between 0 to 255. Having known that, let's take a closer look at this samurai image and zoom all they way to this particular pixel
+
 ![img](https://i.imgur.com/1jbilJc.jpeg)
 
 
-it's kind of pink, right?
 
-As you probably know, most images consist of three channels, red, green and blue, and these values add up give you some unique color, most images are also 8bit, meaning that every pixel can have a value from 0 to 255.
-one of these squares is identical to our chosen pixel above and the other i have altered its red channel by 1,can you tell which is which?
+one of these squares is identical to our chosen pixel above and the other i have altered its red channel by one, can you tell which is which?
 
 ![img](https://i.imgur.com/uDYktMP.jpeg)
 
-i'm guessing here that you don't have superpowers and that you can't, especially without the zoom in, so we can actually leverage this to 
-to easily embed a secret message in any digital image without raising suspicions, probably....
-> Disclaimer: changing the values of pixels can change the image's statistical distributions, so if the change is big enough and/or a steganalyst is clever enough, it can be detected 
+i'm guessing here that you don't have superpowers and that you indeed can't tell the difference, especially without the zoom in, so we can actually leverage this to 
+to easily embed a secret message in any digital image without raising suspicions by modifying the pixels ever so slightly, probably....
+
+> Disclaimer: changing the values of pixels can change the image's statistical distributions, so if the change is big enough and/or an analyst is clever enough, it can be detected 
 
 Now buckle up because things are going to get more technical,
 As we mentioned earlier, all pixels range from 0 to 255 and this can be represented by 8 bits in binary system, so we can modify the least significant bit and all that will happen is an imperceptible change by one
@@ -90,7 +89,9 @@ As we mentioned earlier, all pixels range from 0 to 255 and this can be represen
     }
 </style>
 
-Now enough chit chatting and let's fire up an interpreter
+Now enough chit chatting and let's fire up an interpreter.
+
+
 First things first, let's get our tools set up
 
 we will need opencv to process images, and textwrap because i hate for loops
