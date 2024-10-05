@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hiding in plain sight: An introduction into Steganography and cryptography"
+title: "Hiding in plain sight: An introduction into Steganography"
 ---
 
 More than 24 centuries ago, a Greek ruler named Histiaeus needed to send a secret message to his ally, Aristagoras. A pigeon wasn't going to cut it, so he got a little creative. He summoned his most loyal slave, shaved the man’s head, and wrote the message on his scalp. After bandaging the slave's head, Histiaeus waited until the hair grew back, then sent him on his way to deliver the message.
@@ -274,4 +274,5 @@ binary_to_ascii(decoded_bin_msg[:eom])
 'By believing passionately in something that still does not exist, we create it.'
 ```
 
-Congrats! Now you can send and recieve secret messages in any image!
+
+In conclusion, while steganography offers fascinating ways to hide messages in plain sight, it shouldn't be your sole line of defense.It’s crucial to remember that steganography alone may not provide adequate security against determined adversaries. To enhance your message's security, always pair steganography with robust encryption. By encrypting your messages before embedding them, you ensure that even if the hidden message is discovered, it remains unintelligible without the decryption key.
