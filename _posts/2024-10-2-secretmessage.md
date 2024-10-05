@@ -24,13 +24,13 @@ Since then we have come a long way, from hiding messages on a literal man's head
 But what if you don't have a slave to write on his head or can't craft a seemingly innocent essay that perfectly fits the message in its correct place?
 Well you are in luck, since the age of computers, We don't have to hide messages in physical items anymore, we can embed them in countless formats like images, videos, or sound files, in this article we will discuss how to hide a secret message subtly in any image.
 
-As you probably know, most images consist of three channels, red, green and blue, and these values add up to give you some unique color, most images are also 8bit, meaning that every pixel in a channel has a value between 0 to 255. Having known that, let's take a closer look at this samurai image and zoom all they way to this particular pixel
+As you probably know, most images consist of three channels, red, green and blue, and these values add up to give you some unique color, most images are also 8bit, meaning that every pixel in a channel has a value between 0 to 255. Having known that, let's take a closer look at this samurai image and zoom all the way to this particular pixel
 
 ![img](https://i.imgur.com/1jbilJc.jpeg)
 
 
 
-one of these squares is identical to our chosen pixel above and the other i have altered its red channel by one, can you tell which is which?
+One of these squares is identical to our chosen pixel above and the other one i have altered its red channel by one, can you tell which is which?
 
 ![img](https://i.imgur.com/uDYktMP.jpeg)
 
@@ -105,7 +105,7 @@ let's set up the message that we want to send, i like this quote so let's use it
 msg = "By believing passionately in something that still does not exist, we create it."
 ```
 
-To embed text into images, we first need to convert the text into ASCII character encoding, and then translate it into its binary representation. Each ASCII character is represented as a byte, which conveniently fits into an 8-bit binary format.
+To embed text into images, we first need to convert the text into ASCII character encoding, and then translate it into its binary representation. Each ASCII character is represented as a byte, for example the letter M is 77 in decimal or 01001101 in binary
 
 The ord() function retrieves the ASCII value of each character as an integer, while the format() function converts this integer into its binary form. We use the format specifier '08b', which ensures that the binary string is always 8 bits long by padding with leading zeros if necessary.
 
@@ -274,5 +274,6 @@ binary_to_ascii(decoded_bin_msg[:eom])
 'By believing passionately in something that still does not exist, we create it.'
 ```
 
+We got our message back!!
 
-In conclusion, while steganography offers fascinating ways to hide messages in plain sight, it shouldn't be your sole line of defense.It’s crucial to remember that steganography alone may not provide adequate security against determined adversaries. To enhance your message's security, always pair steganography with robust encryption. By encrypting your messages before embedding them, you ensure that even if the hidden message is discovered, it remains unintelligible without the decryption key.
+To sum up, while steganography offers fascinating ways to hide messages in plain sight, it shouldn't be your sole line of defense.It’s crucial to remember that steganography alone may not provide adequate security against determined adversaries. To enhance your message's security, always pair steganography with robust encryption. By encrypting your messages before embedding them, you ensure that even if the hidden message is discovered, it remains unintelligible without the decryption key.
