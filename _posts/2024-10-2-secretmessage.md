@@ -156,6 +156,7 @@ The image we are working with is 1280x1024 and has three channels (likely repres
 
 Next, we’ll iterate over the pixels in the first channel of the image, read the pixel values, and convert them to binary. We’ll replace the least significant bit (LSB) of each pixel with a bit from our message. Once the LSB has been replaced, we’ll update the pixel's value with the new integer representation. After embedding all the message bits, we’ll write the modified image back to disk.
 
+```python
 i=0
 j=0
 for k, msg_bit in enumerate(binary_msg):
