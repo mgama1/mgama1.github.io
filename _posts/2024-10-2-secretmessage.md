@@ -220,34 +220,55 @@ j=0
 for k, msg_bit in enumerate(binary_msg):
     i=k//height # #rows
     j=k%width #wrap around #cols
-    pixel_bin=bin(img[:, :, 0][i,j]) # Get binary value of the pixel at (i, j) in the first channel
+    pixel_bin=bin(img[:, :, 0][i,j]) # pixel value in binary @ i,j
     pixel_bin_encoded=replace_LSB(pixel_bin,msg_bit)
-    img[:, :, 0][i,j]=int(pixel_bin_encoded,2)  # Set the new integer value at the pixel (i, j)
-cv2.imwrite('x.jpg',img)
+    img[:, :, 0][i,j]=int(pixel_bin_encoded,2)
+cv2.imwrite('x.png',img)
 ```
+> if you write the image as jpeg the message might get corrupted becuase it's a lossy compression format. so make sure to write it as png
 
 And we are done! now you can send the image to your friends and they can easily decode the secret message! Let's see how
 
 This can be done by reading the image and extracting the least significant bit (LSB) from each pixel's binary value. As mentioned earlier, it’s inefficient to scan through the entire image, so instead, after every 64 bits, we’ll search the decoded binary message for the end-of-message (EOM) pattern. If we find it, we’ll stop scanning the image.
 
-To optimize further, we won’t start searching from the beginning of the message after each read, as we already know that the EOM pattern wasn’t found in the last segment. This way, we only search from the point where we last left off.
+To optimize further, we won’t start searching from the beginning of the message after each read, as we already know that the EOM pattern wasn’t found in the last segment. This way, we only search from the point where we last left off plus some search window clearance because the pattern could be split between two segments
 
 ```python
-img_2=cv2.imread('x.jpg')
+
+img_2=cv2.imread('x.png')
 height=img_2.shape[0]
 width=img_2.shape[1]
-
 decoded_bin_msg=''
 i=0
 j=0
 for k in range(width*height):
     i=k//height # #rows
     j=k%width #wrap around #cols
-    pixel_bin=bin(img[:, :, 0][i,j]) # pixel value in binary @ i,j
-    decoded_bin_msg+=pixel_bin[-1] # get LSB
+    pixel_bin=bin(img_2[:, :, 0][i,j]) # pixel value in binary @ i,j
+    decoded_bin_msg+=pixel_bin[-1]
     if k%64==0:
-        eom=get_eom_index(decoded_bin_msg,max(0,k-64))
+        eom=get_eom_index(decoded_bin_msg,k-128)
         print(k)
         if eom:
             break
+            
+        
+```
+
+<p></p>
+```python
+decoded_bin_msg
+```
+[output]:
+```
+'010000100111100100100000011000100110010101101100011010010110010101110110011010010110111001100111001000000111000001100001011100110111001101101001011011110110111001100001011101000110010101101100011110010010000001101001011011100010000001110011011011110110110101100101011101000110100001101001011011100110011100100000011101000110100001100001011101000010000001110011011101000110100101101100011011000010000001100100011011110110010101110011001000000110111001101111011101000010000001100101011110000110100101110011011101000010110000100000011101110110010100100000011000110111001001100101011000010111010001100101001000000110100101110100001011100101110001100101011011110110110101010001111100111011111010011010111001101'
+```
+
+<p></p>
+```python
+binary_to_ascii(decoded_bin_msg[:eom])
+```
+[output]:
+```
+'By believing passionately in something that still does not exist, we create it.'
 ```
