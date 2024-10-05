@@ -139,7 +139,8 @@ def get_eom_index(binary_msg,s=0):
 ```
 This function searches for the binary pattern representing '\eom' starting from position s. If the pattern is found, the function returns its index, marking the end of the message. Otherwise, it returns False, indicating that the end marker wasn’t found.
 
-Finally that we have all the tools that we need, let's read an image and find out its dimensions
+Now that we have all the necessary tools, let’s load an image and look up its dimensions.
+
 ```python
 img=cv2.imread('puppy.jpg')
 height=img.shape[0]
@@ -149,20 +150,19 @@ print(img.shape)
 ```
 (1280, 1024, 3)
 ```
-They say a picture is worth a thousand word, but i think we can do better, so let's calculate how much better exactly!
-the image i'm working with is 1280x1024 and has three channels, that means that we can theoretically put a 3932160 bit message or 491520 byte (character), this averages out with more than 82 thousand word, so it's 82 times better!
+They say a picture is worth a thousand words, but I think we can do better! Let’s calculate exactly how much better.
 
+The image we are working with is 1280x1024 and has three channels (likely representing RGB). This means we can theoretically store a message of up to 3,932,160 bits, which equals 491,520 bytes (or characters).this averages out with more than 82 thousand words, so it's 82 times better!
 
-to simplify things we are going to write only on the first channel (red channel)
+Next, we’ll iterate over the pixels in the first channel of the image, read the pixel values, and convert them to binary. We’ll replace the least significant bit (LSB) of each pixel with a bit from our message. Once the LSB has been replaced, we’ll update the pixel's value with the new integer representation. After embedding all the message bits, we’ll write the modified image back to disk.
 
-```python
 i=0
 j=0
 for k, msg_bit in enumerate(binary_msg):
     i=k//height # #rows
     j=k%width #wrap around #cols
-    pixel_bin=bin(img[:, :, 0][i,j]) # pixel value in binary @ i,j
+    pixel_bin=bin(img[:, :, 0][i,j]) # Get binary value of the pixel at (i, j) in the first channel
     pixel_bin_encoded=replace_LSB(pixel_bin,msg_bit)
-    img[:, :, 0][i,j]=int(pixel_bin_encoded,2)
+    img[:, :, 0][i,j]=int(pixel_bin_encoded,2)  # Set the new integer value at the pixel (i, j)
 cv2.imwrite('x.jpg',img)
 ```
