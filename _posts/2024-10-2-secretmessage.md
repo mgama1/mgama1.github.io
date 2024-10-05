@@ -6,7 +6,7 @@ title: "Hiding in plain sight: An introduction into Steganography"
 More than 24 centuries ago, a Greek ruler named Histiaeus needed to send a secret message to his ally, Aristagoras. A pigeon wasn't going to cut it, so he got a little creative. He summoned his most loyal slave, shaved his head, and wrote the message on his scalp. After bandaging the slave's head, Histiaeus waited until the hair grew back, then sent him on his way to deliver the message.
 
 
-This unusual method of concealing a message is considered the first recorded use of steganography. From that point onward, our methods only grew more creative. As new forms of media emerged, the techniques for hiding messages in plain sight has evolved right alongside them.
+This unusual method of concealing a message is considered the first recorded use of steganography. From that point onward, our methods only grew more creative. As new forms of media emerged, the techniques for hiding messages in plain sight have evolved right alongside them.
 
 
 
@@ -34,12 +34,11 @@ one of these squares is identical to our chosen pixel above and the other i have
 
 ![img](https://i.imgur.com/uDYktMP.jpeg)
 
-i'm guessing here that you don't have superpowers and that you indeed can't tell the difference, especially without the zoom in, so we can actually leverage this to 
+I'm guessing here that you don't have superpowers and that you indeed can't tell the difference, especially without the zoom in, so we can actually leverage this to 
 to easily embed a secret message in any digital image without raising suspicions by modifying the pixels ever so slightly, probably....
 
 > Disclaimer: changing the values of pixels can change the image's statistical distributions, so if the change is big enough and/or an analyst is clever enough, it can be detected 
 
-Now buckle up because things are going to get more technical,
 As we mentioned earlier, all pixels range from 0 to 255 and this can be represented by 8 bits in binary system, so we can modify the least significant bit and all that will happen is an imperceptible change by one
 
 
