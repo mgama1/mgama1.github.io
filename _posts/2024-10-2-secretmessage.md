@@ -6,7 +6,7 @@ title: "Hiding in plain sight: An introduction into Steganography and cryptograp
 More than 24 centuries ago, a Greek ruler named Histiaeus needed to send a secret message to his ally, Aristagoras. A pigeon wasn't going to cut it, so he got a little creative. He summoned his most loyal slave, shaved the man’s head, and wrote the message on his scalp. After bandaging the slave's head, Histiaeus waited until the hair grew back, then sent him on his way to deliver the message.
 
 
-This unusual method of concealing a message is considered the first recorded use of steganography. From that point onward, our methods only grew more creative. As new forms of media emerged, the techniques for hiding messages in plain sight hasevolved right alongside them.
+This unusual method of concealing a message is considered the first recorded use of steganography. From that point onward, our methods only grew more creative. As new forms of media emerged, the techniques for hiding messages in plain sight has evolved right alongside them.
 
 
 
@@ -37,11 +37,11 @@ one of these squares is identical to our chosen pixel above and the other i have
 ![img](https://i.imgur.com/uDYktMP.jpeg)
 
 i'm guessing here that you don't have superpowers and that you can't, especially without the zoom in, so we can actually leverage this to 
-to easily embed a secret message in any digital image without raisng suspicions, probably....
-> Disclaimer: changing the values of pixels can change the image's statstical distributions, so if the change is big enough and/or a steganalyst is clever enough, it can be detected 
+to easily embed a secret message in any digital image without raising suspicions, probably....
+> Disclaimer: changing the values of pixels can change the image's statistical distributions, so if the change is big enough and/or a steganalyst is clever enough, it can be detected 
 
 Now buckle up because things are going to get more technical,
-As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be represented by 8 bits in binary system, so we can modify the least significant bit and all will happen is an imperceptible change by one
+As we mentioned earlier, all pixels range from 0 to 255 and this can be represented by 8 bits in binary system, so we can modify the least significant bit and all that will happen is an imperceptible change by one
 
 
 <div class="bit-sequence-container">
@@ -91,7 +91,7 @@ As we mentioned earlier, all pixels are ranged from 0 to 255 and this can be rep
 </style>
 
 Now enough chit chatting and let's fire up an interpreter
-First things first, let's get our tools setup
+First things first, let's get our tools set up
 
 we will need opencv to process images, and textwrap because i hate for loops
 
@@ -226,7 +226,7 @@ for k, msg_bit in enumerate(binary_msg):
     img[:, :, 0][i,j]=int(pixel_bin_encoded,2)
 cv2.imwrite('x.png',img)
 ```
-> if you write the image as jpeg the message might get corrupted becuase it's a lossy compression format. so make sure to write it as png
+> if you write the image as jpeg the message might get corrupted because it's a lossy compression format. so make sure to write it as png
 
 And we are done! now you can send the image to your friends and they can easily decode the secret message! Let's see how
 
@@ -273,3 +273,5 @@ binary_to_ascii(decoded_bin_msg[:eom])
 ```
 'By believing passionately in something that still does not exist, we create it.'
 ```
+
+Congrats! Now you can send and recieve secret messages in any image!
