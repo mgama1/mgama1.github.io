@@ -152,7 +152,7 @@ print(img.shape)
 ```
 They say a picture is worth a thousand words, but I think we can do better! Let’s calculate exactly how much better.
 
-The image we are working with is 1280x1024 and has three channels (likely representing RGB). This means we can theoretically store a message of up to 3,932,160 bits, which equals 491,520 bytes (or characters).this averages out with more than 82 thousand words, so it's 82 times better!
+The image we are working with is 1280x1024 and has three channels (RGB). This means we can theoretically store a message of up to 3,932,160 bits, which equals 491,520 bytes (or characters).this averages out with more than 82 thousand words, so it's 82 times better!
 
 Next, we’ll iterate over the pixels in the first channel of the image, read the pixel values, and convert them to binary. We’ll replace the least significant bit (LSB) of each pixel with a bit from our message. Once the LSB has been replaced, we’ll update the pixel's value with the new integer representation. After embedding all the message bits, we’ll write the modified image back to disk.
 
@@ -166,4 +166,30 @@ for k, msg_bit in enumerate(binary_msg):
     pixel_bin_encoded=replace_LSB(pixel_bin,msg_bit)
     img[:, :, 0][i,j]=int(pixel_bin_encoded,2)  # Set the new integer value at the pixel (i, j)
 cv2.imwrite('x.jpg',img)
+```
+
+And we are done! now you can send the image to your friends and they can easily decode the secret message! Let's see how
+
+This can be done by reading the image and extracting the least significant bit (LSB) from each pixel's binary value. As mentioned earlier, it’s inefficient to scan through the entire image, so instead, after every 64 bits, we’ll search the decoded binary message for the end-of-message (EOM) pattern. If we find it, we’ll stop scanning the image.
+
+To optimize further, we won’t start searching from the beginning of the message after each read, as we already know that the EOM pattern wasn’t found in the last segment. This way, we only search from the point where we last left off.
+
+```python
+img_2=cv2.imread('x.jpg')
+height=img_2.shape[0]
+width=img_2.shape[1]
+
+decoded_bin_msg=''
+i=0
+j=0
+for k in range(width*height):
+    i=k//height # #rows
+    j=k%width #wrap around #cols
+    pixel_bin=bin(img[:, :, 0][i,j]) # pixel value in binary @ i,j
+    decoded_bin_msg+=pixel_bin[-1] # get LSB
+    if k%64==0:
+        eom=get_eom_index(decoded_bin_msg,max(0,k-64))
+        print(k)
+        if eom:
+            break
 ```
