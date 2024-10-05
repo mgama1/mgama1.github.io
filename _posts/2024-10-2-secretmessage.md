@@ -195,6 +195,7 @@ get_eom_index(binary_msg)
 <p></p>
 
 Now that we have all the necessary tools, let’s load an image and look up its dimensions.
+![puppy](https://github.com/user-attachments/assets/ba4fab75-2eca-45d1-a2a4-2f4629a1faa0)
 
 ```python
 img=cv2.imread('puppy.jpg')
