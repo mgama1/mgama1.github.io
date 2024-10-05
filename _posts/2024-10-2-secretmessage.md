@@ -115,10 +115,12 @@ Here's a Python function that performs this conversion:
 def ascii_to_binary(s):
     return ''.join(format(ord(char), '08b') for char in s)
 ```
+
 ```python
 binary_msg = ascii_to_binary(msg)
 binary_msg
 ```
+
 ```
 '01000010011110010010000001100010011001010110110001101001011001010111011001101001011011100110011100100000011100000110000101110011011100110110100101101111011011100110000101110100011001010110110001111001001000000110100101101110001000000111001101101111011011010110010101110100011010000110100101101110011001110010000001110100011010000110000101110100001000000111001101110100011010010110110001101100001000000110010001101111011001010111001100100000011011100110111101110100001000000110010101111000011010010111001101110100001011000010000001110111011001010010000001100011011100100110010101100001011101000110010100100000011010010111010000101110'
 ```
@@ -132,9 +134,11 @@ def binary_to_ascii(binary_msg):
     ascii_msg=bytes(bytes_list).decode('ascii')
     return ascii_msg
 ```
+
 ```python
 binary_to_ascii(binary_msg)
 ```
+
 ```
 'By believing passionately in something that still does not exist, we create it.'
 ```
@@ -144,12 +148,15 @@ As we mentioned before, the fundamental method for embedding the message involve
 def replace_LSB(binary_str, new_bit):
     return binary_str[:-1] + new_bit
 ```
+
 ```python
 replace_LSB('11111111','0')
 ```
+
 ```
 '11111110'
 ```
+
 Next, we need a way to determine where the hidden message ends. Without a clear endpoint, we would have to assume the entire image contains the message, which could result in either errors or the display of meaningless text. To solve this, we’ll append a specific sequence of bits at the end of the message, which serves as a marker. During decoding, we’ll search for this pattern to identify the end of the message.
 
 In this case, we'll use the binary representation of the ASCII sequence '\eom' (End of Message) as our marker:
@@ -161,6 +168,7 @@ def get_eom_index(binary_msg,s=0):
         return index
     return False
 ```
+
 This function searches for the binary pattern representing '\eom' starting from position s. If the pattern is found, the function returns its index, marking the end of the message. Otherwise, it returns False, indicating that the end marker wasn’t found.
 
 ```python
@@ -168,6 +176,7 @@ msg = "By believing passionately in something that still does not exist, we crea
 binary_msg = ascii_to_binary(msg)
 get_eom_index(binary_msg)
 ```
+
 ```
 632
 ```
@@ -180,9 +189,11 @@ height=img.shape[0]
 width=img.shape[1]
 print(img.shape)
 ```
+
 ```
 (1280, 1024, 3)
 ```
+
 They say a picture is worth a thousand words, but I think we can do better! Let’s calculate exactly how much better.
 
 The image we are working with is 1280x1024 and has three channels (RGB). This means we can theoretically store a message of up to 3,932,160 bits, which equals 491,520 bytes (or characters).this averages out with more than 82 thousand words, so it's 82 times better!
