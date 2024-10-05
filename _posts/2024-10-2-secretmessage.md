@@ -138,10 +138,12 @@ def binary_to_ascii(binary_msg):
     ascii_msg=bytes(bytes_list).decode('ascii')
     return ascii_msg
 ```
+<p></p>
 
 ```python
 binary_to_ascii(binary_msg)
 ```
+<p></p>
 
 ```
 'By believing passionately in something that still does not exist, we create it.'
@@ -152,10 +154,12 @@ As we mentioned before, the fundamental method for embedding the message involve
 def replace_LSB(binary_str, new_bit):
     return binary_str[:-1] + new_bit
 ```
+<p></p>
 
 ```python
 replace_LSB('11111111','0')
 ```
+<p></p>
 
 ```
 '11111110'
@@ -180,10 +184,12 @@ msg = "By believing passionately in something that still does not exist, we crea
 binary_msg = ascii_to_binary(msg)
 get_eom_index(binary_msg)
 ```
+<p></p>
 
 ```
 632
 ```
+<p></p>
 
 Now that we have all the necessary tools, let’s load an image and look up its dimensions.
 
