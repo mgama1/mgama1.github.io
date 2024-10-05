@@ -99,6 +99,12 @@ we will need opencv to process images, and textwrap because i hate for loops
 import cv2
 import textwrap
 ```
+let's set up the message that we want to send, i like this quote so let's use it
+
+```python
+msg = "By believing passionately in something that still does not exist, we create it."
+```
+
 To embed text into images, we first need to convert the text into ASCII character encoding, and then translate it into its binary representation. Each ASCII character is represented as a byte, which conveniently fits into an 8-bit binary format.
 
 The ord() function retrieves the ASCII value of each character as an integer, while the format() function converts this integer into its binary form. We use the format specifier '08b', which ensures that the binary string is always 8 bits long by padding with leading zeros if necessary.
@@ -108,6 +114,13 @@ Here's a Python function that performs this conversion:
 ```python
 def ascii_to_binary(s):
     return ''.join(format(ord(char), '08b') for char in s)
+```
+```python
+binary_msg = ascii_to_binary(msg)
+binary_msg
+```
+```
+'01000010011110010010000001100010011001010110110001101001011001010111011001101001011011100110011100100000011100000110000101110011011100110110100101101111011011100110000101110100011001010110110001111001001000000110100101101110001000000111001101101111011011010110010101110100011010000110100101101110011001110010000001110100011010000110000101110100001000000111001101110100011010010110110001101100001000000110010001101111011001010111001100100000011011100110111101110100001000000110010101111000011010010111001101110100001011000010000001110111011001010010000001100011011100100110010101100001011101000110010100100000011010010111010000101110'
 ```
 When decoding the image, we need to reverse the process by converting the binary back to ASCII. The textwrap.wrap() function splits the binary string into chunks of 8 bits, with each chunk representing one byte, which corresponds to an ASCII character. After converting these 8-bit chunks into integers, we can form a list of ASCII values, convert them into a bytes object, and finally decode it back to readable text.
 
@@ -119,13 +132,24 @@ def binary_to_ascii(binary_msg):
     ascii_msg=bytes(bytes_list).decode('ascii')
     return ascii_msg
 ```
+```python
+binary_to_ascii(binary_msg)
+```
+```
+'By believing passionately in something that still does not exist, we create it.'
+```
 
 As we mentioned before, the fundamental method for embedding the message involves replacing the least significant bit (LSB) of a pixel. Let’s create a function to abstract this process:
 ```python
 def replace_LSB(binary_str, new_bit):
     return binary_str[:-1] + new_bit
 ```
-
+```python
+replace_LSB('11111111','0')
+```
+```
+'11111110'
+```
 Next, we need a way to determine where the hidden message ends. Without a clear endpoint, we would have to assume the entire image contains the message, which could result in either errors or the display of meaningless text. To solve this, we’ll append a specific sequence of bits at the end of the message, which serves as a marker. During decoding, we’ll search for this pattern to identify the end of the message.
 
 In this case, we'll use the binary representation of the ASCII sequence '\eom' (End of Message) as our marker:
@@ -138,6 +162,15 @@ def get_eom_index(binary_msg,s=0):
     return False
 ```
 This function searches for the binary pattern representing '\eom' starting from position s. If the pattern is found, the function returns its index, marking the end of the message. Otherwise, it returns False, indicating that the end marker wasn’t found.
+
+```python
+msg = "By believing passionately in something that still does not exist, we create it.\eom"
+binary_msg = ascii_to_binary(msg)
+get_eom_index(binary_msg)
+```
+```
+632
+```
 
 Now that we have all the necessary tools, let’s load an image and look up its dimensions.
 
