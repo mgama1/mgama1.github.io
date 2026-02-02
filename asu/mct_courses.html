@@ -49,7 +49,6 @@
                 width: 100%;
             }
 
-            /* Simple Table Styling for Print */
             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
             th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
             th { background-color: #f8f9fa; color: #004a98; }
@@ -63,7 +62,9 @@
         <header class="bg-white shadow-md z-20 flex-none">
             <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="h-12 w-12 bg-faculty-blue rounded-full flex items-center justify-center text-white font-bold text-xs">ASU</div>
+                    <img src="ASU-Logo-400.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="ASU Logo" class="h-16 w-auto">
+                    <div class="h-12 w-12 bg-faculty-blue rounded-full hidden items-center justify-center text-white font-bold text-xs">ASU</div>
+                    
                     <div>
                         <h1 class="text-xl md:text-2xl font-bold faculty-blue">MSc Course Planner</h1>
                         <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Mechatronics & Robotics Engineering</p>
@@ -78,7 +79,7 @@
 
         <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
             
-            <main class="flex-1 overflow-y-auto p-4 pb-32 md:pb-4 space-y-8">
+            <main class="flex-1 overflow-y-auto p-4 pb-[45vh] md:pb-4 space-y-8">
                 
                 <div class="bg-blue-50 border-l-4 border-faculty-blue p-4 rounded shadow-sm text-sm text-blue-800">
                     <strong>Instructions:</strong> Select exactly <strong>8 courses</strong> (24 CH). You must satisfy the minimums in the sidebar.
@@ -125,16 +126,22 @@
                         </h2>
                         <span class="text-xs font-semibold px-2 py-1 bg-gray-200 rounded text-gray-600">Elec/Mech Depts</span>
                     </div>
+                    <p class="text-xs text-gray-500 mb-2">Simulated courses from related departments (Optional).</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="pool4-container"></div>
                 </section>
 
             </main>
 
-            <aside class="w-full md:w-80 bg-white border-l border-gray-200 shadow-xl z-30 flex flex-col md:relative fixed bottom-0 h-auto max-h-[40vh] md:max-h-full md:h-full overflow-y-auto">
+            <aside class="w-full md:w-80 bg-white border-l border-t md:border-t-0 border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] md:shadow-xl z-30 flex flex-col md:relative fixed bottom-0 h-auto max-h-[40vh] md:max-h-full md:h-full overflow-y-auto">
                 <div class="p-5">
-                    <h3 class="font-bold text-gray-800 border-b pb-2 mb-4">Checklist</h3>
+                    <div class="flex justify-between items-center md:block mb-4 md:mb-0">
+                        <h3 class="font-bold text-gray-800 md:border-b md:pb-2 md:mb-4">Checklist</h3>
+                        <div class="md:hidden text-sm font-bold faculty-gold">
+                            <span id="mobile-total">0</span>/24 CH
+                        </div>
+                    </div>
                     
-                    <ul class="space-y-3 text-sm" id="rules-list">
+                    <ul class="space-y-2 md:space-y-3 text-xs md:text-sm" id="rules-list">
                         <li class="flex items-start gap-2 text-gray-500" id="rule-phm-min">
                             <div class="mt-0.5 icon">○</div> <span>Min <strong>2 PHM</strong> courses</span>
                         </li>
@@ -155,11 +162,11 @@
                         </li>
                     </ul>
 
-                    <div class="mt-6 pt-4 border-t">
+                    <div class="mt-4 pt-4 border-t">
                         <div id="status-message" class="text-center text-sm font-semibold text-gray-500">
                             Selection Incomplete
                         </div>
-                        <button id="print-btn" class="mt-3 w-full bg-gray-300 text-gray-500 font-bold py-2 rounded cursor-not-allowed" disabled onclick="handlePrint()">
+                        <button id="print-btn" class="mt-3 w-full bg-gray-300 text-gray-500 font-bold py-2 rounded cursor-not-allowed shadow-sm" disabled onclick="handlePrint()">
                             Print Plan
                         </button>
                     </div>
@@ -169,13 +176,16 @@
     </div>
 
     <div id="print-area">
-        <div style="border-bottom: 2px solid #004a98; padding-bottom: 10px; margin-bottom: 20px;">
-            <h1 style="color: #004a98; font-size: 24px; font-weight: bold; margin: 0;">Course Registration Plan</h1>
-            <p style="margin: 5px 0; color: #666;">MSc Mechatronics & Robotics Engineering</p>
-            <p style="margin: 0; font-size: 12px; color: #999;">Faculty of Engineering - Ain Shams University</p>
+        <div style="border-bottom: 2px solid #004a98; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h1 style="color: #004a98; font-size: 24px; font-weight: bold; margin: 0;">Course Registration Plan</h1>
+                <p style="margin: 5px 0; color: #666;">MSc Mechatronics & Robotics Engineering</p>
+                <p style="margin: 0; font-size: 12px; color: #999;">Faculty of Engineering - Ain Shams University</p>
+            </div>
+            <img src="ASU-Logo-400.png" style="height: 80px; width: auto;" alt="Logo">
         </div>
 
-        
+       
 
         <h3 style="color: #004a98;">Selected Courses (24 Credit Hours)</h3>
         <table>
@@ -244,18 +254,14 @@
         ];
 
         const poolGenData = [
-            {code:"ELEC01", title:"Elective 1"},
-            {code:"ELEC02", title:"Elective 2"},
-            {code:"ELEC03", title:"Elective 3"},
+            {code:"ELEC601", title:"Adv. Power Systems (Simulated)"},
+            {code:"MECH602", title:"Adv. Thermodynamics (Simulated)"},
+            {code:"COMM603", title:"Wireless Comm. (Simulated)"}
         ];
 
-        // Combine for easier lookup
         const allCourses = [...pool1Data, ...pool34Data, ...pool58Data, ...poolGenData];
 
-        const state = {
-            selected: new Set(),
-        };
-
+        const state = { selected: new Set() };
         const MAX_COURSES = 8;
         const MAX_PHM = 3;
 
@@ -301,7 +307,6 @@
         }
 
         function updateUI() {
-            // 1. Calculations
             let phmCount = 0;
             let pool34Count = 0;
             let pool58Count = 0;
@@ -316,8 +321,8 @@
 
             const totalCount = state.selected.size;
             document.getElementById('total-ch').innerText = totalCount * 3; 
+            document.getElementById('mobile-total').innerText = totalCount * 3; 
 
-            // 2. Card Visuals
             document.querySelectorAll('.course-card').forEach(card => {
                 const code = card.dataset.code;
                 const pool = card.dataset.pool;
@@ -335,7 +340,6 @@
                 }
             });
 
-            // 3. Validation
             const reqPHM = phmCount >= 2 && phmCount <= 3;
             const reqP34 = pool34Count >= 2;
             const reqP58 = pool58Count >= 1;
@@ -349,7 +353,6 @@
             updateRule('rule-mct-min', reqMCT);
             updateRule('rule-total', reqTot);
 
-            // 4. Status & Print Button
             const allMet = (reqPHM && reqP34 && reqP58 && reqMCT && reqTot);
             const statusDiv = document.getElementById('status-message');
             const printBtn = document.getElementById('print-btn');
@@ -382,11 +385,9 @@
         }
 
         function handlePrint() {
-            // Populate the Print Table
             const tbody = document.getElementById('print-table-body');
             tbody.innerHTML = '';
             
-            // Sort selected items for display
             const sortedCodes = Array.from(state.selected).sort();
             
             sortedCodes.forEach(code => {
@@ -402,8 +403,8 @@
                 tbody.appendChild(tr);
             });
 
+           
 
-            // Trigger Browser Print
             window.print();
         }
 
