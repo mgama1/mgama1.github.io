@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSc Mechatronics Course Planner - Ain Shams University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .faculty-blue { color: #004a98; }
+        .bg-faculty-blue { background-color: #004a98; }
+        .faculty-gold { color: #b8860b; }
+        .bg-faculty-gold { background-color: #b8860b; }
+        
+        /* App Scrollbars */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #004a98; border-radius: 4px; }
+
+        .course-card { transition: all 0.2s ease; }
+        .course-card.selected { 
+            background-color: #ebf5ff; 
+            border-color: #004a98; 
+            border-left-width: 6px;
+        }
+        .course-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f3f4f6;
+            filter: grayscale(100%);
+        }
+
+        /* --- PRINT STYLES --- */
+        #print-area { display: none; }
+        
+        @media print {
+            /* Hide the App UI */
+            #app-container, header, aside { display: none !important; }
+            body { background: white; height: auto; overflow: visible; }
+            
+            /* Show the Print Document */
+            #print-area { 
+                display: block !important; 
+                padding: 20px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+
+            /* Simple Table Styling for Print */
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+            th { background-color: #f8f9fa; color: #004a98; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-slate-800 flex flex-col h-screen overflow-hidden">
+
+    <div id="app-container" class="flex flex-col h-full w-full">
+        
+        <header class="bg-white shadow-md z-20 flex-none">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 bg-faculty-blue rounded-full flex items-center justify-center text-white font-bold text-xs">ASU</div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold faculty-blue">MSc Course Planner</h1>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Mechatronics & Robotics Engineering</p>
+                    </div>
+                </div>
+                <div class="text-right hidden md:block">
+                    <div class="text-sm text-gray-600">Total Credits</div>
+                    <div class="text-3xl font-bold faculty-gold"><span id="total-ch">0</span>/24</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
+            
+            <main class="flex-1 overflow-y-auto p-4 pb-32 md:pb-4 space-y-8">
+                
+                <div class="bg-blue-50 border-l-4 border-faculty-blue p-4 rounded shadow-sm text-sm text-blue-800">
+                    <strong>Instructions:</strong> Select exactly <strong>8 courses</strong> (24 CH). You must satisfy the minimums in the sidebar.
+                </div>
+
+                <section>
+                    <div class="flex justify-between items-end mb-3 border-b pb-2 border-gray-200">
+                        <h2 class="text-lg font-bold faculty-blue flex items-center gap-2">
+                            <span class="bg-faculty-blue text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                            Math & Physics (PHM)
+                        </h2>
+                        <span class="text-xs font-semibold px-2 py-1 bg-gray-200 rounded text-gray-600">Min 2 / Max 3</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="pool1-container"></div>
+                </section>
+
+                <section>
+                    <div class="flex justify-between items-end mb-3 border-b pb-2 border-gray-200">
+                        <h2 class="text-lg font-bold faculty-blue flex items-center gap-2">
+                            <span class="bg-faculty-blue text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                            Introductory (Pool 3 & 4)
+                        </h2>
+                        <span class="text-xs font-semibold px-2 py-1 bg-gray-200 rounded text-gray-600">Min 2</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="pool2-container"></div>
+                </section>
+
+                <section>
+                    <div class="flex justify-between items-end mb-3 border-b pb-2 border-gray-200">
+                        <h2 class="text-lg font-bold faculty-blue flex items-center gap-2">
+                            <span class="bg-faculty-blue text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            Follow-up (Pool 5 - 8)
+                        </h2>
+                        <span class="text-xs font-semibold px-2 py-1 bg-gray-200 rounded text-gray-600">Min 1</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="pool3-container"></div>
+                </section>
+
+                <section>
+                    <div class="flex justify-between items-end mb-3 border-b pb-2 border-gray-200">
+                        <h2 class="text-lg font-bold text-gray-700 flex items-center gap-2">
+                            <span class="bg-gray-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
+                            General Electives
+                        </h2>
+                        <span class="text-xs font-semibold px-2 py-1 bg-gray-200 rounded text-gray-600">Elec/Mech Depts</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="pool4-container"></div>
+                </section>
+
+            </main>
+
+            <aside class="w-full md:w-80 bg-white border-l border-gray-200 shadow-xl z-30 flex flex-col md:relative fixed bottom-0 h-auto max-h-[40vh] md:max-h-full md:h-full overflow-y-auto">
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-800 border-b pb-2 mb-4">Checklist</h3>
+                    
+                    <ul class="space-y-3 text-sm" id="rules-list">
+                        <li class="flex items-start gap-2 text-gray-500" id="rule-phm-min">
+                            <div class="mt-0.5 icon">○</div> <span>Min <strong>2 PHM</strong> courses</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-gray-500" id="rule-phm-max">
+                            <div class="mt-0.5 icon">○</div> <span>Max <strong>3 PHM</strong> courses</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-gray-500" id="rule-pool34">
+                            <div class="mt-0.5 icon">○</div> <span>Min <strong>2 Intro</strong> (Pool 3&4)</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-gray-500" id="rule-pool58">
+                            <div class="mt-0.5 icon">○</div> <span>Min <strong>1 Follow-up</strong> (5-8)</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-gray-500" id="rule-mct-min">
+                            <div class="mt-0.5 icon">○</div> <span>Min <strong>3 Mechatronics</strong> Dept</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-gray-500 pt-3 border-t" id="rule-total">
+                            <div class="mt-0.5 icon">○</div> <span>Total <strong>8 Courses</strong> (24 CH)</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-6 pt-4 border-t">
+                        <div id="status-message" class="text-center text-sm font-semibold text-gray-500">
+                            Selection Incomplete
+                        </div>
+                        <button id="print-btn" class="mt-3 w-full bg-gray-300 text-gray-500 font-bold py-2 rounded cursor-not-allowed" disabled onclick="handlePrint()">
+                            Print Plan
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="print-area">
+        <div style="border-bottom: 2px solid #004a98; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="color: #004a98; font-size: 24px; font-weight: bold; margin: 0;">Course Registration Plan</h1>
+            <p style="margin: 5px 0; color: #666;">MSc Mechatronics & Robotics Engineering</p>
+            <p style="margin: 0; font-size: 12px; color: #999;">Faculty of Engineering - Ain Shams University</p>
+        </div>
+
+        
+
+        <h3 style="color: #004a98;">Selected Courses (24 Credit Hours)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 15%">Code</th>
+                    <th>Course Title</th>
+                    <th style="width: 20%">Category</th>
+                </tr>
+            </thead>
+            <tbody id="print-table-body">
+                </tbody>
+        </table>
+
+        
+    </div>
+
+    <script>
+        // --- DATA ---
+        const pool1Data = [
+            {code:"PHM515", title:"Difference Equations (1)"},
+            {code:"PHM516", title:"Linear Algebra (1)"},
+            {code:"PHM622", title:"Discrete Mathematics"},
+            {code:"PHM624", title:"Finite Element Methods"},
+            {code:"PHM627", title:"Engineering Numerical Analysis"},
+            {code:"PHM628", title:"Eng. Probability & Statistics"},
+            {code:"PHM631", title:"Adv. Engineering Math (1)"}
+        ];
+
+        const pool34Data = [
+            {code:"MCT511", title:"Modern Control Systems"},
+            {code:"MCT541", title:"Design of Mechatronic Systems"},
+            {code:"MCT542", title:"Dynamics & Control of Robots"},
+            {code:"MCT543", title:"Adv. Autonomous Systems"},
+            {code:"MCT544", title:"Selected Topics MCT (1)"},
+            {code:"MDP511", title:"Design of Experiments"},
+            {code:"CSE671", title:"Adv. Artificial Intelligence"},
+            {code:"CSE681", title:"Adv. Digital Image Processing"}
+        ];
+
+        const pool58Data = [
+            {code:"MCT611", title:"Industry 4.0 Fundamentals"},
+            {code:"MCT612", title:"Visual Servoing"},
+            {code:"MCT613", title:"Optimal Control"},
+            {code:"MCT614", title:"Adv. Control Techniques"},
+            {code:"MCT615", title:"Supervisory Control Design"},
+            {code:"MCT616", title:"Pneumatic & Hydraulic Control"},
+            {code:"MCT617", title:"Motion Control & Servo"},
+            {code:"MCT618", title:"Building Automation"},
+            {code:"MCT641", title:"Modeling Dynamic Systems"},
+            {code:"MCT642", title:"Adv. Multibody Dynamics"},
+            {code:"MCT643", title:"Industrial Comm & Networking"},
+            {code:"MCT644", title:"Biomechanics"},
+            {code:"MCT645", title:"Biomechatronics"},
+            {code:"MCT646", title:"Adv. Biosignal Processing"},
+            {code:"MCT647", title:"Micro/Nano Mechatronics"},
+            {code:"MCT648", title:"Selected Topics MCT (2)"},
+            {code:"MCT651", title:"Legged Walking Robotics"},
+            {code:"MCT652", title:"Sensing & Navigation"},
+            {code:"MCT653", title:"Probabilistic Robotics"},
+            {code:"MCT654", title:"Underwater & Aerial Robotics"},
+            {code:"MCT655", title:"Robotics Programming"},
+            {code:"MCT656", title:"Wearable Robotics"},
+            {code:"MCT657", title:"Autotronics"},
+            {code:"MCT658", title:"Self-Driving Vehicles"}
+        ];
+
+        const poolGenData = [
+            {code:"ELEC01", title:"Elective 1"},
+            {code:"ELEC02", title:"Elective 2"},
+            {code:"ELEC03", title:"Elective 3"},
+        ];
+
+        // Combine for easier lookup
+        const allCourses = [...pool1Data, ...pool34Data, ...pool58Data, ...poolGenData];
+
+        const state = {
+            selected: new Set(),
+        };
+
+        const MAX_COURSES = 8;
+        const MAX_PHM = 3;
+
+        function createCard(course, poolId) {
+            const div = document.createElement('div');
+            div.className = "course-card bg-white border border-gray-200 rounded p-3 cursor-pointer hover:shadow-md relative";
+            div.dataset.code = course.code;
+            div.dataset.pool = poolId;
+            div.onclick = () => toggleCourse(course.code);
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-400 font-mono">${course.code}</span>
+                    <div class="h-4 w-4 rounded border border-gray-300 check-circle"></div>
+                </div>
+                <h4 class="text-sm font-semibold text-gray-700 mt-1 leading-tight">${course.title}</h4>
+            `;
+            return div;
+        }
+
+        function init() {
+            const p1 = document.getElementById('pool1-container');
+            const p2 = document.getElementById('pool2-container');
+            const p3 = document.getElementById('pool3-container');
+            const p4 = document.getElementById('pool4-container');
+
+            pool1Data.forEach(c => p1.appendChild(createCard(c, 'phm')));
+            pool34Data.forEach(c => p2.appendChild(createCard(c, 'p34')));
+            pool58Data.forEach(c => p3.appendChild(createCard(c, 'p58')));
+            poolGenData.forEach(c => p4.appendChild(createCard(c, 'gen')));
+        }
+
+        function toggleCourse(code) {
+            const card = document.querySelector(`div[data-code="${code}"]`);
+            if (card.classList.contains('disabled') && !state.selected.has(code)) return;
+
+            if (state.selected.has(code)) {
+                state.selected.delete(code);
+            } else {
+                state.selected.add(code);
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            // 1. Calculations
+            let phmCount = 0;
+            let pool34Count = 0;
+            let pool58Count = 0;
+            let mctCount = 0;
+
+            state.selected.forEach(code => {
+                if (code.startsWith('PHM')) phmCount++;
+                if (pool34Data.find(c => c.code === code)) pool34Count++;
+                if (pool58Data.find(c => c.code === code)) pool58Count++;
+                if (code.startsWith('MCT')) mctCount++;
+            });
+
+            const totalCount = state.selected.size;
+            document.getElementById('total-ch').innerText = totalCount * 3; 
+
+            // 2. Card Visuals
+            document.querySelectorAll('.course-card').forEach(card => {
+                const code = card.dataset.code;
+                const pool = card.dataset.pool;
+                const check = card.querySelector('.check-circle');
+
+                card.classList.remove('selected', 'disabled');
+                check.classList.remove('bg-faculty-gold', 'border-transparent');
+                
+                if (state.selected.has(code)) {
+                    card.classList.add('selected');
+                    check.classList.add('bg-faculty-gold', 'border-transparent');
+                } else {
+                    if (totalCount >= MAX_COURSES) card.classList.add('disabled');
+                    if (pool === 'phm' && phmCount >= MAX_PHM) card.classList.add('disabled');
+                }
+            });
+
+            // 3. Validation
+            const reqPHM = phmCount >= 2 && phmCount <= 3;
+            const reqP34 = pool34Count >= 2;
+            const reqP58 = pool58Count >= 1;
+            const reqMCT = mctCount >= 3;
+            const reqTot = totalCount === MAX_COURSES;
+
+            updateRule('rule-phm-min', phmCount >= 2);
+            updateRule('rule-phm-max', phmCount <= 3);
+            updateRule('rule-pool34', reqP34);
+            updateRule('rule-pool58', reqP58);
+            updateRule('rule-mct-min', reqMCT);
+            updateRule('rule-total', reqTot);
+
+            // 4. Status & Print Button
+            const allMet = (reqPHM && reqP34 && reqP58 && reqMCT && reqTot);
+            const statusDiv = document.getElementById('status-message');
+            const printBtn = document.getElementById('print-btn');
+
+            if (allMet) {
+                statusDiv.innerHTML = "<span class='text-green-600'>✅ All Requirements Met!</span>";
+                printBtn.disabled = false;
+                printBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                printBtn.classList.add('bg-faculty-blue', 'text-white', 'hover:bg-blue-800');
+            } else {
+                statusDiv.innerHTML = "Selection Incomplete";
+                printBtn.disabled = true;
+                printBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                printBtn.classList.remove('bg-faculty-blue', 'text-white', 'hover:bg-blue-800');
+            }
+        }
+
+        function updateRule(elementId, isMet) {
+            const el = document.getElementById(elementId);
+            const icon = el.querySelector('.icon');
+            if (isMet) {
+                el.classList.remove('text-gray-500', 'text-red-500');
+                el.classList.add('text-green-700', 'font-medium');
+                icon.innerText = "✔";
+            } else {
+                el.classList.remove('text-green-700', 'font-medium');
+                el.classList.add('text-gray-500');
+                icon.innerText = "○";
+            }
+        }
+
+        function handlePrint() {
+            // Populate the Print Table
+            const tbody = document.getElementById('print-table-body');
+            tbody.innerHTML = '';
+            
+            // Sort selected items for display
+            const sortedCodes = Array.from(state.selected).sort();
+            
+            sortedCodes.forEach(code => {
+                const course = allCourses.find(c => c.code === code);
+                let cat = "Elective";
+                if(course.code.startsWith('PHM')) cat = "Math/Physics";
+                else if(pool34Data.includes(course)) cat = "Introductory";
+                else if(pool58Data.includes(course)) cat = "Follow-up";
+                else cat = "General Elective";
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${code}</td><td>${course.title}</td><td>${cat}</td>`;
+                tbody.appendChild(tr);
+            });
+
+
+            // Trigger Browser Print
+            window.print();
+        }
+
+        init();
+    </script>
+</body>
+</html>
