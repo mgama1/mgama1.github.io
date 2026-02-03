@@ -82,7 +82,7 @@
             <main class="flex-1 overflow-y-auto p-4 pb-[45vh] md:pb-4 space-y-8">
                 
                 <div class="bg-blue-50 border-l-4 border-faculty-blue p-4 rounded shadow-sm text-sm text-blue-800">
-                    <strong>Instructions:</strong> Select exactly <strong>8 courses</strong> (24 CH). You must satisfy the minimums in the sidebar.
+                    <strong>Instructions:</strong> Select exactly <strong>8 courses</strong> (24 CH). For General Electives, type the course name in the box.
                 </div>
 
                 <section>
@@ -182,10 +182,8 @@
                 <p style="margin: 5px 0; color: #666;">MSc Mechatronics & Robotics Engineering</p>
                 <p style="margin: 0; font-size: 12px; color: #999;">Faculty of Engineering - Ain Shams University</p>
             </div>
-            <img src="ASU-Logo-400.png" style="height: 80px; width: auto;" alt="Logo">
+            <img src="ASU-Logo-400.png" style="height: 80px; width: auto;" alt="Logo" onerror="this.style.display='none'">
         </div>
-
-       
 
         <h3 style="color: #004a98;">Selected Courses (24 Credit Hours)</h3>
         <table>
@@ -199,9 +197,8 @@
             <tbody id="print-table-body">
                 </tbody>
         </table>
-
         
-    </div>
+        </div>
 
     <script>
         // --- DATA ---
@@ -254,9 +251,9 @@
         ];
 
         const poolGenData = [
-            {code:"ELEC601", title:"Adv. Power Systems (Simulated)"},
-            {code:"MECH602", title:"Adv. Thermodynamics (Simulated)"},
-            {code:"COMM603", title:"Wireless Comm. (Simulated)"}
+            {code:"GEN001", title:"Elective 1", isEditable: true},
+            {code:"GEN002", title:"Elective 2", isEditable: true},
+            {code:"GEN003", title:"Elective 3", isEditable: true}
         ];
 
         const allCourses = [...pool1Data, ...pool34Data, ...pool58Data, ...poolGenData];
@@ -272,14 +269,36 @@
             div.dataset.pool = poolId;
             div.onclick = () => toggleCourse(course.code);
             
-            div.innerHTML = `
+            // Header: Code and Checkbox
+            let html = `
                 <div class="flex justify-between items-start">
                     <span class="text-xs font-bold text-gray-400 font-mono">${course.code}</span>
-                    <div class="h-4 w-4 rounded border border-gray-300 check-circle"></div>
-                </div>
-                <h4 class="text-sm font-semibold text-gray-700 mt-1 leading-tight">${course.title}</h4>
-            `;
+                    <div class="h-4 w-4 rounded border border-gray-300 check-circle flex-shrink-0"></div>
+                </div>`;
+
+            // Body: Title or Editable Input
+            if (course.isEditable) {
+                html += `
+                <input type="text" 
+                       value="${course.title}" 
+                       class="text-sm font-semibold text-gray-700 mt-1 w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent pb-1"
+                       onclick="event.stopPropagation()" 
+                       onchange="updateCourseTitle('${course.code}', this.value)"
+                />`;
+            } else {
+                html += `<h4 class="text-sm font-semibold text-gray-700 mt-1 leading-tight">${course.title}</h4>`;
+            }
+
+            div.innerHTML = html;
             return div;
+        }
+
+        // Logic to update global data when user types in an editable field
+        function updateCourseTitle(code, newTitle) {
+            const course = allCourses.find(c => c.code === code);
+            if (course) {
+                course.title = newTitle;
+            }
         }
 
         function init() {
@@ -402,8 +421,6 @@
                 tr.innerHTML = `<td>${code}</td><td>${course.title}</td><td>${cat}</td>`;
                 tbody.appendChild(tr);
             });
-
-           
 
             window.print();
         }
