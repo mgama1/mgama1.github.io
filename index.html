@@ -589,12 +589,18 @@
     const SWIPE_THRESHOLD = 24;
 
     function sizeCanvas() {
-        const HUD_H = 42;
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight - HUD_H;
+        const hud = document.getElementById('snake-hud');
+        const HUD_H = Math.ceil(hud.getBoundingClientRect().height);
+        const rawW = window.innerWidth;
+        const rawH = window.innerHeight - HUD_H;
+        COLS = Math.floor(rawW / CELL);
+        ROWS = Math.floor(rawH / CELL);
+        canvas.width  = COLS * CELL;
+        canvas.height = ROWS * CELL;
         canvas.style.top = HUD_H + 'px';
-        COLS = Math.floor(canvas.width  / CELL);
-        ROWS = Math.floor(canvas.height / CELL);
+        canvas.style.left = Math.floor((rawW - canvas.width) / 2) + 'px';
+        canvas.style.width = canvas.width + 'px';
+        canvas.style.height = canvas.height + 'px';
     }
 
     function openSnake() {
