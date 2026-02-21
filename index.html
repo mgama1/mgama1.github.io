@@ -73,7 +73,7 @@
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px; /* Grid square size */
+            background-size: 30px 30px; /* Grid square size */
             
             border: 1px solid #333;
             border-radius: 12px;
@@ -309,6 +309,97 @@
             margin-top: 50px;
         }
 
+        /* --- SNAKE GAME OVERLAY --- */
+        #snake-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1000;
+            font-family: var(--font-code);
+            overflow: hidden;
+        }
+        #snake-overlay.active { display: block; }
+
+        /* The expanding portal: starts as the robot-wrapper rect, expands to fill screen */
+        #snake-portal {
+            position: absolute;
+            background: #111111;
+            /* same grid as robot-wrapper */
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(74,222,128,0.15);
+            overflow: hidden;
+            /* JS sets initial position/size from robot-wrapper, then animates to full screen */
+            transition: top 0.55s cubic-bezier(0.77,0,0.18,1),
+                        left 0.55s cubic-bezier(0.77,0,0.18,1),
+                        width 0.55s cubic-bezier(0.77,0,0.18,1),
+                        height 0.55s cubic-bezier(0.77,0,0.18,1),
+                        border-radius 0.55s ease;
+        }
+
+        #snake-canvas {
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease 0.4s;
+        }
+        #snake-portal.expanded #snake-canvas { opacity: 1; }
+
+        /* HUD bar at the top */
+        #snake-hud {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(17,17,17,0.85);
+            border-bottom: 1px solid #333;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.5s;
+        }
+        #snake-portal.expanded #snake-hud { opacity: 1; }
+
+        #snake-score-val { color: var(--accent); font-weight: 700; }
+        #snake-close {
+            background: #ff5f57;
+            border: none;
+            width: 13px; height: 13px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        #snake-close:hover { transform: scale(1.3); }
+
+        #snake-msg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-code);
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+        #snake-msg.visible { pointer-events: auto; }
+
+        /* click hint pulse on robot-wrapper */
+        .robot-wrapper.click-hint { animation: clickpulse 0.3s ease; }
+        @keyframes clickpulse {
+            0%   { box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+            50%  { box-shadow: inset 0 0 20px rgba(74,222,128,0.35), 0 0 12px rgba(74,222,128,0.3); }
+            100% { box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        }
+
         @media (max-width: 768px) {
             .hero { grid-template-columns: 1fr; text-align: center; }
             .robot-wrapper { margin-bottom: 30px; height: 350px; }
@@ -328,7 +419,7 @@
             <div class="nav-links">
                 <a href="https://mgama1.github.io/posts" target="_blank">Articles</a>
                 <a href="./resume.pdf" target="_blank">Resume</a>
-                <a href="mailto:mgamal.contact@gmail.com"><i class="fa fa-envelope"></i> Contact</a>
+                <a href="/cdn-cgi/l/email-protection#761b11171b171a581519180217150236111b171f1a5815191b"><i class="fa fa-envelope"></i> Contact</a>
             </div>
         </nav>
 
@@ -443,10 +534,320 @@
             </div>
         </section>
 
+        <!-- HIDDEN SNAKE GAME -->
+        <div id="snake-overlay">
+            <div id="snake-portal">
+                <div id="snake-hud">
+                    <span><i class="fas fa-terminal"></i>&nbsp; snake.bin &mdash; <span style="color:var(--accent)">SCORE: <span id="snake-score-val">0</span></span></span>
+                    <span style="color:var(--text-muted);font-size:0.75rem;">WASD / arrows &nbsp;|&nbsp; hold Shift = boost</span>
+                    <button id="snake-close" title="Exit"></button>
+                </div>
+                <canvas id="snake-canvas"></canvas>
+                <div id="snake-msg"></div>
+            </div>
+        </div>
+
         <footer>
             <p>&copy; 2026 Mahmoud Gamal. <br> <span style="font-family: var(--font-code); font-size: 0.8em; color: var(--accent);">System Status: Online</span></p>
         </footer>
-
     </div>
+
+    <script>
+    // ── TRIGGER: 3 clicks on robot-wrapper ──────────────────────────────────
+    (function() {
+        const wrapper = document.querySelector('.robot-wrapper');
+        let clicks = 0, timer;
+        wrapper.addEventListener('click', function() {
+            clicks++;
+            wrapper.classList.remove('click-hint');
+            void wrapper.offsetWidth;
+            wrapper.classList.add('click-hint');
+            clearTimeout(timer);
+            timer = setTimeout(() => { clicks = 0; }, 1500);
+            if (clicks >= 3) { clicks = 0; openSnake(); }
+        });
+        wrapper.addEventListener('animationend', () => wrapper.classList.remove('click-hint'));
+    })();
+
+    // ── SNAKE GAME ───────────────────────────────────────────────────────────
+    const overlay   = document.getElementById('snake-overlay');
+    const portal    = document.getElementById('snake-portal');
+    const canvas    = document.getElementById('snake-canvas');
+    const ctx       = canvas.getContext('2d');
+    const scoreEl   = document.getElementById('snake-score-val');
+    const msgEl     = document.getElementById('snake-msg');
+    const closeBtn  = document.getElementById('snake-close');
+
+    const CELL = 30; // match portfolio grid exactly (30px)
+    let COLS, ROWS;
+    const BASE_SPEED = 115;
+    const BOOST_SPEED = 65;
+    let snake, dir, nextDir, food, score, running, loopId, boost;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchActive = false;
+    const SWIPE_THRESHOLD = 24;
+
+    function sizeCanvas() {
+        const HUD_H = 42;
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight - HUD_H;
+        canvas.style.top = HUD_H + 'px';
+        COLS = Math.floor(canvas.width  / CELL);
+        ROWS = Math.floor(canvas.height / CELL);
+    }
+
+    function openSnake() {
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+
+        // Get the bounding rect of robot-wrapper to start portal from there
+        const wrapper = document.querySelector('.robot-wrapper');
+        const r = wrapper.getBoundingClientRect();
+
+        // Start portal as the robot-wrapper
+        portal.style.transition = 'none';
+        portal.style.top    = r.top  + 'px';
+        portal.style.left   = r.left + 'px';
+        portal.style.width  = r.width  + 'px';
+        portal.style.height = r.height + 'px';
+        portal.style.borderRadius = '12px';
+        portal.classList.remove('expanded');
+
+        // Force reflow, then animate to full screen
+        void portal.offsetWidth;
+        portal.style.transition = `
+            top 0.55s cubic-bezier(0.77,0,0.18,1),
+            left 0.55s cubic-bezier(0.77,0,0.18,1),
+            width 0.55s cubic-bezier(0.77,0,0.18,1),
+            height 0.55s cubic-bezier(0.77,0,0.18,1),
+            border-radius 0.55s ease`;
+        portal.style.top    = '0';
+        portal.style.left   = '0';
+        portal.style.width  = '100vw';
+        portal.style.height = '100vh';
+        portal.style.borderRadius = '0';
+
+        // After expand, show game
+        setTimeout(() => {
+            portal.classList.add('expanded');
+            sizeCanvas();
+            resetGame();
+            document.addEventListener('keydown', onKey);
+            document.addEventListener('keydown', onBoostKeyDown);
+            document.addEventListener('keyup', onBoostKeyUp);
+            canvas.addEventListener('touchstart', onTouchStart, { passive: true });
+            canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+            canvas.addEventListener('touchend', onTouchEnd, { passive: true });
+        }, 580);
+    }
+
+    function closeSnake() {
+        running = false;
+        clearTimeout(loopId);
+        document.removeEventListener('keydown', onKey);
+        document.removeEventListener('keydown', onBoostKeyDown);
+        document.removeEventListener('keyup', onBoostKeyUp);
+        canvas.removeEventListener('touchstart', onTouchStart);
+        canvas.removeEventListener('touchmove', onTouchMove);
+        canvas.removeEventListener('touchend', onTouchEnd);
+        document.body.style.overflow = '';
+
+        // Animate back into robot-wrapper
+        portal.classList.remove('expanded');
+        const wrapper = document.querySelector('.robot-wrapper');
+        const r = wrapper.getBoundingClientRect();
+        portal.style.top    = r.top  + 'px';
+        portal.style.left   = r.left + 'px';
+        portal.style.width  = r.width  + 'px';
+        portal.style.height = r.height + 'px';
+        portal.style.borderRadius = '12px';
+
+        setTimeout(() => { overlay.style.display = 'none'; }, 580);
+    }
+
+    closeBtn.addEventListener('click', closeSnake);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.style.display !== 'none') closeSnake(); });
+    window.addEventListener('resize', () => { if (portal.classList.contains('expanded')) sizeCanvas(); });
+
+    function resetGame() {
+        const midX = Math.floor(COLS / 2);
+        const midY = Math.floor(ROWS / 2);
+        snake   = [{x:midX,y:midY},{x:midX-1,y:midY},{x:midX-2,y:midY}];
+        dir     = {x:1,y:0};
+        nextDir = {x:1,y:0};
+        score   = 0;
+        boost   = false;
+        running = true;
+        scoreEl.textContent = '0';
+        msgEl.textContent   = '';
+        msgEl.classList.remove('visible');
+        placeFood();
+        clearTimeout(loopId);
+        loop();
+    }
+
+    function placeFood() {
+        let candidate;
+        do {
+            candidate = { x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS) };
+        } while (snake.some(s => s.x===candidate.x && s.y===candidate.y));
+        food = candidate;
+    }
+
+    function loop() {
+        if (!running) return;
+        tick();
+        draw();
+        loopId = setTimeout(loop, boost ? BOOST_SPEED : BASE_SPEED);
+    }
+
+    function tick() {
+        dir = { ...nextDir };
+        const head = {
+            // Wrap around — infinite toroidal grid
+            x: ((snake[0].x + dir.x) % COLS + COLS) % COLS,
+            y: ((snake[0].y + dir.y) % ROWS + ROWS) % ROWS
+        };
+        // Self collision only
+        if (snake.some(s => s.x===head.x && s.y===head.y)) return gameOver();
+        snake.unshift(head);
+        if (head.x===food.x && head.y===food.y) {
+            score += 10;
+            scoreEl.textContent = score;
+            placeFood();
+        } else {
+            snake.pop();
+        }
+    }
+
+    function draw() {
+        // Background matching portfolio grid exactly
+        ctx.fillStyle = '#111111';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Grid — same rgba(255,255,255,0.03), 30px spacing as robot-wrapper
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= COLS; x++) {
+            ctx.beginPath();
+            ctx.moveTo(x * CELL, 0);
+            ctx.lineTo(x * CELL, canvas.height);
+            ctx.stroke();
+        }
+        for (let y = 0; y <= ROWS; y++) {
+            ctx.beginPath();
+            ctx.moveTo(0, y * CELL);
+            ctx.lineTo(canvas.width, y * CELL);
+            ctx.stroke();
+        }
+
+        // Food — glowing red dot
+        const fx = food.x * CELL + CELL/2;
+        const fy = food.y * CELL + CELL/2;
+        ctx.save();
+        ctx.shadowColor = '#ff4444';
+        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#ff4444';
+        ctx.beginPath();
+        ctx.arc(fx, fy, CELL * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Snake segments
+        snake.forEach((seg, i) => {
+            const alpha = Math.max(0.25, 1 - (i / snake.length) * 0.75);
+            const x = seg.x * CELL;
+            const y = seg.y * CELL;
+            const pad = 3;
+
+            ctx.save();
+            if (i === 0) {
+                ctx.shadowColor = '#4ade80';
+                ctx.shadowBlur = 16;
+            }
+            ctx.fillStyle = `rgba(74, 222, 128, ${alpha})`;
+            ctx.fillRect(x + pad, y + pad, CELL - pad*2, CELL - pad*2);
+
+            // Head outline
+            if (i === 0) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x + pad + 1, y + pad + 1, CELL - pad*2 - 2, CELL - pad*2 - 2);
+            }
+            ctx.restore();
+        });
+    }
+
+    function gameOver() {
+        running = false;
+        clearTimeout(loopId);
+
+        // Red flash
+        ctx.fillStyle = 'rgba(255,0,0,0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        msgEl.classList.add('visible');
+        msgEl.innerHTML = `
+            <div style="background:rgba(10,10,10,0.92);padding:24px 36px;border:1px solid #ff4444;border-radius:8px;box-shadow:0 0 30px rgba(255,68,68,0.2);">
+                <div style="color:#ff4444;font-size:1rem;margin-bottom:6px;letter-spacing:0.1em;">SEGMENTATION FAULT</div>
+                <div style="font-size:0.75rem;color:#666;margin-bottom:16px;">core dumped &nbsp;|&nbsp; score: <span style="color:var(--accent)">${score}</span></div>
+                <button onclick="resetGame()" style="background:#4ade80;color:#000;border:none;padding:8px 22px;border-radius:5px;font-family:var(--font-code);cursor:pointer;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;">./restart</button>
+            </div>`;
+    }
+
+    function onKey(e) {
+        const map = {
+            ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1},
+            ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
+            w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0}
+        };
+        const n = map[e.key];
+        if (!n) return;
+        if (n.x !== -dir.x || n.y !== -dir.y) nextDir = n;
+        e.preventDefault();
+    }
+
+    function onBoostKeyDown(e) {
+        if (e.key === 'Shift') boost = true;
+    }
+
+    function onBoostKeyUp(e) {
+        if (e.key === 'Shift') boost = false;
+    }
+
+    function onTouchStart(e) {
+        if (e.touches.length !== 1) return;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchActive = true;
+    }
+
+    function onTouchMove(e) {
+        if (!touchActive || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+            const n = dx > 0 ? {x:1,y:0} : {x:-1,y:0};
+            if (n.x !== -dir.x || n.y !== -dir.y) nextDir = n;
+        } else {
+            const n = dy > 0 ? {x:0,y:1} : {x:0,y:-1};
+            if (n.x !== -dir.x || n.y !== -dir.y) nextDir = n;
+        }
+
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchActive = false;
+        e.preventDefault();
+    }
+
+    function onTouchEnd() {
+        touchActive = false;
+    }
+    </script>
 </body>
 </html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structure & Written Expression Practice Test</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e67e22; /* Orange for Grammar */
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --bg-color: #fcf3cf; /* Light yellow tint */
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h1 { color: var(--primary-color); }
+        h2 { color: var(--accent-color); margin-top: 40px; }
+
+        .question-block {
+            background: var(--card-bg);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
+            font-size: 1.05em;
+        }
+
+        .underline {
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .options label:hover {
+            background-color: #fff3e0;
+        }
+
+        input[type="radio"] { margin-right: 12px; }
+
+        /* Results Styling */
+        .correct-answer {
+            background-color: rgba(46, 204, 113, 0.2) !important;
+            border: 1px solid var(--success-color);
+            color: #006400;
+        }
+
+        .wrong-answer {
+            background-color: rgba(231, 76, 60, 0.2) !important;
+            border: 1px solid var(--error-color);
+            color: #8b0000;
+        }
+
+        .feedback {
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #ccc;
+            display: none;
+        }
+
+        #submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        #submit-btn:hover { background-color: #d35400; }
+
+        #score-display {
+            display: none;
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="timer-container" id="timer">25:00</div>
+
+<header>
+    <h1>Structure & Written Expression</h1>
+    <p>Practice Test 3 • Section 2 • 40 Questions</p>
+</header>
+
+<form id="quiz-form">
+
+    <h2>Part A: Structure (Select the correct completion)</h2>
+
+    <div class="question-block" data-correct="A" data-explain="Adjective 'various' modifies 'health problems'.">
+        <span class="question-text">1. Overexposure to the sun causes _______ health problems.</span>
+        <div class="options">
+            <label><input type="radio" name="q1" value="A"> (A) various</label>
+            <label><input type="radio" name="q1" value="B"> (B) among</label>
+            <label><input type="radio" name="q1" value="C"> (C) but</label>
+            <label><input type="radio" name="q1" value="D"> (D) of</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Adverb clause 'when cold weather comes'. Needs Subject + Verb.">
+        <span class="question-text">2. Birds head south to warmer climates when _______.</span>
+        <div class="options">
+            <label><input type="radio" name="q2" value="A"> (A) is cold weather</label>
+            <label><input type="radio" name="q2" value="B"> (B) does cold weather come</label>
+            <label><input type="radio" name="q2" value="C"> (C) cold weather comes</label>
+            <label><input type="radio" name="q2" value="D"> (D) comes cold weather</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Correlative conjunction: 'not only... but also'.">
+        <span class="question-text">3. The city council is empowered not only to enact new laws, _______ between elections should the need arise.</span>
+        <div class="options">
+            <label><input type="radio" name="q3" value="A"> (A) and to</label>
+            <label><input type="radio" name="q3" value="B"> (B) but also to</label>
+            <label><input type="radio" name="q3" value="C"> (C) and</label>
+            <label><input type="radio" name="q3" value="D"> (D) so that</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Structure: 'one of the [superlative] [noun]'.">
+        <span class="question-text">4. Drying of meats and vegetables is no longer considered one of _______ of preserving food.</span>
+        <div class="options">
+            <label><input type="radio" name="q4" value="A"> (A) the ways are useful</label>
+            <label><input type="radio" name="q4" value="B"> (B) useful ways</label>
+            <label><input type="radio" name="q4" value="C"> (C) the most useful ways</label>
+            <label><input type="radio" name="q4" value="D"> (D) most are useful ways</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Parallel structure: 'reach a height of... and a diameter of...'.">
+        <span class="question-text">5. A giant kind of grass, bamboo may reach a height of 120 feet and _______.</span>
+        <div class="options">
+            <label><input type="radio" name="q5" value="A"> (A) a diameter of 1 foot</label>
+            <label><input type="radio" name="q5" value="B"> (B) its diameter is 1 foot</label>
+            <label><input type="radio" name="q5" value="C"> (C) there is a diameter of 1 foot</label>
+            <label><input type="radio" name="q5" value="D"> (D) which is a diameter of 1 foot</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="D" data-explain="Main verb required. 'Somerset Maugham... wrote'.">
+        <span class="question-text">6. Somerset Maugham, a novelist, _______ about a restless man's quest for inner understanding in The Razor's Edge.</span>
+        <div class="options">
+            <label><input type="radio" name="q6" value="A"> (A) who wrote this</label>
+            <label><input type="radio" name="q6" value="B"> (B) who wrote</label>
+            <label><input type="radio" name="q6" value="C"> (C) when he wrote</label>
+            <label><input type="radio" name="q6" value="D"> (D) wrote</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Infinitive of purpose: 'is used to counteract'.">
+        <span class="question-text">7. Aspirin is used _______ a constriction of the blood vessels.</span>
+        <div class="options">
+            <label><input type="radio" name="q7" value="A"> (A) the counteraction</label>
+            <label><input type="radio" name="q7" value="B"> (B) to counteract</label>
+            <label><input type="radio" name="q7" value="C"> (C) counteract</label>
+            <label><input type="radio" name="q7" value="D"> (D) counteracting</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Word order: 'seldom grows [verb] more than [amount]'.">
+        <span class="question-text">8. The nuthatch _______ six inches long.</span>
+        <div class="options">
+            <label><input type="radio" name="q8" value="A"> (A) grows seldom more than</label>
+            <label><input type="radio" name="q8" value="B"> (B) more than seldom grows</label>
+            <label><input type="radio" name="q8" value="C"> (C) seldom grows more than</label>
+            <label><input type="radio" name="q8" value="D"> (D) grows more than seldom</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Passive voice: 'fats are used...'.">
+        <span class="question-text">9. Composing more than 40 percent of the diet, fats are _______ by the body for energy.</span>
+        <div class="options">
+            <label><input type="radio" name="q9" value="A"> (A) using specifically</label>
+            <label><input type="radio" name="q9" value="B"> (B) used specifically</label>
+            <label><input type="radio" name="q9" value="C"> (C) specific use</label>
+            <label><input type="radio" name="q9" value="D"> (D) the specific use</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Idiom: 'looks like' or 'looks rather like' (resembles).">
+        <span class="question-text">10. The sea mammal medusa is popularly called a jellyfish because it _______ jelly.</span>
+        <div class="options">
+            <label><input type="radio" name="q10" value="A"> (A) looks rather like</label>
+            <label><input type="radio" name="q10" value="B"> (B) looks like rather</label>
+            <label><input type="radio" name="q10" value="C"> (C) likes looking rather</label>
+            <label><input type="radio" name="q10" value="D"> (D) rather likes looking</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Linking verb 'prove' takes an adjective. 'Prove helpful'.">
+        <span class="question-text">11. Therapists are currently using mental imagery in the hope that it might prove _______ in the treatment of cancer.</span>
+        <div class="options">
+            <label><input type="radio" name="q11" value="A"> (A) helpful</label>
+            <label><input type="radio" name="q11" value="B"> (B) for help</label>
+            <label><input type="radio" name="q11" value="C"> (C) helpfully</label>
+            <label><input type="radio" name="q11" value="D"> (D) with the help</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Dangling Modifier. 'By praying... Carrie Nation worked'. She is the one praying.">
+        <span class="question-text">12. By praying outside saloons, throwing rocks in saloon windows, and destroying saloons with her hatchet, _______.</span>
+        <div class="options">
+            <label><input type="radio" name="q12" value="A"> (A) alcohol was prohibited by Carrie Nation</label>
+            <label><input type="radio" name="q12" value="B"> (B) prohibiting alcohol by Carrie Nation</label>
+            <label><input type="radio" name="q12" value="C"> (C) Carrie Nation worked to prohibit alcohol</label>
+            <label><input type="radio" name="q12" value="D"> (D) prohibition of alcohol</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Parallelism/Structure: 'changing... from X to Y'. X=physician, Y=patient.">
+        <span class="question-text">13. More drugmakers are changing their target market from physician to _______.</span>
+        <div class="options">
+            <label><input type="radio" name="q13" value="A"> (A) patient as the key to increasing market share</label>
+            <label><input type="radio" name="q13" value="B"> (B) patient as the key to increasing market share.</label>
+            <label><input type="radio" name="q13" value="C"> (C) patient as the key</label>
+            <label><input type="radio" name="q13" value="D"> (D) patient as the key to increasing market</label>
+        </div>
+        <div class="feedback">Note: The answer is technically just 'patient', but looking at the structure 'patient as the key' completes the thought of the new strategy.</div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Noun Clause subject: 'That the cockroach is... is agreed'.">
+        <span class="question-text">14. _______ cockroach is the pest most in need of eradication is generally agreed upon by housing authorities everywhere.</span>
+        <div class="options">
+            <label><input type="radio" name="q14" value="A"> (A) When the</label>
+            <label><input type="radio" name="q14" value="B"> (B) It is the</label>
+            <label><input type="radio" name="q14" value="C"> (C) That the</label>
+            <label><input type="radio" name="q14" value="D"> (D) The</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <div class="question-block" data-correct="D" data-explain="Modifier/Reduced Clause: 'Now found only...' describes the jaguar.">
+        <span class="question-text">15. _______, the jaguar used to roam freely in the southwestern United States.</span>
+        <div class="options">
+            <label><input type="radio" name="q15" value="A"> (A) It is now found only in Central and South America</label>
+            <label><input type="radio" name="q15" value="B"> (B) Finding in Central and South America</label>
+            <label><input type="radio" name="q15" value="C"> (C) To be found in Central and South America</label>
+            <label><input type="radio" name="q15" value="D"> (D) Now found only in Central and South America</label>
+        </div>
+        <div class="feedback"></div>
+    </div>
+
+    <h2>Part B: Written Expression (Select the ERROR)</h2>
+
+    <div class="question-block" data-correct="A" data-explain="Should be 'The largest'. Superlative is needed for the group of 48.">
+        <span class="question-text">16. The <span class="underline">larger</span> (A) of the forty-eight <span class="underline">continental states</span> (B) in the United States <span class="underline">is</span> (C) Texas.</span>
+        <div class="options">
+            <label><input type="radio" name="q16" value="A"> (A) larger</label>
+            <label><input type="radio" name="q16" value="B"> (B) continental states</label>
+            <label><input type="radio" name="q16" value="C"> (C) is</label>
+            <label><input type="radio" name="q16" value="D"> (D) [No error / Texas]</label>
+        </div>
+        <div class="feedback">Correction: largest</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Should be 'probably' (adverb), not 'probability' (noun).">
+        <span class="question-text">17. According to <span class="underline">the</span> (A) experts, genetic inheritance is <span class="underline">probability</span> (B) the most important <span class="underline">factor</span> (C) in determining a person's <span class="underline">health</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q17" value="A"> (A) the</label>
+            <label><input type="radio" name="q17" value="B"> (B) probability</label>
+            <label><input type="radio" name="q17" value="C"> (C) factor</label>
+            <label><input type="radio" name="q17" value="D"> (D) health</label>
+        </div>
+        <div class="feedback">Correction: probably</div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Should be 'used'. Passive voice 'to be used'.">
+        <span class="question-text">18. The railroad <span class="underline">was</span> (A) one of the first methods of transportation to be <span class="underline">use</span> (C) extensively in early <span class="underline">American history</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q18" value="A"> (A) was</label>
+            <label><input type="radio" name="q18" value="B"> (B) methods [implied]</label>
+            <label><input type="radio" name="q18" value="C"> (C) use</label>
+            <label><input type="radio" name="q18" value="D"> (D) American history</label>
+        </div>
+        <div class="feedback">Correction: used</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Should be 'are'. 'People are thirsty' (adjective), not 'have thirsty'.">
+        <span class="question-text">19. Often when the weather <span class="underline">is</span> (A) extremely hot, people <span class="underline">have</span> (A) very thirsty <span class="underline">but</span> (C) are not terribly <span class="underline">hungry</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q19" value="A"> (A) have</label>
+            <label><input type="radio" name="q19" value="B"> (B) is [implied]</label>
+            <label><input type="radio" name="q19" value="C"> (C) but</label>
+            <label><input type="radio" name="q19" value="D"> (D) hungry</label>
+        </div>
+        <div class="feedback">Correction: are</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Main verb needed: 'lived'. 'Living' creates a fragment.">
+        <span class="question-text">20. Pioneers on the plains sometimes <span class="underline">living</span> (A) in dugouts, sod <span class="underline">rooms</span> (B) cut <span class="underline">into</span> (C) hillsides.</span>
+        <div class="options">
+            <label><input type="radio" name="q20" value="A"> (A) living</label>
+            <label><input type="radio" name="q20" value="B"> (B) rooms</label>
+            <label><input type="radio" name="q20" value="C"> (C) into</label>
+            <label><input type="radio" name="q20" value="D"> (D) hillsides [implied]</label>
+        </div>
+        <div class="feedback">Correction: lived</div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Correlative conjunction: 'not only... but also'. 'However' is incorrect.">
+        <span class="question-text">21. Balloons have been used <span class="underline">in various</span> (A) wars <span class="underline">not only</span> (B) to direct artillery fire... <span class="underline">however</span> (C) to carry bombs.</span>
+        <div class="options">
+            <label><input type="radio" name="q21" value="A"> (A) in various</label>
+            <label><input type="radio" name="q21" value="B"> (B) not only</label>
+            <label><input type="radio" name="q21" value="C"> (C) however</label>
+            <label><input type="radio" name="q21" value="D"> (D) to carry [implied]</label>
+        </div>
+        <div class="feedback">Correction: but also</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Fragment. Remove 'which' to make 'was established' the main verb.">
+        <span class="question-text">22. The National Wildflower Research Center <span class="underline">which was</span> (A) established in 1982 by Lady Bird Johnson <span class="underline">on</span> (B) sixty acres of <span class="underline">land</span> (C) east of Austin.</span>
+        <div class="options">
+            <label><input type="radio" name="q22" value="A"> (A) which was</label>
+            <label><input type="radio" name="q22" value="B"> (B) on</label>
+            <label><input type="radio" name="q22" value="C"> (C) land</label>
+            <label><input type="radio" name="q22" value="D"> (D) [No error / Austin]</label>
+        </div>
+        <div class="feedback">Correction: was (delete which)</div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Parallelism. 'Painters, writers, and musicians'. 'Musicals' are plays.">
+        <span class="question-text">23. The idea... has been <span class="underline">upheld</span> (A) by <span class="underline">painters</span> (B), writers, and <span class="underline">musicals</span> (C) for centuries.</span>
+        <div class="options">
+            <label><input type="radio" name="q23" value="A"> (A) upheld</label>
+            <label><input type="radio" name="q23" value="B"> (B) painters</label>
+            <label><input type="radio" name="q23" value="C"> (C) musicals</label>
+            <label><input type="radio" name="q23" value="D"> (D) centuries [implied]</label>
+        </div>
+        <div class="feedback">Correction: musicians</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Infinitive verb needed: 'To improve'. 'Improvement' is a noun.">
+        <span class="question-text">24. To <span class="underline">improvement</span> (A) the stability of the building, a <span class="underline">concrete</span> (B) foundation two feet <span class="underline">thick</span> (C) must be <span class="underline">installed</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q24" value="A"> (A) improvement</label>
+            <label><input type="radio" name="q24" value="B"> (B) concrete</label>
+            <label><input type="radio" name="q24" value="C"> (C) thick</label>
+            <label><input type="radio" name="q24" value="D"> (D) installed</label>
+        </div>
+        <div class="feedback">Correction: improve</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Should be 'consumption' (noun). 'Consumes' is a verb.">
+        <span class="question-text">25. In 1786... suggested daylight savings time <span class="underline">as</span> (A) a means of cutting down on the <span class="underline">consumes</span> (B) of <span class="underline">candles</span> (C).</span>
+        <div class="options">
+            <label><input type="radio" name="q25" value="A"> (A) as</label>
+            <label><input type="radio" name="q25" value="B"> (B) consumes</label>
+            <label><input type="radio" name="q25" value="C"> (C) candles</label>
+            <label><input type="radio" name="q25" value="D"> (D) [No error]</label>
+        </div>
+        <div class="feedback">Correction: consumption</div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Should be 'flat' (adjective) or 'flattened'. 'Flatten' is a verb.">
+        <span class="question-text">26. An alligator is an animal <span class="underline">somewhat</span> (A) like a crocodile, but with a <span class="underline">broad</span> (B), <span class="underline">flatten</span> (C) snout.</span>
+        <div class="options">
+            <label><input type="radio" name="q26" value="A"> (A) somewhat</label>
+            <label><input type="radio" name="q26" value="B"> (B) broad</label>
+            <label><input type="radio" name="q26" value="C"> (C) flatten</label>
+            <label><input type="radio" name="q26" value="D"> (D) snout [implied]</label>
+        </div>
+        <div class="feedback">Correction: flat</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Article 'An' requires singular noun 'form'.">
+        <span class="question-text">27. An extremely dangerous <span class="underline">forms</span> (A) of cocaine, crack <span class="underline">attacks</span> (B) the nervous system... in a <span class="underline">sharper</span> (C) fashion...</span>
+        <div class="options">
+            <label><input type="radio" name="q27" value="A"> (A) forms</label>
+            <label><input type="radio" name="q27" value="B"> (B) attacks</label>
+            <label><input type="radio" name="q27" value="C"> (C) sharper</label>
+            <label><input type="radio" name="q27" value="D"> (D) fashion [implied]</label>
+        </div>
+        <div class="feedback">Correction: form</div>
+    </div>
+
+    <div class="question-block" data-correct="D" data-explain="Parallelism. 'Science (noun), industry (noun), and commerce (noun)'.">
+        <span class="question-text">28. It is the role... to establish accurate <span class="underline">measurements</span> (A) for science, <span class="underline">industrial</span> (D), and commerce.</span>
+        <div class="options">
+            <label><input type="radio" name="q28" value="A"> (A) measurements</label>
+            <label><input type="radio" name="q28" value="B"> (B) role [implied]</label>
+            <label><input type="radio" name="q28" value="C"> (C) establish [implied]</label>
+            <label><input type="radio" name="q28" value="D"> (D) industrial</label>
+        </div>
+        <div class="feedback">Correction: industry</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Preposition error. 'Of the five' or 'Among the five'. 'Into' is wrong.">
+        <span class="question-text">29. <span class="underline">Into</span> (A) among the five Great Lakes, <span class="underline">only</span> (B) Lake Michigan is <span class="underline">located</span> (C) entirely within the <span class="underline">territorial</span> (D)...</span>
+        <div class="options">
+            <label><input type="radio" name="q29" value="A"> (A) Into</label>
+            <label><input type="radio" name="q29" value="B"> (B) only</label>
+            <label><input type="radio" name="q29" value="C"> (C) located</label>
+            <label><input type="radio" name="q29" value="D"> (D) territorial</label>
+        </div>
+        <div class="feedback">Correction: Of / Among</div>
+    </div>
+
+    <div class="question-block" data-correct="C" data-explain="Wrong pronoun/connector. 'In 1905 when he led...'. 'What' is incorrect.">
+        <span class="question-text">30. Teddy Roosevelt <span class="underline">demonstrated</span> (A) his competitive <span class="underline">spirit</span> (B)... in 1905 <span class="underline">what</span> (C) he led the <span class="underline">Rough Riders</span> (D)...</span>
+        <div class="options">
+            <label><input type="radio" name="q30" value="A"> (A) demonstrated</label>
+            <label><input type="radio" name="q30" value="B"> (B) spirit</label>
+            <label><input type="radio" name="q30" value="C"> (C) what</label>
+            <label><input type="radio" name="q30" value="D"> (D) Rough Riders</label>
+        </div>
+        <div class="feedback">Correction: when</div>
+    </div>
+
+    <div class="question-block" data-correct="D" data-explain="Adjective order. Should be 'controversial issues'.">
+        <span class="question-text">31. The Fairness Doctrine... <span class="underline">requires</span> (A) that... stations <span class="underline">give</span> (B) equal time to <span class="underline">opposing</span> (C) sides of <span class="underline">issues controversial</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q31" value="A"> (A) requires</label>
+            <label><input type="radio" name="q31" value="B"> (B) give</label>
+            <label><input type="radio" name="q31" value="C"> (C) opposing</label>
+            <label><input type="radio" name="q31" value="D"> (D) issues controversial</label>
+        </div>
+        <div class="feedback">Correction: controversial issues</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Should be 'prominent' (adjective). 'Prominence' is a noun.">
+        <span class="question-text">32. Mary Harris Jones... was a <span class="underline">prominence</span> (B) figure in the labor <span class="underline">movement</span> (C) at the <span class="underline">turn</span> (D) of the century.</span>
+        <div class="options">
+            <label><input type="radio" name="q32" value="A"> (A) known [implied]</label>
+            <label><input type="radio" name="q32" value="B"> (B) prominence</label>
+            <label><input type="radio" name="q32" value="C"> (C) movement</label>
+            <label><input type="radio" name="q32" value="D"> (D) turn</label>
+        </div>
+        <div class="feedback">Correction: prominent</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Incorrect connector. 'Because the kit fox is endangered...'. 'Consequently' is an adverbial transition.">
+        <span class="question-text">33. <span class="underline">Consequently</span> (A) the kit fox is an <span class="underline">endangered</span> (B) species, wildlife experts... are <span class="underline">using</span> (C) various methods to protect <span class="underline">it</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q33" value="A"> (A) Consequently</label>
+            <label><input type="radio" name="q33" value="B"> (B) endangered</label>
+            <label><input type="radio" name="q33" value="C"> (C) using</label>
+            <label><input type="radio" name="q33" value="D"> (D) it</label>
+        </div>
+        <div class="feedback">Correction: Because / Since</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Singular subject mismatch. 'The attorney general' is one person, so 'a member'.">
+        <span class="question-text">34. In addition to serving as <span class="underline">members</span> (A) of the president's cabinet, the <span class="underline">attorney general</span> (B) is the <span class="underline">head</span> (C) of the Justice <span class="underline">Department</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q34" value="A"> (A) members</label>
+            <label><input type="radio" name="q34" value="B"> (B) attorney general</label>
+            <label><input type="radio" name="q34" value="C"> (C) head</label>
+            <label><input type="radio" name="q34" value="D"> (D) Department</label>
+        </div>
+        <div class="feedback">Correction: a member</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Infinitive needed: 'motivates [someone] to [verb]'.">
+        <span class="question-text">35. The <span class="underline">need</span> (A) to improve technique motivates ballerinas <span class="underline">exercising</span> (B) and <span class="underline">rehearse</span> (C) for hours <span class="underline">daily</span> (D).</span>
+        <div class="options">
+            <label><input type="radio" name="q35" value="A"> (A) need</label>
+            <label><input type="radio" name="q35" value="B"> (B) exercising</label>
+            <label><input type="radio" name="q35" value="C"> (C) rehearse</label>
+            <label><input type="radio" name="q35" value="D"> (D) daily</label>
+        </div>
+        <div class="feedback">Correction: to exercise</div>
+    </div>
+
+    <div class="question-block" data-correct="A" data-explain="Passive voice syntax error. 'Can be easily recognized'. 'To' is extra.">
+        <span class="question-text">36. The narwhal can be <span class="underline">easily to</span> (A) recognize <span class="underline">by</span> (B) the long spiraled tusk <span class="underline">attached</span> (C) to the left side...</span>
+        <div class="options">
+            <label><input type="radio" name="q36" value="A"> (A) easily to</label>
+            <label><input type="radio" name="q36" value="B"> (B) by</label>
+            <label><input type="radio" name="q36" value="C"> (C) attached</label>
+            <label><input type="radio" name="q36" value="D"> (D) [No error]</label>
+        </div>
+        <div class="feedback">Correction: easily</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Collocation: 'make a point', not 'do a point'.">
+        <span class="question-text">37. The poet Ogden Nash <span class="underline">often</span> (A) used a comic style to <span class="underline">do</span> (B) a <span class="underline">serious</span> (C) point.</span>
+        <div class="options">
+            <label><input type="radio" name="q37" value="A"> (A) often</label>
+            <label><input type="radio" name="q37" value="B"> (B) do</label>
+            <label><input type="radio" name="q37" value="C"> (C) serious</label>
+            <label><input type="radio" name="q37" value="D"> (D) [No error]</label>
+        </div>
+        <div class="feedback">Correction: make</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Word order/idiom. 'Four times saltier'. 'A less' doesn't fit the comparison structure.">
+        <span class="question-text">38. The water in the Great Salt Lake is <span class="underline">a less</span> (B) four times <span class="underline">saltier</span> (C) <span class="underline">than</span> (D) seawater.</span>
+        <div class="options">
+            <label><input type="radio" name="q38" value="A"> (A) water [implied]</label>
+            <label><input type="radio" name="q38" value="B"> (B) a less</label>
+            <label><input type="radio" name="q38" value="C"> (C) saltier</label>
+            <label><input type="radio" name="q38" value="D"> (D) than</label>
+        </div>
+        <div class="feedback">Correction: (remove 'a less' or use 'at least')</div>
+    </div>
+
+    <div class="question-block" data-correct="B" data-explain="Tense mismatch. Specific date (Feb 20, 1962) requires Simple Past 'orbited'.">
+        <span class="question-text">39. On February 20, 1962, Friendship 7 <span class="underline">has orbited</span> (B) the Earth in a <span class="underline">manned</span> (C) flight that <span class="underline">lasted</span> (D) just under five hours.</span>
+        <div class="options">
+            <label><input type="radio" name="q39" value="A"> (A) [No error]</label>
+            <label><input type="radio" name="q39" value="B"> (B) has orbited</label>
+            <label><input type="radio" name="q39" value="C"> (C) manned</label>
+            <label><input type="radio" name="q39" value="D"> (D) lasted</label>
+        </div>
+        <div class="feedback">Correction: orbited</div>
+    </div>
+
+    <div class="question-block" data-correct="D" data-explain="Article needed: 'at a cost of' or 'at the cost of'.">
+        <span class="question-text">40. It has been <span class="underline">suggested</span> (A) that the battleship Missouri <span class="underline">be brought</span> (B) back... at <span class="underline">cost</span> (D) of $475 million.</span>
+        <div class="options">
+            <label><input type="radio" name="q40" value="A"> (A) suggested</label>
+            <label><input type="radio" name="q40" value="B"> (B) be brought</label>
+            <label><input type="radio" name="q40" value="C"> (C) back [implied]</label>
+            <label><input type="radio" name="q40" value="D"> (D) cost</label>
+        </div>
+        <div class="feedback">Correction: a cost / the cost</div>
+    </div>
+
+    <button type="button" id="submit-btn">Submit Answers</button>
+
+</form>
+
+<div id="score-display"></div>
+
+<script>
+    // Timer functionality
+    let timeRemaining = 25 * 60; // 25 minutes in seconds
+    const timerDisplay = document.getElementById('timer');
+    
+    const timerInterval = setInterval(function() {
+        const mins = Math.floor(timeRemaining / 60);
+        const secs = timeRemaining % 60;
+        timerDisplay.textContent = (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
+        
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert("Time is up! Submitting answers...");
+            document.getElementById('submit-btn').click();
+        } else {
+            timeRemaining--;
+        }
+    }, 1000);
+
+    document.getElementById('submit-btn').addEventListener('click', function() {
+        clearInterval(timerInterval); // Stop timer
+        
+        const questions = document.querySelectorAll('.question-block');
+        let score = 0;
+        let total = questions.length;
+
+        questions.forEach(block => {
+            const correctAnswer = block.getAttribute('data-correct');
+            const explanation = block.getAttribute('data-explain');
+            const inputs = block.querySelectorAll('input[type="radio"]');
+            let selected = null;
+            let selectedLabel = null;
+
+            inputs.forEach(input => {
+                input.disabled = true; // Disable changes after submit
+                if (input.checked) {
+                    selected = input.value;
+                    selectedLabel = input.parentElement;
+                }
+            });
+
+            // Remove existing feedback
+            const existingFeedback = block.querySelector('.feedback');
+            if(existingFeedback) existingFeedback.style.display = 'none'; // reset
+
+            const feedbackDiv = block.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+
+            if (selected === correctAnswer) {
+                score++;
+                if(selectedLabel) selectedLabel.classList.add('correct-answer');
+                feedbackDiv.textContent = "✓ Correct. " + explanation;
+                feedbackDiv.classList.add('correct-answer');
+                feedbackDiv.style.backgroundColor = "rgba(46, 204, 113, 0.1)";
+            } else {
+                if(selectedLabel) selectedLabel.classList.add('wrong-answer');
+                
+                feedbackDiv.textContent = `✗ Incorrect. The correct answer is (${correctAnswer}). ${explanation}`;
+                feedbackDiv.classList.add('wrong-answer');
+                feedbackDiv.style.backgroundColor = "rgba(231, 76, 60, 0.1)";
+                
+                // Highlight the correct answer
+                block.querySelectorAll('input').forEach(inp => {
+                    if(inp.value === correctAnswer) {
+                        inp.parentElement.classList.add('correct-answer');
+                    }
+                });
+            }
+        });
+
+        const scoreDisplay = document.getElementById('score-display');
+        const percentage = Math.round((score / total) * 100);
+        
+        scoreDisplay.innerHTML = `You scored ${score} out of ${total} (${percentage}%)`;
+        scoreDisplay.style.display = 'block';
+        
+        // Scroll to bottom
+        scoreDisplay.scrollIntoView({behavior: 'smooth'});
+    });
+</script>
+
+</body>
+</html>

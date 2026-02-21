@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Comprehension Practice Test 3</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .passage-container {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .passage-text {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-left: 5px solid var(--accent-color);
+            margin-bottom: 25px;
+            font-size: 1.05em;
+            text-align: justify;
+        }
+
+        .passage-title {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .options label:hover {
+            background-color: #f0f8ff;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Results Styling */
+        .correct-answer {
+            background-color: rgba(46, 204, 113, 0.2) !important;
+            border: 1px solid var(--success-color);
+            color: #006400;
+        }
+
+        .wrong-answer {
+            background-color: rgba(231, 76, 60, 0.2) !important;
+            border: 1px solid var(--error-color);
+            color: #8b0000;
+        }
+
+        .feedback {
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .feedback.correct { color: var(--success-color); }
+        .feedback.incorrect { color: var(--error-color); }
+
+        #submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        #submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        #score-display {
+            display: none;
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="timer-container" id="timer">00:00</div>
+
+<header>
+    <h1>Reading Comprehension Practice Test 3</h1>
+    <p>Read the 5 passages below and answer the 50 questions.</p>
+</header>
+
+<form id="quiz-form">
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 1: Annie Oakley</div>
+        <div class="passage-text">
+            <p>Sharpshooter Annie Oakley is a mainstay in the folklore of the Old West. Born Phoebe Ann Moses in 1860, Annie learned to shoot at a very young age out of necessity: she hunted for birds and small game animals to help feed her family and to make some extra money by supplying the local hotel restaurant with her catch.</p>
+            <p>She soon became known for her excellent marksmanship and began taking part in shooting competitions at a very young age. It was rather unusual for a young girl not only to take part in such competitions but to win over older, more experienced male competitors. At the age of fifteen, she defeated Frank Butler, a professional marksman, in a competition. She and Butler were married a year later, and together they took part in shooting exhibitions.</p>
+            <p>In 1885, they joined probably the most famous of all western shows, Buffalo Bill's Wild West touring show. As part of their act, Annie shot a cigarette out of her husband's mouth; Frank Butler's participation in this part of the act clearly demonstrated his faith in his wife's shooting ability. Annie also accepted volunteers from the audience to take part in her act, and on one occasion, while touring Europe, she even shot a cigarette out of the mouth of Crown Prince Wilhelm of Germany.</p>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">1. Which of the following is closest in meaning to "folklore" in line 1?</span>
+            <div class="options">
+                <label><input type="radio" name="q1" value="A"> (A) Traditional stories</label>
+                <label><input type="radio" name="q1" value="B"> (B) Western stories</label>
+                <label><input type="radio" name="q1" value="C"> (C) Children's stories</label>
+                <label><input type="radio" name="q1" value="D"> (D) Cowboy stories</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">2. The passage indicates that:</span>
+            <div class="options">
+                <label><input type="radio" name="q2" value="A"> (A) the name Annie Oakley was given to her at birth</label>
+                <label><input type="radio" name="q2" value="B"> (B) Annie changed her name to Phoebe at a young age</label>
+                <label><input type="radio" name="q2" value="C"> (C) the name Phoebe Ann Moses was Annie's choice</label>
+                <label><input type="radio" name="q2" value="D"> (D) Annie did not use her given name</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">3. The passage indicates that Annie learned to hunt:</span>
+            <div class="options">
+                <label><input type="radio" name="q3" value="A"> (A) for pleasure</label>
+                <label><input type="radio" name="q3" value="B"> (B) in order to survive</label>
+                <label><input type="radio" name="q3" value="C"> (C) as part of a competition</label>
+                <label><input type="radio" name="q3" value="D"> (D) because it was a normal activity for someone her age</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">4. The word "marksmanship" in line 4 indicates:</span>
+            <div class="options">
+                <label><input type="radio" name="q4" value="A"> (A) competitiveness</label>
+                <label><input type="radio" name="q4" value="B"> (B) ability to earn money</label>
+                <label><input type="radio" name="q4" value="C"> (C) ability with a gun</label>
+                <label><input type="radio" name="q4" value="D"> (D) attitude about work</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">5. How was the young Annie different from other girls her age?</span>
+            <div class="options">
+                <label><input type="radio" name="q5" value="A"> (A) She used a boy's name.</label>
+                <label><input type="radio" name="q5" value="B"> (B) She worked in a local hotel.</label>
+                <label><input type="radio" name="q5" value="C"> (C) She married at a much younger age than was considered normal.</label>
+                <label><input type="radio" name="q5" value="D"> (D) She won shooting competitions.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">6. According to the passage, what did Annie do one year prior to her marriage?</span>
+            <div class="options">
+                <label><input type="radio" name="q6" value="A"> (A) She defeated her future husband in a shooting match.</label>
+                <label><input type="radio" name="q6" value="B"> (B) She learned to shoot.</label>
+                <label><input type="radio" name="q6" value="C"> (C) She changed her name.</label>
+                <label><input type="radio" name="q6" value="D"> (D) She joined Buffalo Bill's Wild West touring show.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">7. The pronoun "they" in line 8 refers to:</span>
+            <div class="options">
+                <label><input type="radio" name="q7" value="A"> (A) male competitors</label>
+                <label><input type="radio" name="q7" value="B"> (B) Annie and Frank</label>
+                <label><input type="radio" name="q7" value="C"> (C) shooting exhibitions</label>
+                <label><input type="radio" name="q7" value="D"> (D) western shows</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">8. The word "demonstrated" in line 11 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q8" value="A"> (A) disproved</label>
+                <label><input type="radio" name="q8" value="B"> (B) showed</label>
+                <label><input type="radio" name="q8" value="C"> (C) tested</label>
+                <label><input type="radio" name="q8" value="D"> (D) demanded</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">9. The passage suggests that Annie took a shot at Crown Prince Wilhelm because:</span>
+            <div class="options">
+                <label><input type="radio" name="q9" value="A"> (A) Wilhelm wanted her to do it</label>
+                <label><input type="radio" name="q9" value="B"> (B) Annie disliked him tremendously</label>
+                <label><input type="radio" name="q9" value="C"> (C) Germany was at war with the U.S.</label>
+                <label><input type="radio" name="q9" value="D"> (D) Annie disliked smoking</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">10. Where in the passage does the author describe one of the tricks in Annie's act?</span>
+            <div class="options">
+                <label><input type="radio" name="q10" value="A"> (A) Lines 1-4</label>
+                <label><input type="radio" name="q10" value="B"> (B) Lines 4-5</label>
+                <label><input type="radio" name="q10" value="C"> (C) Lines 9-10</label>
+                <label><input type="radio" name="q10" value="D"> (D) Lines 10-11</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">11. The information in the passage is:</span>
+            <div class="options">
+                <label><input type="radio" name="q11" value="A"> (A) lists a cause followed by an effect</label>
+                <label><input type="radio" name="q11" value="B"> (B) moves from general to specific ideas</label>
+                <label><input type="radio" name="q11" value="C"> (C) is in chronological order</label>
+                <label><input type="radio" name="q11" value="D"> (D) is in spatial order</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 2: Thunder and Lightning</div>
+        <div class="passage-text">
+            <p>To understand the forces behind thunder and lightning, one must recall basic information about electricity, that things can become either positively or negatively charged with electricity and that two things with opposite charges will attract each other. As the opposite charges become stronger, the attraction becomes greater; eventually the attraction becomes strong enough to result in a discharge that makes the two things electrically neutral again.</p>
+            <p>Lightning results when one cloud full of moisture develops an opposite charge in relation to another cloud. The pressure continues to build until there is enough pressure to break down the air separating the two clouds. A discharge occurs to neutralize the opposite charges in the two clouds, and this discharge is what we see as lightning. As this discharge of lightning is occurring, the lightning follows the "path of least resistance"; it therefore does not follow a straight line but zigzags in order to find the easiest route.</p>
+            <p>Thunder occurs during the discharge of electricity. As the discharge occurs, the air in the vicinity expands and contracts rapidly; the rushing air currents collide, causing the sound that we hear as thunder. Light travels much faster than sound (the speed of light is 186,284 miles per second, while the speed of sound is 1,100 feet per second), so we see the light first and then hear the sound later. Of course, the farther away the thunder and lightning are, the greater the lapsed time between the two. In fact, the amount of lapsed time between the two can be used to determine how far away the thunder and lightning are.</p>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">12. What does the passage mainly discuss?</span>
+            <div class="options">
+                <label><input type="radio" name="q12" value="A"> (A) Basic information about electricity</label>
+                <label><input type="radio" name="q12" value="B"> (B) The causes of thunder and lightning</label>
+                <label><input type="radio" name="q12" value="C"> (C) How lightning occurs</label>
+                <label><input type="radio" name="q12" value="D"> (D) Why thunder and lightning do not seem to occur together</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">13. Which of the following is NOT true about electric charges?</span>
+            <div class="options">
+                <label><input type="radio" name="q13" value="A"> (A) Something can have either a positive charge or a negative charge.</label>
+                <label><input type="radio" name="q13" value="B"> (B) If one thing is positive and the other is negative, they will attract each other.</label>
+                <label><input type="radio" name="q13" value="C"> (C) If two things have strong negative charges, they will attract each other strongly.</label>
+                <label><input type="radio" name="q13" value="D"> (D) If the attraction between two things gets very strong, a discharge can occur.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">14. The word "moisture" in line 6 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q14" value="A"> (A) wetness</label>
+                <label><input type="radio" name="q14" value="B"> (B) electricity</label>
+                <label><input type="radio" name="q14" value="C"> (C) gas</label>
+                <label><input type="radio" name="q14" value="D"> (D) positive charge</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">15. The passage states that lightning occurs when opposite charges develop in two:</span>
+            <div class="options">
+                <label><input type="radio" name="q15" value="A"> (A) drops of moisture</label>
+                <label><input type="radio" name="q15" value="B"> (B) air currents</label>
+                <label><input type="radio" name="q15" value="C"> (C) paths</label>
+                <label><input type="radio" name="q15" value="D"> (D) clouds</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">16. The "path of least resistance" in line 10 is what type of path?</span>
+            <div class="options">
+                <label><input type="radio" name="q16" value="A"> (A) The easiest</label>
+                <label><input type="radio" name="q16" value="B"> (B) The strongest</label>
+                <label><input type="radio" name="q16" value="C"> (C) The brightest</label>
+                <label><input type="radio" name="q16" value="D"> (D) The most electrically charged</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">17. The word "zigzags" in line 10 indicates that something:</span>
+            <div class="options">
+                <label><input type="radio" name="q17" value="A"> (A) curves</label>
+                <label><input type="radio" name="q17" value="B"> (B) moves directly</label>
+                <label><input type="radio" name="q17" value="C"> (C) proceeds with sharp turns</label>
+                <label><input type="radio" name="q17" value="D"> (D) shines</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">18. The word "contracts" in line 13 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q18" value="A"> (A) becomes larger</label>
+                <label><input type="radio" name="q18" value="B"> (B) associates</label>
+                <label><input type="radio" name="q18" value="C"> (C) speeds up</label>
+                <label><input type="radio" name="q18" value="D"> (D) reduces</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">19. Which of the following is implied in the passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q19" value="A"> (A) The speed of sound is faster than the speed of light.</label>
+                <label><input type="radio" name="q19" value="B"> (B) If you see and hear something at the same time, it is far away.</label>
+                <label><input type="radio" name="q19" value="C"> (C) Humans can travel faster than the speed of light.</label>
+                <label><input type="radio" name="q19" value="D"> (D) Something that is very close will be seen and heard at roughly the same time.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">20. The paragraph following the passage most probably discusses:</span>
+            <div class="options">
+                <label><input type="radio" name="q20" value="A"> (A) why lightning is not straight</label>
+                <label><input type="radio" name="q20" value="B"> (B) the speed of light versus the speed of sound</label>
+                <label><input type="radio" name="q20" value="C"> (C) further characteristics of electricity</label>
+                <label><input type="radio" name="q20" value="D"> (D) figuring out how far away thunder and lightning are</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 3: Cliff Dwellings</div>
+        <div class="passage-text">
+            <p>The cliff dwellings of the southwestern United States provide another mystery to intrigue archeologists. Located in the Four Corners area of the U.S., where Colorado, Utah, Arizona, and New Mexico meet, the cliff dwellings were constructed during the Great Pueblo period, from approximately 1050 to 1300. The cliff dwellings are whole series of contiguous rooms built in layers into the sides of cliffs. The sleeping rooms of the cliff dwellings were very tiny, often only one to two meters wide and little more than one meter high, and they were built in complexes of up to several hundred rooms together. The front rooms of the complexes were considerably larger. These larger rooms were apparently the rooms where daily life took place.</p>
+            <p>When the cliff dwellings were first found by explorers, they had been abandoned. Archeologists today are uncertain as to when or why they were abandoned and where the inhabitants went. There is some evidence, however, that the inhabitants left the cliff dwellings near the end of the thirteenth century because of a serious drought that is known to have occurred in the area from 1276 to 1299. Archeologists believe that the inhabitants could have left the cliff dwellings to move southwest and southeast. Today the descendants of the cliff dwellers are probably members of the Native American tribes of that area.</p>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">21. The paragraph preceding this passage most probably discussed:</span>
+            <div class="options">
+                <label><input type="radio" name="q21" value="A"> (A) another puzzle for archeologists</label>
+                <label><input type="radio" name="q21" value="B"> (B) the development of the Four Corners area</label>
+                <label><input type="radio" name="q21" value="C"> (C) the explorers who found the cliff dwellers</label>
+                <label><input type="radio" name="q21" value="D"> (D) today's descendants of the cliff dwellers</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">22. Which of the following best describes the topic of this passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q22" value="A"> (A) The Great Pueblo period</label>
+                <label><input type="radio" name="q22" value="B"> (B) A description of cliff dwellings</label>
+                <label><input type="radio" name="q22" value="C"> (C) What is known and unknown about the cliff dwellings</label>
+                <label><input type="radio" name="q22" value="D"> (D) The Four Corners area of the United States</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">23. Why did the Four Corners area receive its name?</span>
+            <div class="options">
+                <label><input type="radio" name="q23" value="A"> (A) The area is a square with four corners.</label>
+                <label><input type="radio" name="q23" value="B"> (B) The cliff dwellings in the area each have four corners.</label>
+                <label><input type="radio" name="q23" value="C"> (C) The Great Pueblos are four-cornered.</label>
+                <label><input type="radio" name="q23" value="D"> (D) The corners of four states meet there.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">24. According to the passage, when were the cliff dwellings built?</span>
+            <div class="options">
+                <label><input type="radio" name="q24" value="A"> (A) During the Great Pueblo period</label>
+                <label><input type="radio" name="q24" value="B"> (B) After the drought</label>
+                <label><input type="radio" name="q24" value="C"> (C) Sometime before 1050</label>
+                <label><input type="radio" name="q24" value="D"> (D) At the same time that the explorers found them</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">25. The word "tiny" in line 5 is closest in meaning to which of the following?</span>
+            <div class="options">
+                <label><input type="radio" name="q25" value="A"> (A) Wide</label>
+                <label><input type="radio" name="q25" value="B"> (B) Small</label>
+                <label><input type="radio" name="q25" value="C"> (C) High</label>
+                <label><input type="radio" name="q25" value="D"> (D) Large</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">26. The word "abandoned" in line 9 is closest in meaning to which of the following?</span>
+            <div class="options">
+                <label><input type="radio" name="q26" value="A"> (A) Thriving</label>
+                <label><input type="radio" name="q26" value="B"> (B) Full of daily life</label>
+                <label><input type="radio" name="q26" value="C"> (C) Empty</label>
+                <label><input type="radio" name="q26" value="D"> (D) In a state of drought</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">27. A "drought" in line 12 is:</span>
+            <div class="options">
+                <label><input type="radio" name="q27" value="A"> (A) a lack of food</label>
+                <label><input type="radio" name="q27" value="B"> (B) warfare with neighboring tribes</label>
+                <label><input type="radio" name="q27" value="C"> (C) a desire to find a safer location</label>
+                <label><input type="radio" name="q27" value="D"> (D) a shortage of water</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">28. According to the passage, which of the following are the authorities certain about?</span>
+            <div class="options">
+                <label><input type="radio" name="q28" value="A"> (A) Why the cliff dwellers abandoned their homes</label>
+                <label><input type="radio" name="q28" value="B"> (B) That a drought occurred in the Four Corners area from 1276 to 1299</label>
+                <label><input type="radio" name="q28" value="C"> (C) Where the inhabitants of the cliff dwellings went</label>
+                <label><input type="radio" name="q28" value="D"> (D) When the cliff dwellers abandoned their homes</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">29. The word "descendants" in line 14 can best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q29" value="A"> (A) subordinates</label>
+                <label><input type="radio" name="q29" value="B"> (B) offspring</label>
+                <label><input type="radio" name="q29" value="C"> (C) inferiors</label>
+                <label><input type="radio" name="q29" value="D"> (D) ancestors</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">30. Which of the following is NOT discussed in the passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q30" value="A"> (A) The life-style of the cliff dwellers</label>
+                <label><input type="radio" name="q30" value="B"> (B) The size of the cliff dwellings</label>
+                <label><input type="radio" name="q30" value="C"> (C) The mystery surrounding the abandonment of the cliff dwellings</label>
+                <label><input type="radio" name="q30" value="D"> (D) The location of the cliff dwellings</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 4: Distillation</div>
+        <div class="passage-text">
+            <p>Distillation, the process of separating the elements of a solution, is widely used in industry today. The two most common methods of distillation are fractional distillation, used in the preparation of alcoholic beverages, and flash distillation, used for the conversion of ocean water to fresh water.</p>
+            <p>In fractional distillation a mixture is separated into its various component parts by boiling. This method makes use of the fact that different elements boil at varying temperatures. For example, alcohol has a considerably lower boiling temperature than water: the boiling temperature of water is 212 degrees Fahrenheit, and the boiling temperature of alcohol is 172 degrees Fahrenheit. Thus, when a mixture of alcohol and water is heated, the alcohol vaporizes more quickly than the water. The distillate is collected and the process is repeated until the desired purity has been achieved.</p>
+            <p>Flash distillation does not require high temperatures but instead is based on pressure. In this process, a liquid that is to be separated is forced from a compartment kept under high pressure into a compartment kept at a lower pressure. When a liquid moves into the low-pressure chamber, it suddenly vaporizes, and the vapor is then condensed into distillate.</p>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">31. The word "fresh" in line 3 could most easily be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q31" value="A"> (A) original</label>
+                <label><input type="radio" name="q31" value="B"> (B) modern</label>
+                <label><input type="radio" name="q31" value="C"> (C) inexperienced</label>
+                <label><input type="radio" name="q31" value="D"> (D) nonsaline</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">32. According to the passage, what makes fractional distillation occur?</span>
+            <div class="options">
+                <label><input type="radio" name="q32" value="A"> (A) Time</label>
+                <label><input type="radio" name="q32" value="B"> (B) Pressure</label>
+                <label><input type="radio" name="q32" value="C"> (C) Heat</label>
+                <label><input type="radio" name="q32" value="D"> (D) Water</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">33. The word "Thus" in line 7 is closest in meaning to which of the following?</span>
+            <div class="options">
+                <label><input type="radio" name="q33" value="A"> (A) However</label>
+                <label><input type="radio" name="q33" value="B"> (B) Moreover</label>
+                <label><input type="radio" name="q33" value="C"> (C) Furthermore</label>
+                <label><input type="radio" name="q33" value="D"> (D) Therefore</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">34. According to the passage, what happens when water and alcohol are heated together?</span>
+            <div class="options">
+                <label><input type="radio" name="q34" value="A"> (A) Both the water and the alcohol evaporate at the same rate.</label>
+                <label><input type="radio" name="q34" value="B"> (B) The alcohol cannot evaporate because of the water.</label>
+                <label><input type="radio" name="q34" value="C"> (C) The alcohol evaporates at a temperature of 212 degrees Fahrenheit.</label>
+                <label><input type="radio" name="q34" value="D"> (D) The alcohol evaporates from the mixture first.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">35. The word "purity" in line 9 means:</span>
+            <div class="options">
+                <label><input type="radio" name="q35" value="A"> (A) goodness</label>
+                <label><input type="radio" name="q35" value="B"> (B) cleanness</label>
+                <label><input type="radio" name="q35" value="C"> (C) righteousness</label>
+                <label><input type="radio" name="q35" value="D"> (D) thoroughness</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">36. According to the passage, in the flash distillation process, what causes the liquid to vaporize?</span>
+            <div class="options">
+                <label><input type="radio" name="q36" value="A"> (A) The pressure on the liquid is suddenly changed.</label>
+                <label><input type="radio" name="q36" value="B"> (B) The liquid changes compartments.</label>
+                <label><input type="radio" name="q36" value="C"> (C) The addition of seawater to a solution causes a chemical change to occur.</label>
+                <label><input type="radio" name="q36" value="D"> (D) There is a rapid increase in the pressure on the liquid.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">37. Which of the following processes would probably involve distillation?</span>
+            <div class="options">
+                <label><input type="radio" name="q37" value="A"> (A) Adding a new substance to a mixture</label>
+                <label><input type="radio" name="q37" value="B"> (B) Dividing a pure element into smaller quantities</label>
+                <label><input type="radio" name="q37" value="C"> (C) Mixing two elements together to form a new solution</label>
+                <label><input type="radio" name="q37" value="D"> (D) Removing impurities from a solution</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">38. The word "vaporizes" in line 13 could best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q38" value="A"> (A) becomes gaseous</label>
+                <label><input type="radio" name="q38" value="B"> (B) disappears</label>
+                <label><input type="radio" name="q38" value="C"> (C) becomes stressed</label>
+                <label><input type="radio" name="q38" value="D"> (D) solidifies</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">39. The main purpose of this passage is to:</span>
+            <div class="options">
+                <label><input type="radio" name="q39" value="A"> (A) explain how salt water can be turned into fresh water</label>
+                <label><input type="radio" name="q39" value="B"> (B) give an example of fractional distillation</label>
+                <label><input type="radio" name="q39" value="C"> (C) describe a scientific process</label>
+                <label><input type="radio" name="q39" value="D"> (D) discuss the boiling temperatures of various liquids</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">40. This passage would most probably be assigned reading in which of the following courses?</span>
+            <div class="options">
+                <label><input type="radio" name="q40" value="A"> (A) Biology</label>
+                <label><input type="radio" name="q40" value="B"> (B) Aquatics</label>
+                <label><input type="radio" name="q40" value="C"> (C) Physiology</label>
+                <label><input type="radio" name="q40" value="D"> (D) Chemistry</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 5: The Artist and Society</div>
+        <div class="passage-text">
+            <p>At first glance it might seem that a true artist is a solitary toiler in possession of a unique talent that differentiates her or him from the rest of society. But after further reflection it is quite apparent that the artist is a product of the society in which she or he toils rather than an entity removed from society. The genius of an artist is really a measure of the artist's ability to work within the framework imposed by society, to make use of the resources provided by society, and, most important, to mirror a society's values.</p>
+            <p>It is society that imposes a structure on the artist, and the successful artist must work within this framework. Societies have found various methods to support and train their artists, be it the Renaissance system of royal support of the sculptors and painters of the period or the Japanese tradition of passing artistic knowledge from father to son. The artist is also greatly affected by the physical resources of her or his society. The medium chosen by the artist is a reflection not only of the artist's perception of aesthetic beauty but of resources that society has to supply. After all, wood carvings come from societies with forests, bronze statues come from societies with available supplies of metal, and woven woolen rugs come from societies of shepherds. Finally, the artist must reflect the values, both aesthetic and moral, of the society in which she or he toils. The idea of beauty changes from society to society, as seen in the oft cited example of Rubens' rounded women versus today's gaminlike sylphs, and the artist must serve as a mirror of her or his society's measure of perfection. And society's moral values must equally be reflected in art if it is to be universally accepted.</p>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">41. What does the passage mainly discuss?</span>
+            <div class="options">
+                <label><input type="radio" name="q41" value="A"> (A) The effect of the artist on society</label>
+                <label><input type="radio" name="q41" value="B"> (B) The role of the artist in improving society</label>
+                <label><input type="radio" name="q41" value="C"> (C) The relation between an artist and society</label>
+                <label><input type="radio" name="q41" value="D"> (D) The structure of society</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">42. The word "solitary" in line 1 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q42" value="A"> (A) sociable</label>
+                <label><input type="radio" name="q42" value="B"> (B) monogamous</label>
+                <label><input type="radio" name="q42" value="C"> (C) sensitive</label>
+                <label><input type="radio" name="q42" value="D"> (D) lone</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">43. The author thinks that an artist is:</span>
+            <div class="options">
+                <label><input type="radio" name="q43" value="A"> (A) separate from society</label>
+                <label><input type="radio" name="q43" value="B"> (B) a part of society</label>
+                <label><input type="radio" name="q43" value="C"> (C) differentiated from society</label>
+                <label><input type="radio" name="q43" value="D"> (D) an entity removed from society</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">44. The word "mirror" in line 5 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q44" value="A"> (A) shine</label>
+                <label><input type="radio" name="q44" value="B"> (B) return</label>
+                <label><input type="radio" name="q44" value="C"> (C) reflect</label>
+                <label><input type="radio" name="q44" value="D"> (D) reject</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">45. According to the passage, which of the following is NOT a way that society imposes its structure on an artist?</span>
+            <div class="options">
+                <label><input type="radio" name="q45" value="A"> (A) Society has found ways to train and support its artists.</label>
+                <label><input type="radio" name="q45" value="B"> (B) Society provides physical resources to an artist.</label>
+                <label><input type="radio" name="q45" value="C"> (C) Social imposes its values on the artist.</label>
+                <label><input type="radio" name="q45" value="D"> (D) Society allows the artist to use her or his unique talent to lead a solitary life.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">46. The word "medium" in line 10 could best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q46" value="A"> (A) social milieu</label>
+                <label><input type="radio" name="q46" value="B"> (B) means of expression</label>
+                <label><input type="radio" name="q46" value="C"> (C) neutrality of position</label>
+                <label><input type="radio" name="q46" value="D"> (D) mediocrity of performance</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">47. Which of the following physical resources of art is NOT mentioned in the passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q47" value="A"> (A) Stone</label>
+                <label><input type="radio" name="q47" value="B"> (B) Wood</label>
+                <label><input type="radio" name="q47" value="C"> (C) Wool</label>
+                <label><input type="radio" name="q47" value="D"> (D) Metal</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">48. In line with the author's point about resources, an area near an ocean might feature what type of art?</span>
+            <div class="options">
+                <label><input type="radio" name="q48" value="A"> (A) Shell jewelry</label>
+                <label><input type="radio" name="q48" value="B"> (B) Water color portraits</label>
+                <label><input type="radio" name="q48" value="C"> (C) Wood carvings of fish</label>
+                <label><input type="radio" name="q48" value="D"> (D) Paintings of seascapes</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">49. A "sylph" in line 16 is probably someone who is:</span>
+            <div class="options">
+                <label><input type="radio" name="q49" value="A"> (A) artistic</label>
+                <label><input type="radio" name="q49" value="B"> (B) pretty</label>
+                <label><input type="radio" name="q49" value="C"> (C) curved</label>
+                <label><input type="radio" name="q49" value="D"> (D) slim</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">50. The example of Rubens' women is used to show that the artist:</span>
+            <div class="options">
+                <label><input type="radio" name="q50" value="A"> (A) has been supplied by society</label>
+                <label><input type="radio" name="q50" value="B"> (B) makes use of society's physical resources</label>
+                <label><input type="radio" name="q50" value="C"> (C) reflects society's aesthetic values</label>
+                <label><input type="radio" name="q50" value="D"> (D) reflects society's moral values</label>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="submit-btn">Submit Answers</button>
+
+</form>
+
+<div id="score-display"></div>
+
+<script>
+    // Timer functionality
+    let seconds = 0;
+    const timerDisplay = document.getElementById('timer');
+    const timerInterval = setInterval(function() {
+        seconds++;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timerDisplay.textContent = (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
+    }, 1000);
+
+    document.getElementById('submit-btn').addEventListener('click', function() {
+        clearInterval(timerInterval); // Stop timer
+        
+        const questions = document.querySelectorAll('.question-block');
+        let score = 0;
+        let total = questions.length;
+
+        questions.forEach(block => {
+            const correctAnswer = block.getAttribute('data-correct');
+            const inputs = block.querySelectorAll('input[type="radio"]');
+            let selected = null;
+            let selectedLabel = null;
+
+            inputs.forEach(input => {
+                input.disabled = true; // Disable changes after submit
+                if (input.checked) {
+                    selected = input.value;
+                    selectedLabel = input.parentElement;
+                }
+            });
+
+            // Remove existing feedback
+            const existingFeedback = block.querySelector('.feedback');
+            if(existingFeedback) existingFeedback.remove();
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.classList.add('feedback');
+
+            if (selected === correctAnswer) {
+                score++;
+                selectedLabel.classList.add('correct-answer');
+                feedbackDiv.textContent = "✓ Correct";
+                feedbackDiv.classList.add('correct');
+            } else {
+                if(selectedLabel) {
+                    selectedLabel.classList.add('wrong-answer');
+                    feedbackDiv.textContent = `✗ Incorrect. The correct answer is (${correctAnswer}).`;
+                } else {
+                    feedbackDiv.textContent = `✗ Skipped. The correct answer is (${correctAnswer}).`;
+                }
+                
+                feedbackDiv.classList.add('incorrect');
+                
+                // Highlight the correct answer
+                block.querySelectorAll('input').forEach(inp => {
+                    if(inp.value === correctAnswer) {
+                        inp.parentElement.classList.add('correct-answer');
+                    }
+                });
+            }
+            
+            block.appendChild(feedbackDiv);
+        });
+
+        const scoreDisplay = document.getElementById('score-display');
+        const percentage = Math.round((score / total) * 100);
+        const finalTime = timerDisplay.textContent;
+        
+        scoreDisplay.innerHTML = `You scored ${score} out of ${total} (${percentage}%)<br>Time taken: ${finalTime}`;
+        scoreDisplay.style.display = 'block';
+        
+        // Scroll to bottom
+        scoreDisplay.scrollIntoView({behavior: 'smooth'});
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Comprehension Practice Test</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        .passage-container {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .passage-text {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-left: 5px solid var(--accent-color);
+            margin-bottom: 25px;
+            font-size: 1.05em;
+            text-align: justify;
+        }
+
+        .passage-title {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .options label:hover {
+            background-color: #f0f8ff;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Results Styling */
+        .correct-answer {
+            background-color: rgba(46, 204, 113, 0.2) !important;
+            border: 1px solid var(--success-color);
+            color: #006400;
+        }
+
+        .wrong-answer {
+            background-color: rgba(231, 76, 60, 0.2) !important;
+            border: 1px solid var(--error-color);
+            color: #8b0000;
+        }
+
+        .feedback {
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .feedback.correct { color: var(--success-color); }
+        .feedback.incorrect { color: var(--error-color); }
+
+        #submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        #submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        #score-display {
+            display: none;
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: #555;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>English Reading Comprehension Test</h1>
+    <p>Read the passages below and answer the questions. Click "Submit Answers" at the bottom to see your score.</p>
+</header>
+
+<form id="quiz-form">
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 1: Solar Eclipses</div>
+        <div class="passage-text">
+            <p>A solar eclipse occurs when the Moon moves in front of the Sun and hides at least some part of the Sun from the earth. In a partial eclipse, the Moon covers part of the Sun; in an annular eclipse, the Moon covers the center of the Sun, leaving a bright ring of light around the Moon; in a total eclipse, the Sun is completely covered by the Moon.</p>
+            <p>It seems rather improbable that a celestial body the size of the Moon could completely block out the tremendously immense Sun, as happens during a total eclipse, but this is exactly what happens. Although the Moon is considerably smaller in size than the Sun, the Moon is able to cover the Sun because of their relative distances from Earth. A total eclipse can last up to 7 minutes, during which time the Moon's shadow moves across Earth at a rate of about 0.6 kilometers per second.</p>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">1. This passage mainly:</span>
+            <div class="options">
+                <label><input type="radio" name="q1" value="A"> (A) describes how long an eclipse will last</label>
+                <label><input type="radio" name="q1" value="B"> (B) gives facts about the Moon</label>
+                <label><input type="radio" name="q1" value="C"> (C) explains how the Sun is able to obscure the Moon</label>
+                <label><input type="radio" name="q1" value="D"> (D) informs the reader about solar eclipses</label>
+            </div>
+            <div class="explanation">The passage defines eclipses, types, and mechanics.</div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">2. In which type of eclipse is the Sun obscured in its entirety?</span>
+            <div class="options">
+                <label><input type="radio" name="q2" value="A"> (A) A partial eclipse</label>
+                <label><input type="radio" name="q2" value="B"> (B) An annular eclipse</label>
+                <label><input type="radio" name="q2" value="C"> (C) A total eclipse</label>
+                <label><input type="radio" name="q2" value="D"> (D) A celestial eclipse</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">3. The word "ring" in line 3 could best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q3" value="A"> (A) piece of gold</label>
+                <label><input type="radio" name="q3" value="B"> (B) circle</label>
+                <label><input type="radio" name="q3" value="C"> (C) jewel</label>
+                <label><input type="radio" name="q3" value="D"> (D) bell</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">4. A "celestial body" in line 5 is most probably one that is found:</span>
+            <div class="options">
+                <label><input type="radio" name="q4" value="A"> (A) within the Moon's shadow</label>
+                <label><input type="radio" name="q4" value="B"> (B) somewhere in the sky</label>
+                <label><input type="radio" name="q4" value="C"> (C) on the surface of the Sun</label>
+                <label><input type="radio" name="q4" value="D"> (D) inside Earth's atmosphere</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">5. What is the meaning of "block out" in line 5?</span>
+            <div class="options">
+                <label><input type="radio" name="q5" value="A"> (A) Square</label>
+                <label><input type="radio" name="q5" value="B"> (B) Cover</label>
+                <label><input type="radio" name="q5" value="C"> (C) Evaporate</label>
+                <label><input type="radio" name="q5" value="D"> (D) Shrink</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">6. According to the passage, how can the Moon hide the Sun during a total eclipse?</span>
+            <div class="options">
+                <label><input type="radio" name="q6" value="A"> (A) The fact that the Moon is closer to Earth than the Sun makes up for the Moon's smaller size.</label>
+                <label><input type="radio" name="q6" value="B"> (B) The Moon can only obscure the Sun because of the Moon's great distance from the earth.</label>
+                <label><input type="radio" name="q6" value="C"> (C) Because the Sun is relatively close to Earth, the Sun can be eclipsed by the Moon.</label>
+                <label><input type="radio" name="q6" value="D"> (D) The Moon hides the Sun because of the Moon's considerable size.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">7. The word "relative" in line 8 could best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q7" value="A"> (A) familial</label>
+                <label><input type="radio" name="q7" value="B"> (B) infinite</label>
+                <label><input type="radio" name="q7" value="C"> (C) comparative</label>
+                <label><input type="radio" name="q7" value="D"> (D) paternal</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">8. The passage states that which of the following happens during an eclipse?</span>
+            <div class="options">
+                <label><input type="radio" name="q8" value="A"> (A) The Moon hides from the Sun.</label>
+                <label><input type="radio" name="q8" value="B"> (B) The Moon is obscured by the Sun.</label>
+                <label><input type="radio" name="q8" value="C"> (C) The Moon begins moving at a speed of .6 kilometers per second.</label>
+                <label><input type="radio" name="q8" value="D"> (D) The Moon's shadow crosses Earth.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">9. The word "rate" in line 9 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q9" value="A"> (A) form</label>
+                <label><input type="radio" name="q9" value="B"> (B) speed</label>
+                <label><input type="radio" name="q9" value="C"> (C) distance</label>
+                <label><input type="radio" name="q9" value="D"> (D) rotation</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">10. Where in the passage does the author mention the rate of a total eclipse?</span>
+            <div class="options">
+                <label><input type="radio" name="q10" value="A"> (A) Lines 1-2</label>
+                <label><input type="radio" name="q10" value="B"> (B) Lines 2-4</label>
+                <label><input type="radio" name="q10" value="C"> (C) Lines 5-6</label>
+                <label><input type="radio" name="q10" value="D"> (D) Lines 8-9</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 2: Uncle Sam</div>
+        <div class="passage-text">
+            <p>While the bald eagle is one national symbol of the United States, it is not the only one. Uncle Sam, a bearded gentleman costumed in the red, white, and blue stars and stripes of the nation's flag, is another well-known national symbol. According to legend, this character is based on Samuel Wilson, the owner of a meat-packing business in Troy, New York. During the War of 1812, Sam Wilson's company was granted a government contract to supply meat to the nation's soldiers; this meat was supplied to the army in barrels stamped with the initials U.S., which stood for United States.</p>
+            <p>However, the country was at that time relatively young, and the initials U.S. were not commonly used. Many people questioned what the initials represented, and the standard reply became "Uncle Sam," for the owner of the barrels. It is now generally accepted that the figure of Uncle Sam is based on Samuel Wilson, and the U.S. Congress has made it official by adopting a resolution naming Samuel Wilson as the inspiration for Uncle Sam.</p>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">11. The paragraph preceding this passage most probably discusses:</span>
+            <div class="options">
+                <label><input type="radio" name="q11" value="A"> (A) the War of 1812</label>
+                <label><input type="radio" name="q11" value="B"> (B) the bald eagle, which symbolizes the United States</label>
+                <label><input type="radio" name="q11" value="C"> (C) Sam Wilson's meat-packing company</label>
+                <label><input type="radio" name="q11" value="D"> (D) the costume worn by Uncle Sam</label>
+            </div>
+            <div class="explanation">The first sentence mentions the bald eagle as "one national symbol", implying it was just discussed.</div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">12. Which of the following is the most appropriate title for this passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q12" value="A"> (A) The Bald Eagle</label>
+                <label><input type="radio" name="q12" value="B"> (B) The Symbols of the United States</label>
+                <label><input type="radio" name="q12" value="C"> (C) Samuel Wilson</label>
+                <label><input type="radio" name="q12" value="D"> (D) Uncle Sam-Symbol of the Nation</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">13. Which of the following is NOT mentioned about Uncle Sam's appearance?</span>
+            <div class="options">
+                <label><input type="radio" name="q13" value="A"> (A) He wears facial hair.</label>
+                <label><input type="radio" name="q13" value="B"> (B) There is some blue in his clothing.</label>
+                <label><input type="radio" name="q13" value="C"> (C) He is bald.</label>
+                <label><input type="radio" name="q13" value="D"> (D) His clothes have stripes in them.</label>
+            </div>
+            <div class="explanation">The text mentions a "bearded gentleman" but never says he is bald.</div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">14. The word "costumed" in line 2 could most easily be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q14" value="A"> (A) dressed</label>
+                <label><input type="radio" name="q14" value="B"> (B) nationalized</label>
+                <label><input type="radio" name="q14" value="C"> (C) hidden</label>
+                <label><input type="radio" name="q14" value="D"> (D) seen</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">15. Sam Wilson was the proprietor of what type of business?</span>
+            <div class="options">
+                <label><input type="radio" name="q15" value="A"> (A) A costume company</label>
+                <label><input type="radio" name="q15" value="B"> (B) A meat-packing company</label>
+                <label><input type="radio" name="q15" value="C"> (C) A military clothier</label>
+                <label><input type="radio" name="q15" value="D"> (D) A barrel-making company</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">16. The word "granted" in line 5 means:</span>
+            <div class="options">
+                <label><input type="radio" name="q16" value="A"> (A) refused</label>
+                <label><input type="radio" name="q16" value="B"> (B) underbid for</label>
+                <label><input type="radio" name="q16" value="C"> (C) told about</label>
+                <label><input type="radio" name="q16" value="D"> (D) given</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">17. According to the passage, what was in the barrels stamped U.S.?</span>
+            <div class="options">
+                <label><input type="radio" name="q17" value="A"> (A) Sam Wilson</label>
+                <label><input type="radio" name="q17" value="B"> (B) Food for the army</label>
+                <label><input type="radio" name="q17" value="C"> (C) Weapons to be used in the war</label>
+                <label><input type="radio" name="q17" value="D"> (D) Company contracts</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">18. The word "initials" in line 6 means:</span>
+            <div class="options">
+                <label><input type="radio" name="q18" value="A"> (A) nicknames</label>
+                <label><input type="radio" name="q18" value="B"> (B) family names</label>
+                <label><input type="radio" name="q18" value="C"> (C) first letters of words</label>
+                <label><input type="radio" name="q18" value="D"> (D) company names</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">19. The word "official" in line 10 is closest in meaning to:</span>
+            <div class="options">
+                <label><input type="radio" name="q19" value="A"> (A) authorized</label>
+                <label><input type="radio" name="q19" value="B"> (B) professional</label>
+                <label><input type="radio" name="q19" value="C"> (C) dutiful</label>
+                <label><input type="radio" name="q19" value="D"> (D) accidental</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">20. In 1812, people most probably answered that the letters "U.S." written on the barrels stood for "Uncle Sam" because:</span>
+            <div class="options">
+                <label><input type="radio" name="q20" value="A"> (A) Congress required it</label>
+                <label><input type="radio" name="q20" value="B"> (B) Samuel Wilson was their favorite uncle</label>
+                <label><input type="radio" name="q20" value="C"> (C) Sam Wilson preferred it</label>
+                <label><input type="radio" name="q20" value="D"> (D) they were not exactly sure what the letters meant</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 3: Deserts</div>
+        <div class="passage-text">
+            <p>Most people think of deserts as dry, flat areas with little vegetation and little or no rainfall, but this is hardly true. Many deserts have varied geographical formations ranging from soft, rolling hills to stark, jagged cliffs, and most deserts have a permanent source of water. Although deserts do not receive a high amount of rainfall—to be classified as a desert, an area must get less than twenty-five centimeters of rainfall per year—there are many plants that thrive on only small amounts of water, and deserts are often full of such plant life.</p>
+            <p>Desert plants have a variety of mechanisms for obtaining the water needed for survival. Some plants, such as cactus, are able to store large amounts of water in their leaves or stems; after a rainfall these plants absorb a large supply of water to last until the next rainfall. Other plants, such as the mesquite, have extraordinarily deep root systems that allow them to obtain water from far below the desert's arid surface.</p>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">21. What is the main topic of the passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q21" value="A"> (A) Deserts are dry, flat areas with few plants.</label>
+                <label><input type="radio" name="q21" value="B"> (B) There is little rainfall in the desert.</label>
+                <label><input type="radio" name="q21" value="C"> (C) Many kinds of vegetation can survive with little water.</label>
+                <label><input type="radio" name="q21" value="D"> (D) Deserts are not really flat areas with little plant life.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">22. The passage implies that:</span>
+            <div class="options">
+                <label><input type="radio" name="q22" value="A"> (A) the typical conception of a desert is incorrect</label>
+                <label><input type="radio" name="q22" value="B"> (B) most people are well informed about deserts</label>
+                <label><input type="radio" name="q22" value="C"> (C) all deserts are dry, flat areas</label>
+                <label><input type="radio" name="q22" value="D"> (D) the lack of rainfall in deserts causes the lack of vegetation</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">23. The passage describes the geography of deserts as:</span>
+            <div class="options">
+                <label><input type="radio" name="q23" value="A"> (A) flat</label>
+                <label><input type="radio" name="q23" value="B"> (B) sandy</label>
+                <label><input type="radio" name="q23" value="C"> (C) varied</label>
+                <label><input type="radio" name="q23" value="D"> (D) void of vegetation</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">24. The word "source" in line 3 means:</span>
+            <div class="options">
+                <label><input type="radio" name="q24" value="A"> (A) supply</label>
+                <label><input type="radio" name="q24" value="B"> (B) storage space</label>
+                <label><input type="radio" name="q24" value="C"> (C) need</label>
+                <label><input type="radio" name="q24" value="D"> (D) lack</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">25. According to the passage, what causes an area to be classified as a desert?</span>
+            <div class="options">
+                <label><input type="radio" name="q25" value="A"> (A) The type of plants</label>
+                <label><input type="radio" name="q25" value="B"> (B) The geographical formations</label>
+                <label><input type="radio" name="q25" value="C"> (C) The amount of precipitation</label>
+                <label><input type="radio" name="q25" value="D"> (D) The source of water</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">26. The word "thrive" in line 5 means:</span>
+            <div class="options">
+                <label><input type="radio" name="q26" value="A"> (A) suffer</label>
+                <label><input type="radio" name="q26" value="B"> (B) grow well</label>
+                <label><input type="radio" name="q26" value="C"> (C) minimally survive</label>
+                <label><input type="radio" name="q26" value="D"> (D) decay</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">27. The word "mechanisms" in line 7 could most easily be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q27" value="A"> (A) machines</label>
+                <label><input type="radio" name="q27" value="B"> (B) pumps</label>
+                <label><input type="radio" name="q27" value="C"> (C) sources</label>
+                <label><input type="radio" name="q27" value="D"> (D) methods</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">28. Which of the following is mentioned in the passage about cacti?</span>
+            <div class="options">
+                <label><input type="radio" name="q28" value="A"> (A) They retain water from one rainfall to the next.</label>
+                <label><input type="radio" name="q28" value="B"> (B) They have deep root systems.</label>
+                <label><input type="radio" name="q28" value="C"> (C) They survive in the desert because they do not need water.</label>
+                <label><input type="radio" name="q28" value="D"> (D) They get water from deep below the surface of the desert.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">29. "Mesquite" in line 10 is probably:</span>
+            <div class="options">
+                <label><input type="radio" name="q29" value="A"> (A) a type of tree</label>
+                <label><input type="radio" name="q29" value="B"> (B) a desert animal</label>
+                <label><input type="radio" name="q29" value="C"> (C) a type of cactus</label>
+                <label><input type="radio" name="q29" value="D"> (D) a geographical formation in the desert</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">30. The word "arid" in line 11 means:</span>
+            <div class="options">
+                <label><input type="radio" name="q30" value="A"> (A) deep</label>
+                <label><input type="radio" name="q30" value="B"> (B) dry</label>
+                <label><input type="radio" name="q30" value="C"> (C) sandy</label>
+                <label><input type="radio" name="q30" value="D"> (D) superficial</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">31. Where in the passage does the author describe desert vegetation that keeps water in its leaves?</span>
+            <div class="options">
+                <label><input type="radio" name="q31" value="A"> (A) Lines 1-2</label>
+                <label><input type="radio" name="q31" value="B"> (B) Lines 3-6</label>
+                <label><input type="radio" name="q31" value="C"> (C) Lines 7-9</label>
+                <label><input type="radio" name="q31" value="D"> (D) Lines 9-11</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="passage-container">
+        <div class="passage-title">Passage 4: American Jazz</div>
+        <div class="passage-text">
+            <p>American jazz is a conglomeration of sounds borrowed from such varied sources as American and African folk music, European classical music, and Christian gospel songs. One of the recognizable characteristics of jazz is its use of improvisation: certain parts of the music are written out and played the same way by various performers, and other improvised parts are created spontaneously during a performance and vary widely from performer to performer.</p>
+            <p>The earliest form of jazz was ragtime, lively songs or rags performed on the piano, and the best-known of the ragtime performers and composers was Scott Joplin. Born in 1868 to former slaves, Scott Joplin earned his living from a very early age playing the piano in bars along the Mississippi. One of his regular jobs was in the Maple Leaf Club in Sedalia, Missouri. It was there that he began writing the more than 500 compositions that he was to produce, the most famous of which was "The Maple Leaf Rag."</p>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">32. This passage is about:</span>
+            <div class="options">
+                <label><input type="radio" name="q32" value="A"> (A) jazz in general and one specific type of jazz</label>
+                <label><input type="radio" name="q32" value="B"> (B) the various sources of jazz</label>
+                <label><input type="radio" name="q32" value="C"> (C) the life of Scott Joplin</label>
+                <label><input type="radio" name="q32" value="D"> (D) the major characteristics of jazz</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">33. The word "conglomeration" in line 1 could best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q33" value="A"> (A) disharmony</label>
+                <label><input type="radio" name="q33" value="B"> (B) mixture</label>
+                <label><input type="radio" name="q33" value="C"> (C) purity</label>
+                <label><input type="radio" name="q33" value="D"> (D) treasure</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">34. In line 3, the word "improvisation" involves which of the following?</span>
+            <div class="options">
+                <label><input type="radio" name="q34" value="A"> (A) Playing the written parts of the music</label>
+                <label><input type="radio" name="q34" value="B"> (B) Performing similarly to other musicians</label>
+                <label><input type="radio" name="q34" value="C"> (C) Making up music while playing</label>
+                <label><input type="radio" name="q34" value="D"> (D) Playing a varied selection of musical compositions</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">35. According to the passage, ragtime was:</span>
+            <div class="options">
+                <label><input type="radio" name="q35" value="A"> (A) generally performed on a variety of instruments</label>
+                <label><input type="radio" name="q35" value="B"> (B) the first type of jazz</label>
+                <label><input type="radio" name="q35" value="C"> (C) extremely soothing and sedate</label>
+                <label><input type="radio" name="q35" value="D"> (D) performed only at the Maple Leaf Club in Sedalia</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">36. Which of the following statements is true according to the passage?</span>
+            <div class="options">
+                <label><input type="radio" name="q36" value="A"> (A) Scott Joplin was a slave when he was born.</label>
+                <label><input type="radio" name="q36" value="B"> (B) Scott Joplin's parents had been slaves before Scott was born.</label>
+                <label><input type="radio" name="q36" value="C"> (C) Scott Joplin had formerly been a slave, but he no longer was after 1868.</label>
+                <label><input type="radio" name="q36" value="D"> (D) Scott Joplin's parents were slaves when Scott was born.</label>
+            </div>
+            <div class="explanation">Text says "Born in 1868 to former slaves", implying they were slaves before but not at the time of his birth (or were freed).</div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">37. The word "living" in line 8 could most easily be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q37" value="A"> (A) money</label>
+                <label><input type="radio" name="q37" value="B"> (B) life-style</label>
+                <label><input type="radio" name="q37" value="C"> (C) enjoyment</label>
+                <label><input type="radio" name="q37" value="D"> (D) health</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <span class="question-text">38. The word "regular" in line 9 could best be replaced by:</span>
+            <div class="options">
+                <label><input type="radio" name="q38" value="A"> (A) popular</label>
+                <label><input type="radio" name="q38" value="B"> (B) steady</label>
+                <label><input type="radio" name="q38" value="C"> (C) unusual</label>
+                <label><input type="radio" name="q38" value="D"> (D) boring</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <span class="question-text">39. The word "which" in line 10 refers to:</span>
+            <div class="options">
+                <label><input type="radio" name="q39" value="A"> (A) regular jobs</label>
+                <label><input type="radio" name="q39" value="B"> (B) the Maple Leaf Club</label>
+                <label><input type="radio" name="q39" value="C"> (C) Sedalia, Missouri</label>
+                <label><input type="radio" name="q39" value="D"> (D) 500 compositions</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <span class="question-text">40. The name of Scott Joplin's most famous composition probably came from:</span>
+            <div class="options">
+                <label><input type="radio" name="q40" value="A"> (A) the name of a saloon where he performed</label>
+                <label><input type="radio" name="q40" value="B"> (B) the maple tree near his Sedalia home</label>
+                <label><input type="radio" name="q40" value="C"> (C) the name of the town where he was born</label>
+                <label><input type="radio" name="q40" value="D"> (D) the school where he learned to play the piano</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <span class="question-text">41. The paragraph following the passage probably discusses:</span>
+            <div class="options">
+                <label><input type="radio" name="q41" value="A"> (A) Sedalia, Missouri</label>
+                <label><input type="radio" name="q41" value="B"> (B) the Maple Leaf Club</label>
+                <label><input type="radio" name="q41" value="C"> (C) the numerous compositions of Scott Joplin</label>
+                <label><input type="radio" name="q41" value="D"> (D) the life of Scott Joplin</label>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="submit-btn">Submit Answers</button>
+
+</form>
+
+<div id="score-display"></div>
+
+<script>
+    document.getElementById('submit-btn').addEventListener('click', function() {
+        const questions = document.querySelectorAll('.question-block');
+        let score = 0;
+        let total = questions.length;
+
+        questions.forEach(block => {
+            const correctAnswer = block.getAttribute('data-correct');
+            const inputs = block.querySelectorAll('input[type="radio"]');
+            let selected = null;
+            let selectedLabel = null;
+
+            inputs.forEach(input => {
+                input.disabled = true; // Disable changes after submit
+                if (input.checked) {
+                    selected = input.value;
+                    selectedLabel = input.parentElement;
+                }
+            });
+
+            // Remove existing feedback
+            const existingFeedback = block.querySelector('.feedback');
+            if(existingFeedback) existingFeedback.remove();
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.classList.add('feedback');
+
+            if (selected === correctAnswer) {
+                score++;
+                selectedLabel.classList.add('correct-answer');
+                feedbackDiv.textContent = "✓ Correct";
+                feedbackDiv.classList.add('correct');
+            } else {
+                if(selectedLabel) {
+                    selectedLabel.classList.add('wrong-answer');
+                    feedbackDiv.textContent = `✗ Incorrect. The correct answer is (${correctAnswer}).`;
+                } else {
+                    feedbackDiv.textContent = `✗ Skipped. The correct answer is (${correctAnswer}).`;
+                }
+                
+                feedbackDiv.classList.add('incorrect');
+                
+                // Highlight the correct answer
+                block.querySelectorAll('input').forEach(inp => {
+                    if(inp.value === correctAnswer) {
+                        inp.parentElement.classList.add('correct-answer');
+                    }
+                });
+            }
+            
+            block.appendChild(feedbackDiv);
+            
+            // Show explanation if exists
+            const explanation = block.querySelector('.explanation');
+            if(explanation) explanation.style.display = 'block';
+        });
+
+        const scoreDisplay = document.getElementById('score-display');
+        const percentage = Math.round((score / total) * 100);
+        scoreDisplay.innerHTML = `You scored ${score} out of ${total} (${percentage}%)`;
+        scoreDisplay.style.display = 'block';
+        
+        // Scroll to bottom
+        scoreDisplay.scrollIntoView({behavior: 'smooth'});
+    });
+</script>
+
+</body>
+</html>
