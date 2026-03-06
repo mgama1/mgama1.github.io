@@ -36,6 +36,101 @@
             --ff-mono:    'IBM Plex Mono', 'Courier New', monospace;
         }
 
+        /* ─── DARK MODE TOKENS ───────────────────────────────────── */
+        [data-theme="dark"] {
+            --bg:            #111114;
+            --bg-card:       #1a1a1f;
+            --bg-deep:       #222228;
+            --fg:            #e8e8ec;
+            --fg-dim:        #a0a0aa;
+            --fg-faint:      #5a5a64;
+            --accent:        #e8e8ec;
+            --accent-dim:    #a0a0aa;
+            --accent-glow:   rgba(232,232,236,.05);
+            --rule:          rgba(232,232,236,.09);
+            --shadow:        rgba(0,0,0,.3);
+            --blue:          #7aaabb;
+            --blue-dim:      #9abfcc;
+            --blue-faint:    rgba(122,170,187,.10);
+        }
+
+        /* ─── THEME TOGGLE (floating) ────────────────────────────── */
+        .theme-toggle {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 999;
+            background: var(--bg-card);
+            border: 1px solid var(--rule);
+            border-radius: 99px;
+            cursor: pointer;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--ff-mono);
+            font-size: .65rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: color .2s, border-color .2s, background .2s, transform .2s, box-shadow .2s;
+        }
+        .theme-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--shadow);
+        }
+        .theme-toggle .icon-sun  { display: none; font-size: 1.1rem; }
+        .theme-toggle .icon-moon { display: inline; font-size: 1.1rem; }
+        [data-theme="dark"] .theme-toggle .icon-sun  { display: inline; }
+        [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+        /* ─── HAMBURGER ──────────────────────────────────────────── */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+        }
+        .nav-toggle span {
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: var(--fg);
+            transition: transform .3s ease, opacity .3s ease;
+            transform-origin: center;
+        }
+        .nav-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .nav-toggle.open span:nth-child(2) { opacity: 0; }
+        .nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            border-top: 1px solid var(--rule);
+            padding: 8px 0 16px;
+        }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav a {
+            font-family: var(--ff-mono);
+            font-size: .65rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--rule);
+            transition: color .2s, padding-left .2s;
+        }
+        .mobile-nav a:hover { color: var(--accent); padding-left: 8px; }
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
 
@@ -190,7 +285,7 @@
             font-weight: 900;
         }
 
-        h1 .line-normal { display: block; color: #2e2a28; }
+        h1 .line-normal { display: block; color: var(--fg); }
 
         h1 .line-stretch {
             display: block;
@@ -535,6 +630,11 @@
             margin-top: 8px;
         }
 
+        a.proj-name {
+            transition: color .25s;
+        }
+        a.proj-name:hover { color: var(--blue); }
+
         .proj-name {
             font-family: var(--ff-display);
             font-size: clamp(1.4rem, 2.8vw, 1.9rem);
@@ -542,10 +642,10 @@
             line-height: 1.05;
             letter-spacing: -.02em;
             margin-bottom: 14px;
-            color: #2e2a28;
+            color: var(--fg);
             transition: color .25s;
         }
-        .project-row:hover .proj-name { color: #5a5550; }
+        .project-row:hover .proj-name { color: var(--fg-dim); }
 
         .proj-desc {
             font-size: .88rem;
@@ -759,6 +859,22 @@
         }
 
         /* ─── PUBLICATIONS ───────────────────────────────────────── */
+        .pub-read-link {
+            font-family: var(--ff-mono);
+            font-size: .65rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--blue);
+            display: inline-block;
+            margin-left: 8px;
+            transition: color .2s, transform .2s;
+        }
+        
+        .pub-read-link:hover {
+            color: var(--accent);
+            transform: translateX(3px);
+        }
+
         .pub-item {
             display: grid;
             grid-template-columns: 44px 1fr;
@@ -816,6 +932,98 @@
             color: var(--blue-dim);
         }
 
+        /* ─── COPY EMAIL BUTTON ──────────────────────────────────── */
+        .copy-email-btn {
+            font-family: var(--ff-mono);
+            font-size: .65rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .2s;
+        }
+        .copy-email-btn::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: -3px;
+            width: 0; height: 1px;
+            background: var(--accent);
+            transition: width .25s ease;
+        }
+        .copy-email-btn:hover { color: var(--accent); }
+        .copy-email-btn:hover::after { width: 100%; }
+
+        .copy-email-btn .copy-icon,
+        .copy-email-btn .check-icon { font-size: .8rem; transition: opacity .2s, transform .2s; }
+        .copy-email-btn .check-icon { display: none; color: var(--blue); }
+
+        /* Tooltip */
+        .copy-email-btn .copy-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+            background: var(--bg-card);
+            color: var(--blue);
+            font-family: var(--ff-mono);
+            font-size: .62rem;
+            letter-spacing: .08em;
+            text-transform: lowercase;
+            padding: 6px 12px;
+            border-radius: 2px;
+            border: 1px solid var(--rule);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 4px 16px var(--shadow);
+            transition: opacity .25s ease, transform .25s ease;
+        }
+        .copy-email-btn .copy-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%; left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: var(--rule);
+        }
+        /* second pseudo for inner arrow fill */
+        .copy-email-btn .copy-tooltip::before {
+            content: '';
+            position: absolute;
+            top: calc(100% - 1px); left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: var(--bg-card);
+            z-index: 1;
+        }
+        .copy-email-btn.copied .copy-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .copy-email-btn.copied .copy-icon { display: none; }
+        .copy-email-btn.copied .check-icon { display: inline; }
+
+        /* Mobile nav copy-email button */
+        .mobile-nav .copy-email-btn {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--rule);
+            width: 100%;
+            justify-content: flex-start;
+            border-radius: 0;
+        }
+        .mobile-nav .copy-email-btn:hover { padding-left: 8px; }
+        .mobile-nav .copy-email-btn .copy-tooltip { left: 0; transform: translateX(0) translateY(6px); }
+        .mobile-nav .copy-email-btn .copy-tooltip::after { left: 16px; transform: none; }
+        .mobile-nav .copy-email-btn .copy-tooltip::before { left: 20px; transform: none; }
+        .mobile-nav .copy-email-btn.copied .copy-tooltip { transform: translateX(0) translateY(0); }
+
         /* ─── ANIMATIONS ─────────────────────────────────────────── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(18px); }
@@ -843,6 +1051,7 @@
             .edu-grid { grid-template-columns: 1fr; }
             .tl-item { grid-template-columns: 1fr; gap: 10px; }
             nav { display: none; }
+            .nav-toggle { display: flex; }
             .section-watermark { display: none; }
         }
     </style>
@@ -857,9 +1066,27 @@
             <nav>
                 <a href="https://mgama1.github.io/posts" target="_blank">Articles</a>
                 <a href="./mgama1_resume.pdf" target="_blank">Curriculum Vitae</a>
-                <a href="/cdn-cgi/l/email-protection#761b11171b171a581519180217150236111b171f1a5815191b"><i class="fa fa-envelope" style="margin-right:5px"></i>Contact</a>
+                <button class="copy-email-btn" id="copy-email-nav" aria-label="Copy email address">
+                    <i class="fa fa-envelope copy-icon"></i>
+                    <i class="fa fa-check check-icon"></i>
+                    Contact
+                    <span class="copy-tooltip">mgamal.contact@gmail.com</span>
+                </button>
             </nav>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
         </div>
+        <nav class="mobile-nav" id="mobile-nav">
+            <a href="https://mgama1.github.io/posts" target="_blank">Articles</a>
+            <a href="./mgama1_resume.pdf" target="_blank">Curriculum Vitae</a>
+            <button class="copy-email-btn" id="copy-email-mobile" aria-label="Copy email address">
+                <i class="fa fa-envelope copy-icon"></i>
+                <i class="fa fa-check check-icon"></i>
+                Contact
+                <span class="copy-tooltip">mgamal.contact@gmail.com</span>
+            </button>
+        </nav>
     </header>
 
     <section class="hero">
@@ -873,7 +1100,7 @@
             </h1>
             <div class="hero-divider"></div>
             <p class="hero-sub">Mechatronics · Computational Intelligence · Mathematical Modelling</p>
-            <p class="hero-bio">MSc candidate at Ain Shams University, Cairo. My work sits at the intersection of machine learning, computer vision, and control theory — with a focus on systems that are not merely functional, but explainable and rigorously validated.</p>
+            <p class="hero-bio"> Mahmoud Gamal is a Mechatronics Engineer focused on Computational Intelligence and Mathematical Modeling. He leverages code to abstract, analyze, and solve difficult real-world challenges.</p>
             <div class="hero-cta">
                 <a class="btn" href="./mgama1_resume.pdf" target="_blank">Curriculum Vitae ↗</a>
                 <div class="social-links">
@@ -928,7 +1155,7 @@
                     <div class="proj-year">2024</div>
                 </div>
                 <div class="proj-main">
-                    <div class="proj-name">EDvanced</div>
+                    <a class="proj-name" href="https://github.com/mgama1/Edvanced" target="_blank">EDvanced</a>
                     <p class="proj-desc">End-to-end exam analysis system. Extracts answers from scanned bubble sheets via OCR and ArUco markers, then applies DBSCAN + PCA to detect statistically anomalous response patterns — with p-value assessments and visual cluster insights for full explainability.</p>
                     <div class="proj-tags">
                         <span class="proj-tag">Unsupervised Learning</span><span class="proj-tag">Statistical Analysis</span>
@@ -947,7 +1174,7 @@
                     <div class="proj-year">2024</div>
                 </div>
                 <div class="proj-main">
-                    <div class="proj-name">OGallery</div>
+                    <a class="proj-name" href="https://github.com/mgama1/Ogallery" target="_blank">OGallery</a>
                     <p class="proj-desc">Open-source Linux image gallery with a trained MobileNet classifier for automatic categorisation and Levenshtein distance for typo-tolerant search. Features a custom caching mechanism for performant image loading at scale.</p>
                     <div class="proj-tags">
                         <span class="proj-tag">PyQt5</span><span class="proj-tag">MobileNet</span>
@@ -965,7 +1192,7 @@
                     <div class="proj-year">2023</div>
                 </div>
                 <div class="proj-main">
-                    <div class="proj-name">ADAS Perception Module</div>
+                    <a class="proj-name" href="https://github.com/mgama1/adas" target="_blank">ADAS Perception Module</a>
                     <p class="proj-desc">Graduation project. Real-time perception pipeline combining lane segmentation (OpenCV) with custom-dataset YOLOv5 fine-tuning for object detection. Successfully deployed on Raspberry Pi under embedded constraints.</p>
                     <div class="proj-tags">
                         <span class="proj-tag">YOLOv5</span><span class="proj-tag">OpenCV</span>
@@ -1005,15 +1232,14 @@
 
         <div class="tl-item">
             <div>
-                <div class="tl-period">Oct 2024 — Present</div>
-                <div class="tl-org">Brightskies</div>
+                <div class="tl-period">Aug 2025 — Present</div>
+                <div class="tl-org">HTI</div>
             </div>
             <div>
-                <div class="tl-role">AI Engineer</div>
+                <div class="tl-role">Teaching Assistant</div>
                 <ul class="tl-bullets">
-                    <li>Developing and deploying production ML systems for computer vision and NLP pipelines.</li>
-                    <li>Designing model evaluation frameworks and validation suites for regulated environments.</li>
-                    <li>Collaborating on edge deployment strategy for inference on embedded hardware.</li>
+                    <li>Taught undergraduate control systems courses, supervised labs, and mentored 300+ students in control system analysis and design</li>
+                    <li>Formulated and architected a combinatorial optimization model from scratch to automate lectures and exams scheduling, leveraging Constraint Programming to replace manual processes and eliminate resource conflicts</li>
                 </ul>
             </div>
         </div>
@@ -1088,32 +1314,24 @@
     </section>
 -->
     <section class="section reveal">
-        <div class="section-watermark">05</div>
+        <div class="section-watermark">04</div>
         <div class="section-head">
-            <span class="section-num">§ 05</span>
-            <h2>Publications &amp; Activities</h2>
+            <span class="section-num">§ 04</span>
+            <h2>Writing &amp; Publications</h2>
             <div class="rule-line"></div>
         </div>
 
         <div class="pub-item">
             <div class="pub-idx">[1]</div>
-            <div class="pub-body"><strong>Technical Article:</strong> Colour palette extraction using k-means clustering — algorithmic approach and Python implementation. <em>Personal Blog, 2024.</em></div>
+            <div class="pub-body"><strong>Technical Article:</strong> Colour palette extraction using k-means clustering — algorithmic approach and Python implementation. <em>Personal Blog, 2024.</em> <a href="https://mgama1.github.io/color_palette/" target="_blank" class="pub-read-link">Read ↗</a></div>
         </div>
         <div class="pub-item">
             <div class="pub-idx">[2]</div>
-            <div class="pub-body"><strong>Technical Article:</strong> Steganography techniques: embedding and extracting hidden data with Python. <em>Personal Blog, 2024.</em></div>
+            <div class="pub-body"><strong>Technical Article:</strong> Steganography techniques: embedding and extracting hidden data with Python. <em>Personal Blog, 2024.</em> <a href="https://mgama1.github.io/secretmessage/" target="_blank" class="pub-read-link">Read ↗</a></div>
         </div>
         <div class="pub-item">
             <div class="pub-idx">[3]</div>
-            <div class="pub-body"><strong>Synthetic Dataset:</strong> Egyptian ID card corpus with randomised personal details and StyleGAN2-generated portrait photographs — created for document understanding research.</div>
-        </div>
-        <div class="pub-item">
-            <div class="pub-idx">[4]</div>
-            <div class="pub-body"><strong>IEEE FSB Robotics Team Head</strong> (2020–2021) — Founded student team, designed curriculum, and tutored fundamentals of robotics to incoming members.</div>
-        </div>
-        <div class="pub-item">
-            <div class="pub-idx">[5]</div>
-            <div class="pub-body"><strong>Fab Lab Fayoum Volunteer</strong> (2019–2021) — Technical guidance and support for fabrication lab visitors.</div>
+            <div class="pub-body"><strong>Synthetic Dataset:</strong> Egyptian ID card corpus with randomised personal details and StyleGAN2-generated portrait photographs — created for document understanding research. <a href="https://www.kaggle.com/datasets/mg31415/synthetic-egyptian-id-cards" target="_blank" class="pub-read-link">View ↗</a></div>
         </div>
     </section>
 
@@ -1124,7 +1342,67 @@
 
 </div>
 
+<!-- Floating dark mode toggle -->
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+    <span class="icon-moon"><i class="fas fa-moon"></i></span>
+    <span class="icon-sun"><i class="fas fa-sun"></i></span>
+</button>
+
 <script>
+    // ─── COPY EMAIL ───────────────────────────────────────────────
+    function setupCopyEmail(btnId) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        let resetTimer;
+        btn.addEventListener('click', () => {
+            navigator.clipboard.writeText('mgamal.contact@gmail.com').then(() => {
+                clearTimeout(resetTimer);
+                btn.classList.add('copied');
+                // After a beat, fade the tooltip out before removing .copied
+                resetTimer = setTimeout(() => {
+                    const tip = btn.querySelector('.copy-tooltip');
+                    tip.style.opacity = '0';
+                    tip.style.transform = btn.closest('.mobile-nav')
+                        ? 'translateX(0) translateY(6px)'
+                        : 'translateX(-50%) translateY(6px)';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        tip.style.opacity = '';
+                        tip.style.transform = '';
+                    }, 260);
+                }, 2000);
+            });
+        });
+    }
+    setupCopyEmail('copy-email-nav');
+    setupCopyEmail('copy-email-mobile');
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem('theme');
+    if (saved) root.setAttribute('data-theme', saved);
+
+    toggleBtn.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    });
+
+    // ─── HAMBURGER MENU ───────────────────────────────────────────
+    const navToggle = document.getElementById('nav-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    navToggle.addEventListener('click', () => {
+        navToggle.classList.toggle('open');
+        mobileNav.classList.toggle('open');
+    });
+    // Close on link click
+    mobileNav.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+            navToggle.classList.remove('open');
+            mobileNav.classList.remove('open');
+        });
+    });
+
     // ─── EQUALIZE HERO WORD WIDTHS (VIA FONT SCALING) ─────────────
     document.fonts.ready.then(() => {
         const lines = document.querySelectorAll('h1 .line-stretch');
