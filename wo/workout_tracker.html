@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #080808;
+    --s1:       #0d0d0d;
+    --s2:       #121212;
+    --s3:       #181818;
+    --border:   #1e1e1e;
+    --border2:  #2c2c2c;
+    --text:     #909090;
+    --text-dim: #444;
+    --text-hi:  #efefef;
+
+    /* done / complete — cold steel white */
+    --green:        #141a1f;
+    --green-bdr:    #253040;
+    --green-text:   #b8ccd8;
+    --green-dim:    #4a6878;
+
+    /* rest timer — hot amber */
+    --amber:        #1e1408;
+    --amber-bdr:    #58380a;
+    --amber-text:   #c87818;
+
+    --check:        #c8d8e0;
+    --done-bg:      #0d1014;
+    --done-bdr:     #1e2c38;
+
+    /* accent */
+    --accent:       #3a5068;
+    --accent-hi:    #c87818;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: rgba(8,8,8,0.98);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .header-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .stat-block {
+    padding: 0 28px;
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .stat-block .val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--text-hi);
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-block .lbl {
+    font-size: 0.46rem;
+    letter-spacing: 0.32em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 20px;
+  }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+
+  .reset-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  /* LAYOUT */
+  .layout {
+    min-height: calc(100vh - 65px);
+  }
+
+  /* MUSCLE GRID LANDING */
+  .muscle-grid-view {
+    padding: 48px 48px 48px;
+    animation: rise 0.2s ease forwards;
+  }
+
+  .muscle-grid-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .muscle-grid-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.2rem;
+    letter-spacing: 0.1em;
+    color: var(--text-hi);
+    line-height: 1;
+  }
+
+  .muscle-grid-sub {
+    font-size: 0.5rem;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .muscle-grid-label {
+    font-size: 0.52rem;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .muscle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .muscle-card {
+    background: var(--s1);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 0;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.15s, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+    min-height: 130px;
+  }
+
+  .muscle-card:hover {
+    background: var(--s2);
+    border-color: var(--border2);
+    transform: scale(1.04);
+    box-shadow: 0 0 32px rgba(0,0,0,0.6), 0 0 10px rgba(0,0,0,0.4);
+    z-index: 2;
+  }
+
+  .muscle-card:hover .muscle-card-icon { opacity: 0.22; }
+  .muscle-card:hover .muscle-card-index { color: var(--accent-hi); }
+
+  /* ghost icon — right side watermark */
+  .muscle-card-icon {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    opacity: 0.08;
+    filter: grayscale(1);
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .muscle-card-inner {
+    position: relative;
+    z-index: 1;
+    padding: 20px 22px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+  }
+
+  .muscle-card-index {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    transition: color 0.15s;
+  }
+
+  .muscle-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    letter-spacing: 0.06em;
+    color: var(--text-hi);
+    line-height: 0.9;
+    margin-bottom: 16px;
+  }
+
+  .muscle-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .muscle-card-sets {
+    font-size: 0.46rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .muscle-card-status {
+    font-size: 0.46rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .muscle-card-status.done { color: var(--green-text); }
+  .muscle-card-status.active { color: var(--accent-hi); }
+
+  .muscle-card-pct.done { color: var(--green-text); }
+
+  /* DETAIL VIEW */
+  .detail-view {
+    padding: 40px 48px;
+    animation: rise 0.2s ease forwards;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 0 0 10px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 36px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .back-btn:hover { color: var(--text); border-color: var(--border2); }
+  .back-btn svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+  /* keep .main for detail content */
+  .main { padding: 0; }
+
+  /* MUSCLE ICON (legacy sidebar — kept for compatibility but hidden) */
+  .muscle-icon {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    flex-shrink: 0;
+    opacity: 0.55;
+    filter: grayscale(0.2);
+    transition: opacity 0.15s, filter 0.15s;
+  }
+
+  .muscle-btn-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .muscle-name {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  .main { padding: 36px 40px; }
+
+  .session-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .session-meta-label {
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .session-meta-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    letter-spacing: 0.1em;
+  }
+
+  .progress-track {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 36px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--green-dim);
+    transition: width 0.5s ease;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4.5rem;
+    letter-spacing: 0.06em;
+    line-height: 0.9;
+    margin-bottom: 28px;
+    color: var(--text-hi);
+  }
+
+  /* CARD */
+  .exercise-card {
+    background: var(--s1);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border2);
+    margin-bottom: 2px;
+    animation: rise 0.3s ease forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .exercise-card:nth-child(1) { animation-delay: 0.00s; }
+  .exercise-card:nth-child(2) { animation-delay: 0.07s; }
+  .exercise-card:nth-child(3) { animation-delay: 0.14s; }
+
+  .exercise-card.all-done {
+    background: var(--done-bg);
+    border-color: var(--done-bdr);
+    border-left-color: var(--green-dim);
+  }
+
+  .yt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 5px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-top: 14px;
+    display: inline-flex;
+  }
+  .yt-btn:hover { border-color: #f00; color: #f00; }
+  .yt-btn svg { width: 11px; height: 11px; fill: currentColor; flex-shrink: 0; }
+
+  /* CARD BODY */
+  .card-body {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+  }
+
+  .card-left {
+    padding: 22px 24px;
+    border-right: 1px solid var(--border);
+  }
+
+  .ex-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.65rem;
+    letter-spacing: 0.06em;
+    color: var(--text-hi);
+    margin-bottom: 4px;
+  }
+
+  .exercise-card.all-done .ex-name { color: var(--green-text); }
+
+  .muscles-line {
+    font-size: 0.52rem;
+    color: var(--text-dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .ex-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .tag {
+    font-size: 0.48rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+  }
+
+  .tag.hi { border-color: var(--border2); color: var(--text); }
+
+  /* MUSCLE NAME WRAP (for freq pip) */
+  .muscle-name-wrap { display: flex; align-items: center; gap: 7px; }
+
+  /* FREQUENCY PIP */
+  .freq-pip { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .freq-pip.fresh { background: var(--green-dim); }
+  .freq-pip.stale { background: var(--amber-text); opacity: 0.7; }
+  .freq-pip.cold  { background: var(--border2); }
+
+  /* PR / STREAK PILLS on card */
+  .ex-stat-row { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat-pill {
+    font-size: 0.46rem; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 3px 8px; border: 1px solid var(--border);
+    color: var(--text-dim); background: transparent;
+  }
+  .stat-pill.amber { border-color: var(--amber-bdr); color: var(--amber-text); background: var(--amber); }
+  .stat-pill.green { border-color: var(--green-bdr); color: var(--green-text); background: var(--green); }
+
+  /* VOLUME CHART */
+  .vol-chart-wrap { margin-bottom: 28px; }
+  .vol-bar-area { display: flex; align-items: flex-end; gap: 5px; height: 72px; margin-bottom: 4px; }
+  .vol-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; justify-content: flex-end; }
+  .vol-bar { width: 100%; background: var(--s3); border: 1px solid var(--border); min-height: 2px; }
+  .vol-bar.has-data { background: var(--green); border-color: var(--green-bdr); }
+  .vol-bar.this-week { background: var(--green-dim); border-color: var(--green-text); }
+  .vol-bar-val { font-size: 0.58rem; color: var(--text-dim); letter-spacing: 0.05em; min-height: 10px; }
+  .vol-bar-lbl { font-size: 0.56rem; color: var(--text-dim); letter-spacing: 0.06em; text-align: center; white-space: nowrap; }
+
+  /* EXERCISE STAT CARDS in history */
+  .ex-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 8px; }
+  .ex-stat-card { background: var(--s2); border: 1px solid var(--border); padding: 11px 13px; }
+  .ex-stat-name { font-size: 0.72rem; letter-spacing: 0.1em; color: var(--text); text-transform: uppercase; margin-bottom: 8px; line-height: 1.4; }
+  .ex-stat-nums { display: flex; gap: 14px; }
+  .ex-stat-num .n { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--text-hi); line-height: 1; }
+  .ex-stat-num .l { font-size: 0.58rem; letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
+
+  .tempo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+
+  .tempo-cell {
+    background: var(--s2);
+    border: 1px solid var(--border);
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .tc-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .tc-lbl {
+    font-size: 0.48rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .cue-block {
+    font-size: 0.66rem;
+    line-height: 1.9;
+    color: var(--text-dim);
+    padding: 12px 14px;
+    background: transparent;
+    border-left: 2px solid var(--accent);
+    font-style: italic;
+    letter-spacing: 0.03em;
+  }
+
+  /* SETS */
+  .card-right { padding: 22px 20px; }
+
+  .sets-header {
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .set-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-left: 2px solid transparent;
+    background: transparent;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+
+  .set-row:hover { border-color: var(--border2); background: var(--s2); }
+
+  .set-row.done {
+    background: var(--green);
+    border-color: var(--green-bdr);
+    border-left-color: var(--green-dim);
+  }
+
+  .check-box {
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    flex-shrink: 0;
+    transition: all 0.12s;
+    color: transparent;
+  }
+
+  .set-row.done .check-box {
+    background: var(--green-dim);
+    border-color: var(--green-bdr);
+    color: var(--check);
+  }
+
+  .set-info { flex: 1; }
+
+  .set-num {
+    font-size: 0.48rem;
+    letter-spacing: 0.22em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .set-reps {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .set-row.done .set-reps { color: var(--green-text); }
+
+  .set-tempo {
+    font-size: 0.46rem;
+    color: var(--text-dim);
+    opacity: 0.5;
+    margin-top: 1px;
+  }
+
+  /* REST — global timer next to section title */
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 20px;
+  }
+
+  .global-rest-timer {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    background: var(--s2);
+    border: 1px solid var(--amber-bdr);
+    padding: 10px 16px 10px 10px;
+    flex-shrink: 0;
+  }
+  .global-rest-timer.active { display: flex; }
+
+  .rest-ring-wrap { position: relative; flex-shrink: 0; width: 64px; height: 64px; }
+  .rest-ring-wrap svg { transform: rotate(-90deg); }
+  .rest-ring-bg  { fill: none; stroke: var(--border); stroke-width: 3; }
+  .rest-ring-arc { fill: none; stroke: var(--amber-text); stroke-width: 3; stroke-linecap: round;
+                   transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+  .rest-ring-arc.urgent { stroke: #c0392b; }
+  .rest-ring-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .rest-ring-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; color: var(--amber-text); letter-spacing: 0.06em; line-height: 1;
+  }
+  .rest-ring-num.urgent { color: #e74c3c; }
+  .rest-ring-lbl {
+    font-size: 0.38rem; letter-spacing: 0.18em; color: var(--text-dim);
+    text-transform: uppercase; margin-top: 1px;
+  }
+  .rest-ring-go {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem; color: var(--green-text); letter-spacing: 0.08em; line-height: 1;
+  }
+  .rest-info { }
+  .rest-info-label {
+    font-size: 0.42rem; letter-spacing: 0.25em; color: var(--amber-text);
+    text-transform: uppercase; margin-bottom: 3px;
+  }
+  .rest-info-exname {
+    font-size: 0.65rem; color: var(--text); letter-spacing: 0.05em; margin-bottom: 2px;
+  }
+  .rest-info-msg { font-size: 0.55rem; color: var(--text-dim); }
+
+  /* NOTES */
+  .notes-wrap { margin-top: 10px; }
+
+  .notes-lbl {
+    font-size: 0.52rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .notes-input {
+    width: 100%;
+    background: var(--s2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 11px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 52px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .notes-input:focus { border-color: var(--border2); }
+  .notes-input::placeholder { color: var(--text-dim); opacity: 0.4; }
+
+  /* EMPTY */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 65vh;
+    text-align: center;
+  }
+
+  .empty-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 0.58rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    opacity: 0.5;
+    text-transform: uppercase;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--s3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 11px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    z-index: 600;
+    transform: translateY(50px);
+    opacity: 0;
+    transition: all 0.25s ease;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* HISTORY PANEL */
+  .history-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    margin-right: 6px;
+  }
+  .history-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  .history-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    display: none;
+    pointer-events: none;
+  }
+  .history-overlay.open { display: block; pointer-events: all; }
+
+  .history-panel {
+    background: var(--s1);
+    border-left: 1px solid var(--border2);
+    width: 520px;
+    min-width: 320px;
+    max-width: 90vw;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 28px;
+    animation: slideIn 0.2s ease;
+    position: fixed;
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    pointer-events: all;
+  }
+
+  .history-resize-handle {
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 10;
+    transition: background 0.15s;
+  }
+  .history-resize-handle:hover,
+  .history-resize-handle.dragging { background: var(--accent); }
+
+  @keyframes slideIn {
+    from { transform: translateX(40px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+  }
+
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .history-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.12em;
+    color: var(--text-hi);
+  }
+
+  .history-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .history-close:hover { border-color: var(--border2); color: var(--text); }
+
+  .history-section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* streak dots — 12 weeks */
+  .streak-grid {
+    display: grid;
+    grid-template-columns: 20px repeat(12, 28px);
+    gap: 4px;
+    margin-bottom: 32px;
+  }
+
+  .sg-dow-label {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 4px;
+  }
+
+  .sg-cell {
+    width: 28px;
+    height: 28px;
+    background: var(--s2);
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: default;
+  }
+
+  .sg-cell.worked { background: var(--green); border-color: var(--green-bdr); }
+  .sg-cell.today  { border-color: var(--accent); }
+
+  .sg-cell:hover .sg-tooltip {
+    display: block;
+  }
+
+  .sg-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--s3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-size: 0.58rem;
+    padding: 5px 9px;
+    white-space: nowrap;
+    z-index: 10;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+  }
+
+  /* month labels row */
+  .month-labels {
+    display: grid;
+    grid-template-columns: 20px repeat(12, 28px);
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .month-lbl {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+
+  /* day log list */
+  .day-log { margin-bottom: 8px; }
+
+  .day-log-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-log-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.35rem;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    width: 90px;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+
+  .day-log-date .dldate-sub {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+
+  .day-log-muscles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-top: 2px;
+  }
+
+  .muscle-chip {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--border2);
+    background: var(--s2);
+    color: var(--text);
+  }
+
+  .day-log-sets {
+    margin-left: auto;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.25rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  .history-empty {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    padding: 20px 0;
+  }
+
+  @media (max-width: 900px) {
+    .card-body { grid-template-columns: 1fr; }
+    .card-left { border-right: none; border-bottom: 1px solid var(--border); }
+    .muscle-grid { grid-template-columns: repeat(2, 1fr); }
+    .muscle-grid-view { padding: 32px 28px; }
+    .detail-view { padding: 32px 28px; }
+  }
+
+  @media (max-width: 680px) {
+    .muscle-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+    .muscle-grid-view { padding: 24px 16px; }
+    .detail-view { padding: 24px 16px; }
+    .muscle-card-name { font-size: 1.7rem; }
+    .header { padding: 12px 16px; }
+    .header-stats .stat-block:nth-child(n+2) { display: none; }
+    .stat-block { padding: 0 14px; }
+    .section-title { font-size: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-wordmark">Operator</div>
+  <div class="header-stats">
+    <div class="stat-block">
+      <div class="val" id="hdr-sets">0</div>
+      <div class="lbl">Sets Today</div>
+    </div>
+    <div class="stat-block">
+      <div class="val" id="hdr-streak">0</div>
+      <div class="lbl">Day Streak</div>
+    </div>
+    <div class="stat-block">
+      <div class="val" id="hdr-sessions">0</div>
+      <div class="lbl">Total Sessions</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="history-btn" onclick="openHistory()">History</button>
+    <button class="reset-btn" onclick="confirmReset()">Reset Today</button>
+  </div>
+</header>
+
+<!-- HISTORY PANEL -->
+<div class="history-overlay" id="historyOverlay">
+  <div class="history-panel" id="historyPanel">
+    <div class="history-resize-handle" id="historyResizeHandle"></div>
+    <div class="history-header">
+      <div class="history-title">Training History</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="reset-btn" onclick="exportData()">Export</button>
+        <label class="reset-btn" style="cursor:pointer;">Import<input type="file" accept=".json" onchange="importData(event)" style="display:none;"></label>
+        <button class="history-close" onclick="closeHistory()">&#10005;</button>
+      </div>
+    </div>
+    <div id="history-content"></div>
+  </div>
+</div>
+
+<div class="layout">
+  <div id="main-content">
+    <!-- landing grid injected by buildLanding() -->
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+const DATA = {
+  chest: {
+    label: "Chest",
+    exercises: [{
+      id: "push_ups", name: "Push Ups",
+      sets: 4, reps: "8-10",
+      tempo: ["4","1","2","1"],
+      tempoLabels: ["Eccentric","Bottom Hold","Concentric","Top Hold"],
+      muscles: "Pectoralis Major / Anterior Deltoid / Triceps",
+      cues: "Lower your chest to the floor over 4 full seconds. Hold the bottom position for 1 second — full stretch. Drive up in 2 seconds. Squeeze at the top for 1 second before the next rep.",
+      rest: 90
+    }]
+  },
+  back: {
+    label: "Back",
+    exercises: [{
+      id: "pull_ups", name: "Pull Ups",
+      sets: 4, reps: "6-8",
+      tempo: ["3","1","2","1"],
+      tempoLabels: ["Eccentric","Dead Hang","Concentric","Top Hold"],
+      muscles: "Latissimus Dorsi / Biceps / Rear Deltoid",
+      cues: "Lower to a full dead hang over 3 seconds. Pause 1 second. Pull in 2 seconds. Hold chin over bar for 1 second. Every rep from a full hang — no kipping.",
+      rest: 120
+    }]
+  },
+  trapezius: {
+    label: "Trapezius",
+    exercises: [{
+      id: "scapular_pull", name: "Scapular Pull Ups",
+      sets: 3, reps: "10-12",
+      tempo: ["2","2","2","2"],
+      tempoLabels: ["Lower","Bottom","Depress","Hold"],
+      muscles: "Lower Trapezius / Serratus Anterior / Rhomboids",
+      cues: "Dead hang. No elbow bend at any point. Depress the scapulae downward over 2 seconds. Hold for 2 seconds. Return over 2 seconds. Pause 2 seconds. Pure scapular movement only.",
+      rest: 60
+    }]
+  },
+  deltoid: {
+    label: "Deltoid",
+    exercises: [
+      {
+        id: "pike_push_up", name: "Pike Push Up",
+        sets: 3, reps: "8-10",
+        tempo: ["4","1","2","0"],
+        tempoLabels: ["Eccentric","Bottom Hold","Concentric","Reset"],
+        muscles: "Anterior Deltoid / Lateral Deltoid / Triceps",
+        cues: "Hips as high as possible to simulate a vertical press. Lower your head toward the floor between your hands over 4 seconds. Hold 1 second at the bottom. Press back in 2 seconds.",
+        rest: 90
+      },
+      {
+        id: "wide_pike_push_up", name: "Wide Pike Push Up",
+        sets: 3, reps: "8-10",
+        tempo: ["4","1","2","0"],
+        tempoLabels: ["Eccentric","Bottom Hold","Concentric","Reset"],
+        muscles: "Lateral Deltoid / Upper Chest / Triceps",
+        cues: "Hands placed wider than shoulder width to shift load onto the lateral deltoid. Maintain identical tempo to the standard pike. Do not rush the eccentric under fatigue.",
+        rest: 90
+      }
+    ]
+  },
+  biceps: {
+    label: "Biceps",
+    exercises: [{
+      id: "chin_ups", name: "Chin Ups",
+      sets: 4, reps: "6-8",
+      tempo: ["3","1","3","1"],
+      tempoLabels: ["Eccentric","Dead Hang","Concentric","Top Hold"],
+      muscles: "Biceps Brachii / Brachialis / Lats",
+      cues: "Supinated grip. Lower over 3 seconds to a full dead hang. Pause 1 second. Curl up over 3 seconds — lead with the elbows pulling back. Hold 1 second at the top with a hard bicep contraction.",
+      rest: 120
+    }]
+  },
+  legs: {
+    label: "Legs",
+    exercises: [
+      {
+        id: "slow_squats", name: "Slow Squats",
+        sets: 4, reps: "10-12",
+        tempo: ["5","2","3","0"],
+        tempoLabels: ["Eccentric","Bottom Hold","Concentric","Reset"],
+        muscles: "Quadriceps / Hamstrings / Glutes / Core",
+        cues: "Descend over 5 full seconds. Hold parallel for 2 seconds. Rise over 3 seconds. Never lock out at the top — keep the quads and glutes under constant tension throughout the entire set.",
+        rest: 90
+      },
+      {
+        id: "figure_four_squat", name: "Figure-Four Single-Leg Squat",
+        sets: 3, reps: "6-8",
+        tempo: ["4","2","3","0"],
+        tempoLabels: ["Eccentric","Bottom Hold","Concentric","Reset"],
+        muscles: "Glutes / Quadriceps / Hip Flexors",
+        cues: "Cross one ankle over the opposite knee before descending. Lower over 4 seconds into a deep hip stretch. Hold 2 seconds at the bottom. Drive up over 3 seconds. Complete all reps on one side before switching.",
+        rest: 90
+      }
+    ]
+  }
+};
+
+const MUSCLE_ICONS = {
+  chest:     'chest.png',
+  back:      'back.png',
+  trapezius: 'traps.png',
+  deltoid:   'deltoid.png',
+  biceps:    'biceps.png',
+  legs:      'legs.png'
+};
+
+function todayKey() { return 'wd_' + new Date().toISOString().slice(0,10); }
+function loadProgress() { try { return JSON.parse(localStorage.getItem(todayKey())||'{}'); } catch { return {}; } }
+function saveProgress(p) { localStorage.setItem(todayKey(), JSON.stringify(p)); updateHeader(); if(activeKey) renderMain(activeKey); }
+function loadNotes() { try { return JSON.parse(localStorage.getItem('wd_notes')||'{}'); } catch { return {}; } }
+function saveNote(id, txt) { const n=loadNotes(); n[id]=txt; localStorage.setItem('wd_notes', JSON.stringify(n)); }
+function loadHistory() { try { return JSON.parse(localStorage.getItem('wd_hist')||'{}'); } catch { return {}; } }
+function stampSession(muscle) {
+  const h=loadHistory(), d=new Date().toISOString().slice(0,10);
+  h[d]=(h[d]||0)+1;
+  localStorage.setItem('wd_hist',JSON.stringify(h));
+  // record muscle groups per day
+  const mg = JSON.parse(localStorage.getItem('wd_muscles')||'{}');
+  if(!mg[d]) mg[d]=[];
+  if(muscle && !mg[d].includes(muscle)) mg[d].push(muscle);
+  localStorage.setItem('wd_muscles', JSON.stringify(mg));
+  updateHeader();
+}
+
+function updateHeader() {
+  const p=loadProgress(); let total=0;
+  Object.values(p).forEach(e=>Object.values(e).forEach(v=>{if(v)total++;}));
+  document.getElementById('hdr-sets').textContent=total;
+  const h=loadHistory(), today=new Date(); let streak=0;
+  for(let i=0;i<365;i++){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    if(h[d.toISOString().slice(0,10)]) streak++; else if(i>0) break;
+  }
+  document.getElementById('hdr-streak').textContent=streak;
+  document.getElementById('hdr-sessions').textContent=Object.keys(h).length;
+}
+
+let activeKey=null;
+
+function buildLanding() {
+  activeKey = null;
+  const p = loadProgress();
+  const muscles = JSON.parse(localStorage.getItem('wd_muscles')||'{}');
+  const today = new Date();
+
+  const cards = Object.entries(DATA).map(([k, g], idx) => {
+    const total = g.exercises.reduce((s,e) => s+e.sets, 0);
+    let done = 0; g.exercises.forEach(e => { if(p[e.id]) done += Object.values(p[e.id]).filter(Boolean).length; });
+    const pct = total > 0 ? Math.round(done/total*100) : 0;
+    const allDone = done >= total && total > 0;
+    const started = done > 0 && !allDone;
+
+    // frequency pip
+    let lastDays = null;
+    for(let i=0; i<60; i++){
+      const d = new Date(today); d.setDate(d.getDate()-i);
+      const ds = d.toISOString().slice(0,10);
+      if(muscles[ds] && muscles[ds].includes(k)){ lastDays=i; break; }
+    }
+    let pipClass = 'cold';
+    if(lastDays !== null){ pipClass = lastDays<=3?'fresh':lastDays<=7?'stale':'cold'; }
+    const pipTitle = lastDays===null?'Never trained':lastDays===0?'Today':lastDays===1?'Yesterday':`${lastDays}d ago`;
+    const iconSrc = MUSCLE_ICONS[k] || '';
+    const indexStr = String(idx+1).padStart(2,'0');
+    const statusText = allDone ? 'COMPLETE' : started ? `${pct}% &mdash; IN PROGRESS` : 'READY';
+    const statusCls = allDone ? 'done' : started ? 'active' : '';
+
+    return `<div class="muscle-card" onclick="selectMuscle('${k}')">
+      ${iconSrc ? `<img class="muscle-card-icon" src="${iconSrc}" alt="${g.label}">` : ''}
+      <div class="muscle-card-inner">
+        <div class="muscle-card-index">${indexStr} &nbsp;·&nbsp; <span class="freq-pip ${pipClass}" style="display:inline-block;vertical-align:middle;" title="${pipTitle}"></span></div>
+        <div class="muscle-card-name">${g.label}</div>
+        <div class="muscle-card-footer">
+          <span class="muscle-card-sets">${total} SETS</span>
+          <span class="muscle-card-status ${statusCls}">${statusText}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="muscle-grid-view">
+      <div class="muscle-grid-header">
+        <div class="muscle-grid-title">Select Target</div>
+        <div class="muscle-grid-sub">Choose muscle group to begin session</div>
+      </div>
+      <div class="muscle-grid">${cards}</div>
+    </div>`;
+}
+
+function selectMuscle(key) {
+  activeKey = key;
+  renderMain(key);
+}
+
+function renderMain(key) {
+  const g = DATA[key], p = loadProgress(), notes = loadNotes();
+  const total = g.exercises.reduce((s,e) => s+e.sets, 0);
+  let done = 0; g.exercises.forEach(e => { if(p[e.id]) done += Object.values(p[e.id]).filter(Boolean).length; });
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="detail-view">
+      <button class="back-btn" onclick="buildLanding()">
+        <svg viewBox="0 0 10 10"><polyline points="6,1 2,5 6,9"/></svg>
+        All Muscles
+      </button>
+      <div class="title-row">
+        <div class="section-title" style="margin-bottom:0">${g.label}</div>
+        <div class="global-rest-timer" id="global-rest-timer">
+          <div class="rest-ring-wrap">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle class="rest-ring-bg" cx="32" cy="32" r="27"/>
+              <circle class="rest-ring-arc" id="rarc-global" cx="32" cy="32" r="27"
+                stroke-dasharray="169.6" stroke-dashoffset="0"/>
+            </svg>
+            <div class="rest-ring-center">
+              <span class="rest-ring-num" id="rcd-global">—</span>
+              <span class="rest-ring-lbl">rest</span>
+            </div>
+          </div>
+          <div class="rest-info">
+            <div class="rest-info-label">Resting</div>
+            <div class="rest-info-exname" id="rmsg-exname">—</div>
+            <div class="rest-info-msg" id="rmsg-global">Breathe. Next set coming.</div>
+          </div>
+        </div>
+      </div>
+      <div class="session-meta">
+        <span class="session-meta-label">Session Progress</span>
+        <span class="session-meta-pct">${done} / ${total} sets &mdash; ${pct}%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div id="exercise-list">
+        ${g.exercises.map((ex,i) => renderCard(ex,p,notes,i)).join('')}
+      </div>
+    </div>`;
+}
+
+function renderCard(ex, p, notes, idx) {
+  const ep=p[ex.id]||{};
+  const done=Object.values(ep).filter(Boolean).length;
+  const allDone=done===ex.sets;
+  const note=notes[ex.id]||'';
+
+  const streak=getExStreak(ex.id, ex.sets);
+  const totalSessions=getTotalExSessions(ex.id, ex.sets);
+  const statPills=(streak>0||totalSessions>0)?`<div class="ex-stat-row">
+    ${streak>0?`<span class="stat-pill ${streak>=5?'amber':'green'}">🔥 ${streak} in a row</span>`:''}
+    ${totalSessions>0?`<span class="stat-pill">✓ ${totalSessions} session${totalSessions!==1?'s':''} complete</span>`:''}
+  </div>`:'';
+
+  const tempoHtml=ex.tempo.map((t,i)=>`
+    <div class="tempo-cell">
+      <div class="tc-num">${t}s</div>
+      <div class="tc-lbl">${ex.tempoLabels[i]}</div>
+    </div>`).join('');
+
+  const setsHtml=Array.from({length:ex.sets},(_,i)=>{
+    const isDone=!!ep[`s${i}`];
+    return `<div class="set-row ${isDone?'done':''}" onclick="toggleSet('${ex.id}',${i})">
+      <div class="check-box">${isDone?'&#10003;':''}</div>
+      <div class="set-info">
+        <div class="set-num">Set ${i+1} of ${ex.sets}</div>
+        <div class="set-reps">${ex.reps} reps</div>
+        <div class="set-tempo">Tempo ${ex.tempo.join('-')}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="exercise-card ${allDone?'all-done':''}" id="card-${ex.id}" style="animation-delay:${idx*0.08}s">
+    <div class="card-body">
+      <div class="card-left">
+        <div class="ex-name">${ex.name}${allDone?' &mdash; Complete':''}</div>
+        <div class="muscles-line">${ex.muscles}</div>
+        ${statPills}
+        <div class="ex-tags">
+          <span class="tag">${ex.sets} Sets</span>
+          <span class="tag">${ex.reps} Reps</span>
+          <span class="tag hi">Tempo ${ex.tempo.join('-')}</span>
+          <span class="tag">Rest ${ex.rest}s</span>
+          <span class="tag">${done}/${ex.sets} done</span>
+        </div>
+        <div class="tempo-grid">${tempoHtml}</div>
+        <div class="cue-block">${ex.cues}</div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name+' exercise')}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M23.5 6.2s-.2-1.6-1-2.3c-.9-1-1.9-1-2.4-1C17.2 2.7 12 2.7 12 2.7s-5.2 0-8.1.2c-.5.1-1.5.1-2.4 1-.7.7-1 2.3-1 2.3S.3 8 .3 9.8v1.7c0 1.7.2 3.5.2 3.5s.2 1.6 1 2.3c.9 1 2.1.9 2.6 1C5.8 18.5 12 18.5 12 18.5s5.2 0 8.1-.3c.5-.1 1.5-.1 2.4-1 .7-.7 1-2.3 1-2.3s.2-1.7.2-3.5V9.8c0-1.7-.2-3.6-.2-3.6zM9.7 14.3V8.1l6.6 3.1-6.6 3.1z"/></svg>
+          Watch on YouTube
+        </a>
+      </div>
+      <div class="card-right">
+        <div class="sets-header">Sets</div>
+        ${setsHtml}
+        <div class="notes-wrap">
+          <div class="notes-lbl">Notes</div>
+          <textarea class="notes-input" placeholder="How did this feel?" onchange="saveNote('${ex.id}',this.value)">${note}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+const restTimers={};
+
+function toggleSet(exId, i) {
+  const p=loadProgress();
+  if(!p[exId]) p[exId]={};
+  const k=`s${i}`;
+  p[exId][k]=!p[exId][k];
+  const isDone=p[exId][k];
+  saveProgress(p);
+  let restSec=90, muscleKey=null, exSets=4;
+  Object.entries(DATA).forEach(([mk,g])=>g.exercises.forEach(e=>{
+    if(e.id===exId){restSec=e.rest;muscleKey=mk;exSets=e.sets;}
+  }));
+  const doneSets=Object.values(p[exId]).filter(Boolean).length;
+  recordExSets(exId, doneSets);
+  if(isDone){
+    stampSession(muscleKey);
+    if(doneSets===exSets){
+      const streak=getExStreak(exId,exSets);
+      if(streak>=3) showToast(`🔥 ${streak} sessions in a row!`);
+      else showToast(`Exercise complete! Rest ${restSec}s.`);
+    } else {
+      showToast(`Set ${i+1} complete. Rest ${restSec}s.`);
+    }
+  } else {
+    stopRest();
+  }
+  if(activeKey){ renderMain(activeKey); }
+  if(isDone){ startRest(exId, restSec); }
+}
+
+function startRest(id, sec) {
+  // find exercise name
+  let exName = '';
+  Object.values(DATA).forEach(g=>g.exercises.forEach(e=>{ if(e.id===id) exName=e.name; }));
+
+  const wrap = document.getElementById('global-rest-timer');
+  if (!wrap) return;
+  wrap.classList.add('active');
+
+  // clear any running timer
+  if (restTimers._active) { clearInterval(restTimers._active); delete restTimers._active; }
+
+  const CIRC = 2 * Math.PI * 27; // r=27 → 169.6
+  let rem = sec, warned = false;
+
+  const numEl  = document.getElementById('rcd-global');
+  const arcEl  = document.getElementById('rarc-global');
+  const msgEl  = document.getElementById('rmsg-global');
+  const exEl   = document.getElementById('rmsg-exname');
+
+  if (exEl)  exEl.textContent = exName;
+  if (numEl) { numEl.textContent = fmt(rem); numEl.className = 'rest-ring-num'; }
+  if (arcEl) { arcEl.style.strokeDashoffset = 0; arcEl.className = 'rest-ring-arc'; }
+  if (msgEl) msgEl.textContent = 'Breathe. Next set coming.';
+
+  restTimers._active = setInterval(() => {
+    rem--;
+    const n = document.getElementById('rcd-global');
+    const a = document.getElementById('rarc-global');
+    const m = document.getElementById('rmsg-global');
+    if (!n) { clearInterval(restTimers._active); return; }
+
+    if (rem <= 0) {
+      clearInterval(restTimers._active); delete restTimers._active;
+      const center = n.closest('.rest-ring-center');
+      if (center) center.innerHTML = '<span class="rest-ring-go">Go</span>';
+      if (a) { a.style.strokeDashoffset = CIRC; a.classList.add('urgent'); }
+      if (m) m.textContent = 'Start your next set!';
+      playRestDone();
+      showToast('Rest complete. Next set.');
+      setTimeout(() => {
+        const b = document.getElementById('global-rest-timer');
+        if (b) b.classList.remove('active');
+      }, 2500);
+    } else {
+      if (rem <= 3 && !warned) { warned = true; playWarningBeep(); }
+      n.textContent = fmt(rem);
+      const urgent = rem <= 5;
+      n.className = 'rest-ring-num' + (urgent ? ' urgent' : '');
+      if (a) {
+        a.style.strokeDashoffset = CIRC * (1 - rem / sec);
+        a.className = 'rest-ring-arc' + (urgent ? ' urgent' : '');
+      }
+      const msgs = ['Breathe. Next set coming.', 'Stay loose. Keep breathing.', 'Almost ready. Stay focused.'];
+      if (m) m.textContent = msgs[Math.min(Math.floor((1 - rem/sec) * msgs.length), msgs.length-1)];
+    }
+  }, 1000);
+}
+
+function stopRest(id) {
+  if (restTimers._active) { clearInterval(restTimers._active); delete restTimers._active; }
+  const b = document.getElementById('global-rest-timer');
+  if (b) b.classList.remove('active');
+}
+
+function fmt(s){return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
+
+function confirmReset(){
+  if(confirm("Reset today's progress?")){
+    localStorage.removeItem(todayKey());
+    showToast("Today's progress cleared.");
+    activeKey ? renderMain(activeKey) : buildLanding();
+    updateHeader();
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function exportData() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('wd_')) {
+      try { data[key] = JSON.parse(localStorage.getItem(key)); }
+      catch { data[key] = localStorage.getItem(key); }
+    }
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `workout_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported successfully.');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (typeof data !== 'object' || data === null) throw new Error();
+      const keys = Object.keys(data).filter(k => k.startsWith('wd_'));
+      if (keys.length === 0) { showToast('No valid data found in file.'); return; }
+      if (!confirm(`Import ${keys.length} records? This will merge with existing data.`)) return;
+      keys.forEach(k => localStorage.setItem(k, JSON.stringify(data[k])));
+      updateHeader();
+      activeKey ? renderMain(activeKey) : buildLanding();
+      showToast(`Imported ${keys.length} records successfully.`);
+    } catch {
+      showToast('Invalid backup file.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function openHistory() {
+  renderHistory();
+  document.getElementById('historyOverlay').classList.add('open');
+}
+
+function closeHistory() {
+  document.getElementById('historyOverlay').classList.remove('open');
+}
+
+function overlayClick(e) {
+  const panel = document.getElementById('historyPanel');
+  if (!panel.contains(e.target)) closeHistory();
+}
+
+function renderHistory() {
+  const hist = loadHistory();
+  const muscles = JSON.parse(localStorage.getItem('wd_muscles')||'{}');
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0,10);
+
+  // ── 12-week contribution grid ──────────────────────────
+  // Build a grid: 7 rows (Mon–Sun) x 12 cols (weeks), ending today
+  const DOW_LABELS = ['M','T','W','T','F','S','S'];
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Find the Sunday of the week containing today, then go back 12 weeks
+  const dayOfWeek = (today.getDay() + 6) % 7; // Mon=0, Sun=6
+  // Start of 12-week window: Monday 12 weeks ago
+  const gridStart = new Date(today);
+  gridStart.setDate(gridStart.getDate() - dayOfWeek - 7*11);
+
+  // Build 12 columns × 7 rows
+  let weeks = [];
+  for(let w=0; w<12; w++) {
+    let week = [];
+    for(let d=0; d<7; d++) {
+      const dt = new Date(gridStart);
+      dt.setDate(gridStart.getDate() + w*7 + d);
+      week.push(dt);
+    }
+    weeks.push(week);
+  }
+
+  // Month labels (show month name at first week of that month in grid)
+  const monthLabels = weeks.map(week => {
+    const firstDay = week[0];
+    // Show month if the 1st of the month falls within this week
+    const hasFirst = week.some(d => d.getDate() === 1);
+    if(hasFirst) {
+      const monthDay = week.find(d => d.getDate() === 1);
+      return MONTHS[monthDay.getMonth()];
+    }
+    return '';
+  });
+
+  const monthRow = `<div class="month-labels">
+    <div></div>
+    ${monthLabels.map(m=>`<div class="month-lbl">${m}</div>`).join('')}
+  </div>`;
+
+  const gridRows = DOW_LABELS.map((lbl, di) => {
+    const cells = weeks.map(week => {
+      const dt = week[di];
+      const ds = dt.toISOString().slice(0,10);
+      const worked = !!hist[ds];
+      const isToday = ds === todayStr;
+      const isFuture = dt > today;
+      if(isFuture) return `<div class="sg-cell" style="opacity:0.2"></div>`;
+      const mgs = muscles[ds] ? muscles[ds].map(m=>DATA[m]?DATA[m].label:m).join(', ') : '';
+      const tooltip = worked
+        ? `${ds}${mgs ? ' — '+mgs : ''}`
+        : ds;
+      return `<div class="sg-cell ${worked?'worked':''} ${isToday?'today':''}">
+        <div class="sg-tooltip">${tooltip}</div>
+      </div>`;
+    }).join('');
+    return `<div class="sg-dow-label">${lbl}</div>${cells}`;
+  }).join('');
+
+  const grid = `${monthRow}<div class="streak-grid">${gridRows}</div>`;
+
+  // ── Day-by-day log (last 30 days with activity) ────────
+  const logDays = [];
+  for(let i=0; i<120; i++) {
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().slice(0,10);
+    if(hist[ds]) logDays.push({ ds, d });
+    if(logDays.length >= 30) break;
+  }
+
+  const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  const logHtml = logDays.length === 0
+    ? `<div class="history-empty">No sessions recorded yet.</div>`
+    : logDays.map(({ds, d}) => {
+        const mgs = muscles[ds] || [];
+        const chips = mgs.map(m => `<span class="muscle-chip">${DATA[m]?DATA[m].label:m}</span>`).join('');
+
+        // Count sets done that day
+        let setsCount = 0;
+        try {
+          const dp = JSON.parse(localStorage.getItem('wd_'+ds)||'{}');
+          Object.values(dp).forEach(e=>Object.values(e).forEach(v=>{if(v)setsCount++;}));
+        } catch {}
+
+        const isToday = ds === todayStr;
+        const dateLabel = isToday ? 'Today' : WEEKDAYS[d.getDay()];
+        const dateShort = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+
+        return `<div class="day-log-row">
+          <div class="day-log-date">${dateLabel}<span class="dldate-sub">${dateShort}</span></div>
+          <div class="day-log-muscles">${chips || '<span style="font-size:0.55rem;color:var(--text-dim);letter-spacing:0.1em;">—</span>'}</div>
+          ${setsCount > 0 ? `<div class="day-log-sets">${setsCount} sets</div>` : ''}
+        </div>`;
+      }).join('');
+
+  // ── This week's volume per muscle group ────────────────
+  const dowIdx = (today.getDay()+6)%7; // Mon=0
+  const weekStart = new Date(today); weekStart.setDate(today.getDate() - dowIdx);
+
+  // collect all days this week up to today
+  const weekDays = [];
+  for(let d=0; d<7; d++) {
+    const dt = new Date(weekStart); dt.setDate(weekStart.getDate()+d);
+    if(dt > today) break;
+    weekDays.push(dt.toISOString().slice(0,10));
+  }
+
+  // tally sets per muscle group this week
+  const muscleVol = {};
+  Object.entries(DATA).forEach(([k,g]) => {
+    let sets = 0;
+    weekDays.forEach(ds => {
+      try {
+        const dp = JSON.parse(localStorage.getItem('wd_'+ds)||'{}');
+        g.exercises.forEach(ex => {
+          if(dp[ex.id]) sets += Object.values(dp[ex.id]).filter(Boolean).length;
+        });
+      } catch {}
+    });
+    muscleVol[k] = { label: g.label, sets, target: g.exercises.reduce((s,e)=>s+e.sets,0) };
+  });
+
+  const maxMuscleVol = Math.max(...Object.values(muscleVol).map(m=>m.sets), 1);
+  const muscleVolBars = Object.values(muscleVol).map(m => {
+    const pct = m.sets / Math.max(m.sets, m.target);
+    const barH = Math.max(m.sets / maxMuscleVol * 68, m.sets > 0 ? 4 : 1);
+    const done = m.sets >= m.target;
+    return `
+      <div class="vol-bar-col">
+        <div class="vol-bar-val">${m.sets > 0 ? m.sets : ''}</div>
+        <div class="vol-bar ${m.sets>0?'has-data':''} ${done?'this-week':''}"
+          style="height:${barH}px" title="${m.label}: ${m.sets}/${m.target} sets"></div>
+        <div class="vol-bar-lbl">${m.label}</div>
+      </div>`;
+  }).join('');
+
+  const weekLabel = weekStart.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  const volChart = `
+    <div class="vol-chart-wrap">
+      <div class="vol-bar-area">${muscleVolBars}</div>
+      <div style="font-size:0.44rem;color:var(--text-dim);letter-spacing:0.15em;text-transform:uppercase;margin-top:6px;">
+        Week of ${weekLabel} &nbsp;·&nbsp; <span style="color:var(--green-text)">■</span> full target reached
+      </div>
+    </div>`;
+
+  // ── Per-exercise stats ──────────────────────────────────
+  const allExercises = Object.values(DATA).flatMap(g=>g.exercises);
+  const exStatsHtml = (() => {
+    const cards = allExercises.map(ex => {
+      const streak = getExStreak(ex.id, ex.sets);
+      const total = getTotalExSessions(ex.id, ex.sets);
+      if(total === 0) return '';
+      return `<div class="ex-stat-card">
+        <div class="ex-stat-name">${ex.name}</div>
+        <div class="ex-stat-nums">
+          <div class="ex-stat-num"><div class="n">${total}</div><div class="l">Sessions</div></div>
+          ${streak>0?`<div class="ex-stat-num"><div class="n" style="color:var(--amber-text)">${streak}</div><div class="l">Streak</div></div>`:''}
+        </div>
+      </div>`;
+    }).filter(Boolean).join('');
+    return cards ? `<div class="ex-stat-grid">${cards}</div>` : '';
+  })();
+
+  document.getElementById('history-content').innerHTML = `
+    <div class="history-section-label">12-Week Overview</div>
+    ${grid}
+    <div class="history-section-label" style="margin-top:8px;">This Week's Volume</div>
+    ${volChart}
+    <div class="history-section-label" style="margin-top:8px;">Exercise Records</div>
+    ${exStatsHtml || '<div class="history-empty">Complete exercises to see records.</div>'}
+    <div class="history-section-label" style="margin-top:8px;">Session Log</div>
+    <div class="day-log">${logHtml}</div>
+  `;
+}
+
+document.getElementById('historyOverlay').addEventListener('mousedown', e => {
+  const panel = document.getElementById('historyPanel');
+  if (!panel.contains(e.target)) closeHistory();
+});
+
+// ── AUDIO ────────────────────────────────────────────────
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+function playBeep(freq=880, dur=0.12, vol=0.25) {
+  try {
+    const ctx = getAudioCtx();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq; o.type = 'sine';
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+function playRestDone() {
+  playBeep(523,0.10); setTimeout(()=>playBeep(659,0.10),130); setTimeout(()=>playBeep(784,0.22),260);
+}
+function playWarningBeep() { playBeep(440,0.07,0.15); }
+
+// ── EXERCISE HISTORY (PRs & streaks) ─────────────────────
+function loadExHistory() { try { return JSON.parse(localStorage.getItem('wd_ex_hist')||'{}'); } catch { return {}; } }
+function saveExHistory(h) { localStorage.setItem('wd_ex_hist', JSON.stringify(h)); }
+function recordExSets(exId, count) {
+  const h = loadExHistory();
+  if (!h[exId]) h[exId] = {};
+  h[exId][new Date().toISOString().slice(0,10)] = count;
+  saveExHistory(h);
+}
+function getExStreak(exId, totalSets) {
+  const exH = (loadExHistory()[exId]) || {};
+  const today = new Date(), todayStr = today.toISOString().slice(0,10);
+  const startI = (exH[todayStr]||0) >= totalSets ? 0 : 1;
+  let streak = 0;
+  for (let i = startI; i < 365; i++) {
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    if ((exH[d.toISOString().slice(0,10)]||0) >= totalSets) streak++;
+    else break;
+  }
+  return streak;
+}
+function getTotalExSessions(exId, totalSets) {
+  return Object.values((loadExHistory()[exId])||{}).filter(v=>v>=totalSets).length;
+}
+
+buildLanding();
+updateHeader();
+
+// ── History panel horizontal resize ──────────────────────
+(function() {
+  const handle = document.getElementById('historyResizeHandle');
+  const panel  = document.getElementById('historyPanel');
+  let dragging = false;
+  let startX, startW;
+
+  handle.addEventListener('mousedown', e => {
+    dragging = true;
+    startX = e.clientX;
+    startW = panel.offsetWidth;
+    handle.classList.add('dragging');
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const delta = startX - e.clientX;   // dragging left = wider
+    const newW  = Math.min(
+      Math.max(startW + delta, parseInt(getComputedStyle(panel).minWidth)),
+      window.innerWidth * 0.9
+    );
+    panel.style.width = newW + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+  });
+})();
+</script>
+</body>
+</html>

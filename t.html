@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Square Thumbnail — Mahmoud Gamal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Your exact light-mode palette tokens */
+            --bg: #f2f2f4;
+            --fg: #141418;
+            --fg-dim: #48484e;
+            --blue: #4a6878;
+            --rule: rgba(20,20,24,.10);
+            --ff-display: 'Playfair Display', Georgia, serif;
+            --ff-mono: 'IBM Plex Mono', 'Courier New', monospace;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #dcdce2; 
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* 1080x1080 High-Res Square */
+        .thumbnail-canvas {
+            position: relative;
+            width: 1080px;
+            height: 1080px;
+            background: var(--bg);
+            box-shadow: 0 24px 64px rgba(20,20,24,.15);
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Drafting Grid Texture */
+        .thumbnail-canvas::before {
+            content: '';
+            position: absolute; 
+            inset: 0;
+            background-image:
+                linear-gradient(var(--rule) 1px, transparent 1px),
+                linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Top Blue Accent Border */
+        .thumbnail-canvas::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 12px;
+            background: var(--blue);
+        }
+
+        /* Technical Corner Crosshairs */
+        .diag-corner {
+            position: absolute;
+            width: 32px; height: 32px;
+            z-index: 10;
+        }
+        .diag-corner::before, .diag-corner::after {
+            content: ''; position: absolute; background: var(--fg); opacity: 0.3;
+        }
+        .diag-corner::before { left: 15px; top: 0; bottom: 0; width: 2px; }
+        .diag-corner::after { top: 15px; left: 0; right: 0; height: 2px; }
+        
+        /* Positioned slightly inside the canvas edges */
+        .tl { top: 50px; left: 50px; }
+        .tr { top: 50px; right: 50px; }
+        .bl { bottom: 50px; left: 50px; }
+        .br { bottom: 50px; right: 50px; }
+
+        .content-layer {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .eyebrow {
+            font-family: var(--ff-mono);
+            font-size: 22px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .eyebrow::before {
+            content: '';
+            width: 64px; height: 2px;
+            background: var(--blue);
+        }
+
+        .section-watermark {
+            position: absolute;
+            top: -40px; right: -30px;
+            font-family: var(--ff-display);
+            font-size: 380px;
+            font-weight: 900;
+            color: var(--fg);
+            opacity: .04;
+            line-height: 1;
+            font-style: italic;
+        }
+
+        .typography-wrapper {
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        h1 {
+            font-family: var(--ff-display);
+            font-size: 100px;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--fg);
+            margin: 0;
+            max-width: 880px;
+        }
+
+        h1 em {
+            color: var(--blue);
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-family: var(--ff-mono);
+            font-size: 24px;
+            color: var(--fg-dim);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 48px;
+            font-weight: 400;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-family: var(--ff-mono);
+            font-size: 20px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+            border-top: 2px solid var(--rule);
+            padding-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="thumbnail-canvas">
+    <div class="section-watermark">04</div>
+    
+    <div class="diag-corner tl"></div>
+    <div class="diag-corner tr"></div>
+    <div class="diag-corner bl"></div>
+    <div class="diag-corner br"></div>
+
+    <div class="content-layer">
+        <div class="eyebrow">Writing & Publications</div>
+
+        <div class="typography-wrapper">
+            <h1>Notes on <em>computation,</em><br>models, and systems.</h1>
+            <div class="subtitle">The math behind the machine.</div>
+        </div>
+
+        <footer>
+            <div>Mahmoud Gamal</div>
+            <div>[ mgama1.github.io ]</div>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>
