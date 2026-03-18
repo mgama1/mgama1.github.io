@@ -742,6 +742,175 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); }
 
+  /* ADD EXERCISE BUTTON */
+  .add-exercise-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--border2);
+    color: var(--text-dim);
+    padding: 16px 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.18s;
+  }
+  .add-exercise-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--s1);
+  }
+  .add-exercise-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  /* CUSTOM EXERCISE DELETE BTN */
+  .ex-delete-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .ex-delete-btn:hover { border-color: #c0392b; color: #c0392b; background: rgba(192,57,43,0.08); }
+  .ex-name-row { display: flex; align-items: center; margin-bottom: 4px; }
+
+  /* ADD EXERCISE MODAL */
+  .ae-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .ae-overlay.open { display: flex; }
+
+  .ae-modal {
+    background: var(--s1);
+    border: 1px solid var(--border2);
+    width: 560px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: rise 0.18s ease forwards;
+  }
+
+  .ae-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .ae-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    color: var(--text-hi);
+    line-height: 1;
+  }
+
+  .ae-subtitle {
+    font-size: 0.46rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .ae-close {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .ae-close:hover { border-color: var(--border2); color: var(--text); }
+
+  .ae-body { padding: 20px 24px; }
+
+  .ae-field { margin-bottom: 16px; }
+
+  .ae-label {
+    display: block;
+    font-size: 0.46rem;
+    letter-spacing: 0.28em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .ae-input, .ae-textarea {
+    width: 100%;
+    background: var(--s2);
+    border: 1px solid var(--border);
+    color: var(--text-hi);
+    padding: 9px 11px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    outline: none;
+    transition: border-color 0.18s;
+    letter-spacing: 0.03em;
+  }
+  .ae-input:focus, .ae-textarea:focus { border-color: var(--border2); }
+  .ae-input::placeholder, .ae-textarea::placeholder { color: var(--text-dim); opacity: 0.4; }
+  .ae-textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+
+  .ae-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ae-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+  .ae-section-lbl {
+    font-size: 0.44rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+
+  .ae-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .ae-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 9px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ae-btn:hover { border-color: var(--border2); color: var(--text); }
+  .ae-btn.primary {
+    border-color: var(--accent);
+    color: var(--green-text);
+    background: var(--green);
+  }
+  .ae-btn.primary:hover { background: var(--done-bg); border-color: var(--green-bdr); }
+
   /* HISTORY PANEL */
   .history-btn {
     background: transparent;
@@ -1044,6 +1213,60 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ADD EXERCISE MODAL -->
+<div class="ae-overlay" id="aeOverlay">
+  <div class="ae-modal" id="aeModal">
+    <div class="ae-header">
+      <div>
+        <div class="ae-title">Add Exercise</div>
+        <div class="ae-subtitle" id="ae-muscle-label">to muscle group</div>
+      </div>
+      <button class="ae-close" onclick="closeAddExModal()">✕</button>
+    </div>
+    <div class="ae-body">
+      <div class="ae-field">
+        <label class="ae-label">Exercise Name *</label>
+        <input class="ae-input" id="ae-name" placeholder="e.g. Diamond Push Ups" />
+      </div>
+      <div class="ae-field">
+        <label class="ae-label">Muscles Worked</label>
+        <input class="ae-input" id="ae-muscles" placeholder="e.g. Triceps / Pectoralis / Anterior Deltoid" />
+      </div>
+      <div class="ae-row ae-field">
+        <div>
+          <label class="ae-label">Sets *</label>
+          <input class="ae-input" id="ae-sets" type="number" min="1" max="20" placeholder="3" />
+        </div>
+        <div>
+          <label class="ae-label">Reps</label>
+          <input class="ae-input" id="ae-reps" placeholder="8-10" />
+        </div>
+      </div>
+      <div class="ae-field">
+        <label class="ae-label">Rest (seconds)</label>
+        <input class="ae-input" id="ae-rest" type="number" min="10" max="600" placeholder="90" />
+      </div>
+      <div class="ae-field">
+        <div class="ae-section-lbl">Tempo (seconds) — Eccentric · Bottom Hold · Concentric · Top Hold</div>
+        <div class="ae-row-4">
+          <input class="ae-input" id="ae-t0" type="number" min="0" max="30" placeholder="3" />
+          <input class="ae-input" id="ae-t1" type="number" min="0" max="30" placeholder="1" />
+          <input class="ae-input" id="ae-t2" type="number" min="0" max="30" placeholder="2" />
+          <input class="ae-input" id="ae-t3" type="number" min="0" max="30" placeholder="1" />
+        </div>
+      </div>
+      <div class="ae-field">
+        <label class="ae-label">Coaching Cues</label>
+        <textarea class="ae-textarea" id="ae-cues" placeholder="Describe form, focus points, and feel for each rep..."></textarea>
+      </div>
+    </div>
+    <div class="ae-footer">
+      <button class="ae-btn" onclick="closeAddExModal()">Cancel</button>
+      <button class="ae-btn primary" onclick="saveNewExercise()">Save Exercise</button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 const DATA = {
@@ -1282,6 +1505,10 @@ function renderMain(key) {
       <div id="exercise-list">
         ${g.exercises.map((ex,i) => renderCard(ex,p,notes,i)).join('')}
       </div>
+      <button class="add-exercise-btn" onclick="openAddExModal('${key}')">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
+        Add Exercise
+      </button>
     </div>`;
 }
 
@@ -1320,7 +1547,10 @@ function renderCard(ex, p, notes, idx) {
   <div class="exercise-card ${allDone?'all-done':''}" id="card-${ex.id}" style="animation-delay:${idx*0.08}s">
     <div class="card-body">
       <div class="card-left">
-        <div class="ex-name">${ex.name}${allDone?' &mdash; Complete':''}</div>
+        <div class="ex-name-row">
+          <div class="ex-name" style="flex:1">${ex.name}${allDone?' &mdash; Complete':''}</div>
+          ${ex.isCustom ? `<button class="ex-delete-btn" onclick="event.stopPropagation();deleteCustomExercise('${activeKey}','${ex.id}')" title="Remove exercise">✕</button>` : ''}
+        </div>
         <div class="muscles-line">${ex.muscles}</div>
         ${statPills}
         <div class="ex-tags">
@@ -1495,6 +1725,7 @@ function importData(event) {
       if (keys.length === 0) { showToast('No valid data found in file.'); return; }
       if (!confirm(`Import ${keys.length} records? This will merge with existing data.`)) return;
       keys.forEach(k => localStorage.setItem(k, JSON.stringify(data[k])));
+      mergeCustomExercises();
       updateHeader();
       activeKey ? renderMain(activeKey) : buildLanding();
       showToast(`Imported ${keys.length} records successfully.`);
@@ -1754,6 +1985,95 @@ function getTotalExSessions(exId, totalSets) {
   return Object.values((loadExHistory()[exId])||{}).filter(v=>v>=totalSets).length;
 }
 
+// ── CUSTOM EXERCISES ─────────────────────────────────────
+function loadCustomExercises() {
+  try { return JSON.parse(localStorage.getItem('wd_custom_exercises') || '{}'); } catch { return {}; }
+}
+function saveCustomExercises(obj) {
+  localStorage.setItem('wd_custom_exercises', JSON.stringify(obj));
+}
+function mergeCustomExercises() {
+  const custom = loadCustomExercises();
+  Object.entries(DATA).forEach(([muscleKey]) => {
+    // Strip any previously merged custom exercises
+    DATA[muscleKey].exercises = DATA[muscleKey].exercises.filter(e => !e.isCustom);
+  });
+  Object.entries(custom).forEach(([muscleKey, exercises]) => {
+    if (!DATA[muscleKey]) return;
+    exercises.forEach(ex => DATA[muscleKey].exercises.push({ ...ex, isCustom: true }));
+  });
+}
+
+let _aeTargetMuscle = null;
+
+function openAddExModal(muscleKey) {
+  _aeTargetMuscle = muscleKey;
+  const g = DATA[muscleKey];
+  document.getElementById('ae-muscle-label').textContent = 'Adding to ' + (g ? g.label : muscleKey);
+  ['ae-name','ae-muscles','ae-sets','ae-reps','ae-rest','ae-cues','ae-t0','ae-t1','ae-t2','ae-t3']
+    .forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('aeOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('ae-name').focus(), 80);
+}
+
+function closeAddExModal() {
+  document.getElementById('aeOverlay').classList.remove('open');
+  _aeTargetMuscle = null;
+}
+
+function saveNewExercise() {
+  const name = document.getElementById('ae-name').value.trim();
+  const setsVal = parseInt(document.getElementById('ae-sets').value, 10);
+  if (!name) { showToast('Exercise name is required.'); return; }
+  if (!setsVal || setsVal < 1) { showToast('Sets must be at least 1.'); return; }
+
+  const muscles = document.getElementById('ae-muscles').value.trim() || '—';
+  const reps    = document.getElementById('ae-reps').value.trim() || '8-12';
+  const rest    = parseInt(document.getElementById('ae-rest').value, 10) || 90;
+  const cues    = document.getElementById('ae-cues').value.trim() || '';
+  const tempo   = ['ae-t0','ae-t1','ae-t2','ae-t3'].map(id => {
+    const v = parseInt(document.getElementById(id).value, 10);
+    return isNaN(v) ? '2' : String(v);
+  });
+  const tempoLabels = ['Eccentric','Bottom Hold','Concentric','Top Hold'];
+
+  // Generate a unique id
+  const baseId = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  const allIds = Object.values(DATA).flatMap(g => g.exercises.map(e => e.id));
+  let id = baseId, n = 2;
+  while (allIds.includes(id)) { id = baseId + '_' + n++; }
+
+  const ex = { id, name, sets: setsVal, reps, tempo, tempoLabels, muscles, cues, rest };
+
+  const custom = loadCustomExercises();
+  if (!custom[_aeTargetMuscle]) custom[_aeTargetMuscle] = [];
+  custom[_aeTargetMuscle].push(ex);
+  saveCustomExercises(custom);
+
+  mergeCustomExercises();
+  closeAddExModal();
+  renderMain(_aeTargetMuscle);
+  showToast(`"${name}" added.`);
+}
+
+function deleteCustomExercise(muscleKey, exId) {
+  if (!confirm('Remove this exercise permanently?')) return;
+  const custom = loadCustomExercises();
+  if (custom[muscleKey]) {
+    custom[muscleKey] = custom[muscleKey].filter(e => e.id !== exId);
+    if (custom[muscleKey].length === 0) delete custom[muscleKey];
+  }
+  saveCustomExercises(custom);
+  mergeCustomExercises();
+  renderMain(muscleKey);
+  showToast('Exercise removed.');
+}
+
+document.getElementById('aeOverlay').addEventListener('mousedown', e => {
+  if (e.target === document.getElementById('aeOverlay')) closeAddExModal();
+});
+
+mergeCustomExercises();
 buildLanding();
 updateHeader();
 
