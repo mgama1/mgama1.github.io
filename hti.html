@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر جدول المراقبة — HTI</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #0c0f14;
+  --s1:         #131720;
+  --s2:         #1a1f2e;
+  --s3:         #222838;
+  --border:     #2e3548;
+  --border-sub: #1e2436;
+  --text:       #dde3f0;
+  --text-2:     #7e8caa;
+  --text-3:     #3d4a62;
+  --amber:      #f0a843;
+  --amber-dim:  #261c08;
+  --amber-b:    #5a3c10;
+  --green:      #3fb950;
+  --green-dim:  #0a2210;
+  --green-b:    #164a22;
+  --indigo:     #818cf8;
+  --indigo-dim: #161830;
+  --blue:       #58a6ff;
+  --red:        #f85149;
+  --orange:     #fb923c;
+  --r:          8px;
+  --r-sm:       4px;
+  --r-lg:       14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;overflow:hidden}
+
+/* ── UPLOAD SCREEN ── */
+#uploadScreen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:40px;z-index:200;background:var(--bg)}
+.upload-logo{font-size:32px;font-weight:900;letter-spacing:-1px;color:var(--amber)}
+.upload-logo span{color:var(--text-2);font-weight:300}
+.upload-card{background:var(--s2);border:2px dashed var(--border);border-radius:var(--r-lg);padding:48px 72px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;max-width:480px;width:100%}
+.upload-card:hover,.upload-card.drag-over{border-color:var(--amber);background:rgba(240,168,67,.04)}
+.upload-icon{font-size:44px;margin-bottom:14px}
+.upload-title{font-size:20px;font-weight:700;margin-bottom:6px}
+.upload-sub{font-size:13px;color:var(--text-2)}
+.upload-btn{margin-top:18px;display:inline-block;padding:7px 22px;background:var(--amber);color:#0d0d0d;border-radius:var(--r-sm);font-weight:700;font-size:13px;cursor:pointer}
+#csvInput{display:none}
+.resume-banner{background:var(--s2);border:1px solid var(--amber-b);border-radius:var(--r);padding:14px 20px;max-width:480px;width:100%;display:flex;align-items:center;gap:14px}
+.resume-info{flex:1}
+.resume-title{font-size:13px;font-weight:700;color:var(--amber)}
+.resume-sub{font-size:11px;color:var(--text-2);margin-top:2px}
+.resume-btns{display:flex;gap:8px}
+
+/* ── APP SHELL ── */
+#appShell{display:none;flex-direction:column;height:100vh}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;gap:12px;background:var(--s1);border-bottom:1px solid var(--border);padding:10px 20px;flex-shrink:0}
+.hdr-logo{font-size:17px;font-weight:900;letter-spacing:-.5px;color:var(--amber)}
+.hdr-logo span{color:var(--text-2);font-weight:400;font-size:13px;margin-right:6px}
+.hdr-spacer{flex:1}
+.hdr-stat{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:5px}
+.hdr-stat strong{color:var(--text);font-size:13px}
+.hdr-sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+.save-indicator{font-size:11px;display:flex;align-items:center;gap:5px;color:var(--text-3);transition:color .3s}
+.save-indicator.saved{color:var(--green)}
+.save-indicator.saving{color:var(--amber)}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--border);padding:0 20px;flex-shrink:0}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+
+/* ── BTNS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.btn-amber{background:var(--amber);color:#0d0d0d;border-color:var(--amber)}
+.btn-amber:hover{background:#d8932e}
+.btn-outline{background:transparent;color:var(--text-2);border-color:var(--border)}
+.btn-outline:hover{background:var(--s2);color:var(--text)}
+.btn-danger{background:rgba(248,81,73,.15);color:var(--red);border-color:rgba(248,81,73,.3)}
+.btn-danger:hover{background:rgba(248,81,73,.25)}
+.btn-indigo{background:var(--indigo-dim);color:var(--indigo);border-color:rgba(129,140,248,.3)}
+.btn-indigo:hover{background:rgba(129,140,248,.15)}
+
+/* ── FILTER BAR ── */
+.filter-bar{padding:8px 20px;background:var(--s1);border-bottom:1px solid var(--border-sub);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.search-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Cairo',sans-serif;font-size:12px;padding:5px 10px;outline:none;transition:border-color .15s}
+.search-input::placeholder{color:var(--text-3)}
+.search-input:focus{border-color:var(--amber)}
+
+/* ── BODY ── */
+.app-body{display:flex;flex:1;overflow:hidden}
+.tab-panel{flex:1;overflow-y:auto;overflow-x:hidden}
+
+/* ── SCHEDULE VIEW ── */
+.day-section{border-bottom:1px solid var(--border)}
+.day-hdr{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--border-sub);user-select:none}
+.day-hdr:hover{background:var(--s1)}
+.day-name{font-size:14px;font-weight:700;color:var(--amber)}
+.day-date{font-size:11px;color:var(--text-3);font-family:monospace}
+.day-toggle{margin-right:auto;color:var(--text-3);font-size:12px;transition:transform .2s}
+.day-section.collapsed .day-toggle{transform:rotate(180deg)}
+.day-section.collapsed .day-body{display:none}
+.ts-section{padding:14px 20px 8px}
+.ts-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ts-badge{background:var(--s3);border:1px solid var(--border);color:var(--blue);font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;font-family:monospace}
+.ts-meta{font-size:11px;color:var(--text-3)}
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:8px;margin-bottom:14px}
+.room-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.room-card.drag-over{border-color:var(--amber)!important;box-shadow:0 0 0 2px rgba(240,168,67,.15)}
+.room-card.violation{border-color:rgba(248,81,73,.5)}
+.room-card.flash-warn{background:rgba(240,168,67,.12)!important;}
+.room-card-hdr{padding:7px 10px;background:var(--s3);border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px}
+.room-name{font-size:14px;font-weight:700;font-family:monospace;color:var(--text)}
+.room-info{flex:1}
+.room-subject{font-size:11px;color:var(--text-2);line-height:1.5}
+.room-dept{font-size:10px;color:var(--text-3)}
+.room-badges{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.2px;white-space:nowrap}
+.badge-indigo{background:var(--indigo-dim);color:var(--indigo)}
+.badge-warn{background:rgba(251,146,60,.12);color:var(--orange)}
+.badge-danger{background:rgba(248,81,73,.12);color:var(--red)}
+.badge-ok{background:var(--green-dim);color:var(--green)}
+.wbar{padding:4px 10px 2px}
+.wbar-track{height:2px;background:var(--s1);border-radius:1px;overflow:hidden}
+.wbar-fill{height:100%;border-radius:1px;transition:width .4s,background .3s;background:var(--green)}
+.wbar-fill.warn{background:var(--orange)}
+.wbar-fill.danger{background:var(--red)}
+.wbar-lbl{font-size:9px;color:var(--text-3);display:flex;justify-content:space-between;margin-top:2px}
+.room-proctors{padding:6px 8px 8px;display:flex;flex-wrap:wrap;gap:4px;min-height:38px}
+.drop-hint{display:none;width:100%;text-align:center;color:var(--text-3);font-size:10px;padding:4px;border:1px dashed var(--border);border-radius:var(--r-sm)}
+.room-card.drag-over .drop-hint{display:block}
+.chip{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px 0 5px;border-radius:5px;cursor:grab;font-size:11px;font-weight:500;transition:transform .1s,opacity .15s;user-select:none;white-space:nowrap;max-width:190px;overflow:hidden}
+.chip:active{cursor:grabbing}
+.chip.dragging{opacity:.35;transform:scale(.93)}
+.chip.hard{background:var(--amber-dim);border:1px solid var(--amber-b);color:var(--amber)}
+.chip.easy{background:var(--green-dim);border:1px solid var(--green-b);color:var(--green)}
+.chip-acad{width:5px;height:5px;border-radius:50%;background:var(--indigo);flex-shrink:0}
+.chip-name{overflow:hidden;text-overflow:ellipsis;flex:1}
+.chip-w{font-size:9px;opacity:.55;margin-right:2px}
+
+/* ── STAGING ── */
+.staging{width:268px;min-width:268px;background:var(--s1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.staging-hdr{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.staging-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+.staging-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center}
+.staging-badge.empty{background:var(--s3);color:var(--text-3)}
+.staging-hint{padding:8px 14px;font-size:11px;color:var(--text-3);border-bottom:1px solid var(--border-sub);line-height:1.6}
+.staging-drop{flex:1;overflow-y:auto;padding:10px;transition:background .15s}
+.staging-drop.drag-over{background:rgba(240,168,67,.04);outline:2px dashed var(--amber-b);outline-offset:-4px;border-radius:var(--r)}
+.staging-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:110px;color:var(--text-3);font-size:12px;gap:8px;text-align:center}
+.staging-empty-icon{font-size:28px;opacity:.4}
+.staging-group{margin-bottom:12px}
+.staging-group-lbl{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;padding:0 2px 5px;border-bottom:1px solid var(--border-sub);margin-bottom:6px}
+.staging-group-chips{display:flex;flex-wrap:wrap;gap:4px}
+
+/* ── PROCTOR VIEW ── */
+#proctorPanel{padding:24px 28px;display:none}
+.pv-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.pv-title{font-size:18px;font-weight:700;flex:1}
+.pv-search{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Cairo',sans-serif;font-size:12px;padding:5px 10px;outline:none;width:220px;transition:border-color .15s}
+.pv-search:focus{border-color:var(--amber)}
+.pv-search::placeholder{color:var(--text-3)}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.pc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.pc-hdr{padding:10px 14px;background:var(--s3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.pc-name{font-size:14px;font-weight:700;flex:1}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.pc-thead{display:grid;grid-template-columns:90px 70px 1fr 70px;background:var(--bg);border-bottom:1px solid var(--border)}
+.pc-row{display:grid;grid-template-columns:90px 70px 1fr 70px;border-bottom:1px solid var(--border-sub);font-size:11px}
+.pc-row:last-child{border-bottom:none}
+.pc-cell{padding:6px 10px;color:var(--text-2);border-left:1px solid var(--border-sub)}
+.pc-cell:last-child{border-left:none}
+.pc-cell.h{color:var(--text-3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.pc-cell.primary{color:var(--text);font-weight:600}
+.pc-empty{padding:14px;font-size:11px;color:var(--text-3);text-align:center}
+.pc-total{padding:6px 10px;font-size:10px;color:var(--text-3);display:flex;justify-content:space-between;background:var(--bg);border-top:1px solid var(--border-sub)}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-lg);width:460px;max-width:92vw;box-shadow:0 24px 60px rgba(0,0,0,.5);overflow:hidden}
+.modal-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center}
+.modal-title{font-size:14px;font-weight:700;flex:1}
+.modal-body{padding:14px 18px}
+.move-preview{background:var(--s3);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text-2);display:flex;gap:14px;flex-wrap:wrap}
+.mp-item{display:flex;flex-direction:column;gap:2px}
+.mp-lbl{font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase}
+.mp-val{color:var(--text);font-weight:600}
+.vlist{display:flex;flex-direction:column;gap:5px}
+.vitem{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:var(--r-sm);font-size:12px;line-height:1.5}
+.vitem.error{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.25);color:#f8d0ce}
+.vitem.warn{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:#fdd8b5}
+.vitem.ok{background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25);color:#a8f0b2}
+.vicon{font-size:14px;flex-shrink:0;margin-top:1px}
+.modal-ftr{padding:10px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--border);color:var(--text);padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;z-index:600;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+
+/* ── PRINT ── */
+@media print {
+  body{background:#fff;color:#000;overflow:visible;font-size:11pt}
+  #appShell{height:auto;overflow:visible;display:block!important}
+  .hdr,.tabs,.filter-bar,.staging,.pv-toolbar .btn,.pv-toolbar .pv-search{display:none!important}
+  .app-body{display:block;overflow:visible}
+  #scheduleWrapper{display:none!important}
+  #proctorPanel{display:block!important;padding:10px;overflow:visible}
+  .pv-title{font-size:16pt;color:#000;margin-bottom:12px}
+  .pv-grid{display:block}
+  .pc{border:1px solid #ccc;margin-bottom:18px;page-break-inside:avoid;background:#fff;border-radius:4px}
+  .pc-hdr{background:#f0f0f0;border-bottom:1px solid #ccc}
+  .pc-name{color:#000}
+  .badge{border:1px solid #bbb;background:#eee;color:#333}
+  .pc-thead,.pc-row{border-bottom:1px solid #eee}
+  .pc-cell{color:#444;padding:5px 8px}
+  .pc-cell.primary{color:#000}
+  .pc-cell.h{color:#777;background:#f8f8f8}
+  .pc-total{background:#f8f8f8;border-top:1px solid #ddd;color:#666}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ UPLOAD SCREEN ═══ -->
+<div id="uploadScreen">
+  <div class="upload-logo">HTI <span>Proctor Scheduler</span></div>
+
+  <div class="resume-banner" id="resumeBanner" style="display:none">
+    <div class="resume-info">
+      <div class="resume-title">📂 توجد جلسة محفوظة</div>
+      <div class="resume-sub" id="resumeMeta">جاري التحميل…</div>
+    </div>
+    <div class="resume-btns">
+      <button class="btn btn-amber" onclick="resumeSession()">استكمال</button>
+      <button class="btn btn-outline" onclick="discardSession()">تجاهل</button>
+    </div>
+  </div>
+
+  <div class="upload-card" id="uploadCard">
+    <div class="upload-icon">📋</div>
+    <div class="upload-title">تحميل جدول المراقبة</div>
+    <div class="upload-sub">اسحب ملف proctor_assignments.csv هنا<br>أو انقر للاختيار</div>
+    <label class="upload-btn" for="csvInput">اختر الملف</label>
+    <input type="file" id="csvInput" accept=".csv">
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ═══ -->
+<div id="appShell">
+  <div class="hdr">
+    <div class="hdr-logo">HTI <span>محرر جدول المراقبة</span></div>
+    <div class="hdr-stat"><span>أوقات:</span><strong id="statTs">-</strong></div>
+    <div class="hdr-sep"></div>
+    <div class="hdr-stat"><span>قاعات:</span><strong id="statRooms">-</strong></div>
+    <div class="hdr-sep"></div>
+    <div class="hdr-stat"><span>تعيينات:</span><strong id="statAssign">-</strong></div>
+    <div class="hdr-sep"></div>
+    <div class="hdr-stat" id="statViolations" style="display:none;color:var(--red)">⚠ <strong id="statViolCount">0</strong> انتهاك</div>
+    <div class="hdr-spacer"></div>
+    <div class="save-indicator" id="saveIndicator">● محفوظ</div>
+    <div class="hdr-sep"></div>
+    <button class="btn btn-outline" onclick="resetAll()">↺ إعادة تحميل</button>
+    <button class="btn btn-amber" onclick="exportCSV()">⬇ CSV</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-schedule" onclick="switchTab('schedule')">📅 الجدول</div>
+    <div class="tab" id="tab-proctor" onclick="switchTab('proctor')">👤 جداول المراقبين</div>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <input type="text" class="search-input" id="searchInput"
+      placeholder="بحث بالاسم أو القاعة أو المادة..."
+      oninput="filterSchedule(this.value)">
+    <button class="btn btn-outline" onclick="document.getElementById('searchInput').value='';filterSchedule('')">مسح</button>
+  </div>
+
+  <div class="app-body">
+    <!-- Schedule tab -->
+    <div class="tab-panel" id="scheduleWrapper" style="display:flex;flex:1;overflow:hidden">
+      <div style="flex:1;overflow-y:auto;overflow-x:hidden" id="scheduleArea"></div>
+      <div class="staging">
+        <div class="staging-hdr">
+          <div class="staging-title">🗂 الانتظار <span class="staging-badge empty" id="stagingCount">0</span></div>
+          <button class="btn btn-outline" style="font-size:11px;padding:3px 8px" onclick="clearStaging()">مسح</button>
+        </div>
+        <div class="staging-hint">اسحب المراقبين هنا مؤقتاً ثم أعد توزيعهم</div>
+        <div class="staging-drop" id="stagingDrop"
+          ondragover="onDragOver(event,'staging')"
+          ondragleave="onDragLeave(event,'staging')"
+          ondrop="onDrop(event,'staging',null)">
+          <div class="staging-empty" id="stagingEmpty">
+            <div class="staging-empty-icon">🧑‍💼</div>
+            <div>لا يوجد مراقبون<br>في الانتظار</div>
+          </div>
+          <div id="stagingList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proctor tab -->
+    <div class="tab-panel" id="proctorPanel">
+      <div class="pv-toolbar">
+        <div class="pv-title">جداول المراقبين</div>
+        <input type="text" class="pv-search" id="pvSearch"
+          placeholder="بحث باسم المراقب..." oninput="renderProctorView(this.value)">
+        <button class="btn btn-indigo" onclick="window.print()">🖨 طباعة الكل</button>
+        <button class="btn btn-outline" onclick="exportProctorHTML()">⬇ حفظ HTML</button>
+      </div>
+      <div class="pv-grid" id="pvGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="validModal" style="display:none">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="modalTitle">تأكيد نقل المراقب</div></div>
+    <div class="modal-body">
+      <div class="move-preview" id="movePreview"></div>
+      <div class="vlist" id="validList"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-amber" id="confirmBtn" onclick="confirmMove()">تأكيد النقل</button>
+      <button class="btn btn-outline" onclick="cancelMove()">إلغاء</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'hti_proctor_v2';
+let proctorMeta = {}, schedule = {}, staging = [], pendingMove = null, dragData = null, saveTimer = null;
+
+// ── PERSISTENCE ──
+function saveState() {
+  setSaveIndicator('saving');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ts: new Date().toISOString(), proctorMeta, schedule, staging }));
+      setSaveIndicator('saved');
+    } catch(e) { setSaveIndicator('error'); }
+  }, 600);
+}
+
+function setSaveIndicator(s) {
+  const el = document.getElementById('saveIndicator');
+  if (s==='saving'){ el.textContent='● جاري الحفظ…'; el.className='save-indicator saving'; }
+  else if (s==='saved'){ el.textContent='● محفوظ'; el.className='save-indicator saved'; }
+  else { el.textContent='● خطأ'; el.className='save-indicator'; el.style.color='var(--red)'; }
+}
+
+window.addEventListener('load', () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.ts) return;
+    const d = new Date(saved.ts);
+    const fmt = d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+      + ' — ' + d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+    const n = Object.values(saved.schedule||{}).reduce((a,ts)=>a+Object.keys(ts.rooms||{}).length,0);
+    document.getElementById('resumeMeta').textContent = `${fmt} | ${n} قاعة`;
+    document.getElementById('resumeBanner').style.display = 'flex';
+  } catch(e){}
+});
+
+function resumeSession() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    proctorMeta = saved.proctorMeta||{}; schedule = saved.schedule||{}; staging = saved.staging||[];
+    renderApp();
+  } catch(e){ showToast('فشل في استعادة الجلسة'); }
+}
+
+function discardSession() {
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('resumeBanner').style.display = 'none';
+}
+
+// ── CSV ──
+document.getElementById('csvInput').addEventListener('change', e => { if(e.target.files[0]) loadCSV(e.target.files[0]); });
+const uploadCard = document.getElementById('uploadCard');
+uploadCard.addEventListener('dragover', e=>{ e.preventDefault(); uploadCard.classList.add('drag-over'); });
+uploadCard.addEventListener('dragleave', ()=>uploadCard.classList.remove('drag-over'));
+uploadCard.addEventListener('drop', e=>{ e.preventDefault(); uploadCard.classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.name.endsWith('.csv'))loadCSV(f); });
+
+function loadCSV(file){ const r=new FileReader(); r.onload=e=>parseCSV(e.target.result); r.readAsText(file,'UTF-8'); }
+
+function parseCSV(text) {
+  if (text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+  const lines=text.trim().split('\n'), headers=parseCSVLine(lines[0]);
+  proctorMeta={}; schedule={}; staging=[];
+  for (let i=1;i<lines.length;i++){
+    const line=lines[i].trim(); if(!line)continue;
+    const vals=parseCSVLine(line), row={};
+    headers.forEach((h,idx)=>row[h.trim()]=(vals[idx]||'').trim());
+    const {date,day,exam_time,room,subject,department,year,student_count,
+      proctor,proctor_weight,proctor_type,is_academic,
+      room_required_n,room_required_w,room_has_academic,avail_days}=row;
+    const tsKey=`${date}|${exam_time}`;
+    if(proctor&&!proctorMeta[proctor]){
+      const days=avail_days?avail_days.split(',').map(d=>d.trim()).filter(Boolean):['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','السبت'];
+      proctorMeta[proctor]={avail_days:days,weight:parseInt(proctor_weight)||1,type:proctor_type||'easy',is_academic:(is_academic||'').toLowerCase()==='yes'};
+    }
+    if(!schedule[tsKey]) schedule[tsKey]={date,day,exam_time,rooms:{}};
+    if(room&&!schedule[tsKey].rooms[room]) schedule[tsKey].rooms[room]={subject,department,year,student_count,required_n:parseInt(room_required_n)||0,required_w:parseInt(room_required_w)||0,room_has_academic:(room_has_academic||'').toLowerCase()==='yes',proctors:[]};
+    if(proctor&&room){const rm=schedule[tsKey].rooms[room];if(!rm.proctors.includes(proctor))rm.proctors.push(proctor);}
+  }
+  renderApp(); saveState();
+}
+
+function parseCSVLine(line){
+  const res=[]; let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"')inQ=!inQ;else if(c===','&&!inQ){res.push(cur);cur='';}else cur+=c;}
+  res.push(cur); return res;
+}
+
+// ── RENDER ──
+function renderApp(){
+  document.getElementById('uploadScreen').style.display='none';
+  const s=document.getElementById('appShell'); s.style.display='flex'; s.style.flexDirection='column'; s.style.height='100vh';
+  updateStats(); renderSchedule(schedule); renderStaging(); renderProctorView('');
+}
+
+// ── TABS ──
+let currentTab = 'schedule';
+function switchTab(name){
+  currentTab=name;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const isSch=name==='schedule';
+  document.getElementById('scheduleWrapper').style.display=isSch?'flex':'none';
+  document.getElementById('proctorPanel').style.display=isSch?'none':'block';
+  document.getElementById('filterBar').style.display=isSch?'flex':'none';
+  if(name==='proctor') renderProctorView(document.getElementById('pvSearch').value);
+}
+
+// ── SCHEDULE RENDER ──
+function renderSchedule(sched, filter=''){
+  const area=document.getElementById('scheduleArea'); area.innerHTML='';
+  const byDate={};
+  for(const [tsKey,tsData] of Object.entries(sched)){
+    if(!byDate[tsData.date])byDate[tsData.date]=[];
+    byDate[tsData.date].push({tsKey,...tsData});
+  }
+  for(const date of Object.keys(byDate).sort()){
+    const slots=byDate[date].sort((a,b)=>a.exam_time.localeCompare(b.exam_time));
+    if(filter){const has=slots.some(s=>Object.values(s.rooms).some(r=>matchesFilter(r,filter)||r.proctors.some(p=>p.includes(filter))));if(!has)continue;}
+    const dayEl=document.createElement('div'); dayEl.className='day-section';
+    dayEl.innerHTML=`<div class="day-hdr" onclick="toggleDay(this)"><span class="day-name">${slots[0].day}</span><span class="day-date">${date}</span><span style="margin-right:auto;font-size:11px;color:var(--text-3)">${slots.length} وقت • ${slots.reduce((a,s)=>a+Object.keys(s.rooms).length,0)} قاعة</span><span class="day-toggle">▲</span></div><div class="day-body"></div>`;
+    const body=dayEl.querySelector('.day-body');
+    for(const slot of slots)body.appendChild(renderTimeslot(slot,filter));
+    area.appendChild(dayEl);
+  }
+}
+
+function renderTimeslot(slot,filter=''){
+  const {tsKey,exam_time,rooms}=slot;
+  const visible=Object.entries(rooms).filter(([n,r])=>!filter||matchesFilter(r,filter)||r.proctors.some(p=>p.includes(filter)));
+  const sec=document.createElement('div'); sec.className='ts-section';
+  sec.innerHTML=`<div class="ts-hdr"><span class="ts-badge">${exam_time}</span><span class="ts-meta">${visible.length} قاعة</span></div><div class="rooms-grid"></div>`;
+  const grid=sec.querySelector('.rooms-grid');
+  for(const [rn,rd] of visible) grid.appendChild(renderRoomCard(tsKey,rn,rd));
+  return sec;
+}
+
+function renderRoomCard(tsKey,roomName,roomData){
+  const {subject,department,year,required_n,required_w,room_has_academic,proctors}=roomData;
+  const curW=proctors.reduce((s,p)=>s+(proctorMeta[p]?.weight||1),0);
+  const hasAc=proctors.some(p=>proctorMeta[p]?.is_academic);
+  const viols=getViolations(tsKey,roomName,roomData);
+  const wPct=required_w>0?Math.min(100,(curW/required_w)*100):100;
+  const wCls=wPct<60?'danger':wPct<100?'warn':'';
+  const wBadge=wPct<100?`<span class="badge badge-warn">${curW}/${required_w} وزن</span>`:`<span class="badge badge-ok">✓ وزن</span>`;
+  const acBadge=room_has_academic?(hasAc?`<span class="badge badge-indigo">أكاديمي ✓</span>`:`<span class="badge badge-danger">⚠ أكاديمي</span>`):'';
+  const card=document.createElement('div');
+  card.className='room-card'+(viols.length?' violation':'');
+  card.ondragover=e=>onDragOver(e,'room');
+  card.ondragleave=e=>onDragLeave(e,'room');
+  card.ondrop=e=>onDrop(e,'room',{tsKey,room:roomName});
+  card.innerHTML=`<div class="room-card-hdr"><div class="room-info"><div class="room-name">${roomName}</div><div class="room-subject">${subject||''}</div><div class="room-dept">${department||''}${year?' • السنة '+year:''}</div></div><div class="room-badges">${wBadge}${acBadge}</div></div><div class="wbar"><div class="wbar-track"><div class="wbar-fill ${wCls}" style="width:${wPct}%"></div></div><div class="wbar-lbl"><span>الوزن: ${curW}</span><span>مطلوب: ${required_w}</span></div></div><div class="room-proctors">${proctors.map(p=>chipHTML(p,tsKey,roomName)).join('')}<div class="drop-hint">+ أسقط مراقب هنا</div></div>`;
+  return card;
+}
+
+function chipHTML(name,tsKey,fromRoom){
+  const m=proctorMeta[name]||{weight:1,type:'easy',is_academic:false};
+  return `<div class="chip ${m.type}" draggable="true" data-name="${encodeURIComponent(name)}" data-from-ts="${encodeURIComponent(tsKey)}" data-from-room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name}">${m.is_academic?'<span class="chip-acad"></span>':''}<span class="chip-w">${m.type==='hard'?'ح':'س'}</span><span class="chip-name">${name}</span></div>`;
+}
+
+function renderStaging(){
+  const list=document.getElementById('stagingList'),empty=document.getElementById('stagingEmpty'),badge=document.getElementById('stagingCount');
+  badge.textContent=staging.length; badge.className='staging-badge'+(staging.length?'':' empty');
+  empty.style.display=staging.length?'none':'flex'; list.innerHTML='';
+  const byTs={};
+  for(const s of staging){if(!byTs[s.fromTsKey])byTs[s.fromTsKey]=[];byTs[s.fromTsKey].push(s);}
+  for(const [tsKey,items] of Object.entries(byTs)){
+    const ts=schedule[tsKey],lbl=ts?`${ts.day} ${ts.exam_time}`:tsKey;
+    const grp=document.createElement('div'); grp.className='staging-group';
+    grp.innerHTML=`<div class="staging-group-lbl">${lbl}</div><div class="staging-group-chips"></div>`;
+    const chips=grp.querySelector('.staging-group-chips');
+    for(const s of items)chips.innerHTML+=chipHTML(s.name,tsKey,'__staging__');
+    list.appendChild(grp);
+  }
+}
+
+// ── PROCTOR VIEW ──
+function renderProctorView(filter=''){
+  const grid=document.getElementById('pvGrid'); grid.innerHTML='';
+  const byP={};
+  for(const [tsKey,ts] of Object.entries(schedule)){
+    for(const [rn,r] of Object.entries(ts.rooms)){
+      for(const p of r.proctors){
+        if(!byP[p])byP[p]=[];
+        byP[p].push({date:ts.date,day:ts.day,exam_time:ts.exam_time,room:rn,subject:r.subject,department:r.department,year:r.year});
+      }
+    }
+  }
+  const names=Object.keys(byP).sort((a,b)=>a.localeCompare(b,'ar'));
+  const filtered=filter?names.filter(n=>n.includes(filter)):names;
+  for(const name of filtered){
+    const m=proctorMeta[name]||{};
+    const entries=byP[name].sort((a,b)=>(a.date+a.exam_time).localeCompare(b.date+b.exam_time));
+    const totalW=entries.length*(m.weight||1);
+    const inStaging=staging.some(s=>s.name===name);
+    const typeBadge=m.type==='hard'?`<span class="badge badge-warn">أساسي</span>`:`<span class="badge badge-ok">مساعد</span>`;
+    const acadBadge=m.is_academic?`<span class="badge badge-indigo">أكاديمي</span>`:'';
+    const stgBadge=inStaging?`<span class="badge badge-danger">في الانتظار</span>`:'';
+    const card=document.createElement('div'); card.className='pc';
+    card.innerHTML=`<div class="pc-hdr"><span class="pc-name">${name}</span><div class="pc-tags">${typeBadge}${acadBadge}${stgBadge}</div></div>
+      <div class="pc-thead"><div class="pc-cell h">اليوم</div><div class="pc-cell h">الوقت</div><div class="pc-cell h">المادة / القسم</div><div class="pc-cell h">القاعة</div></div>
+      <div class="pc-body">${entries.length?entries.map(e=>`<div class="pc-row"><div class="pc-cell primary">${e.day}<br><span style="font-size:9px;color:var(--text-3)">${e.date}</span></div><div class="pc-cell">${e.exam_time}</div><div class="pc-cell">${e.subject||''}<br><span style="font-size:9px;color:var(--text-3)">${e.department||''}${e.year?' - السنة '+e.year:''}</span></div><div class="pc-cell primary">${e.room}</div></div>`).join(''):'<div class="pc-empty">لا توجد تعيينات</div>'}</div>
+      <div class="pc-total"><span>${entries.length} جلسة</span><span>الوزن الإجمالي: ${totalW}</span></div>`;
+    grid.appendChild(card);
+  }
+  if(!filtered.length) grid.innerHTML=`<div style="color:var(--text-3);font-size:13px;padding:40px;text-align:center">لا توجد نتائج</div>`;
+}
+
+function exportProctorHTML(){
+  const byP={};
+  for(const [tsKey,ts] of Object.entries(schedule)){
+    for(const [rn,r] of Object.entries(ts.rooms)){
+      for(const p of r.proctors){
+        if(!byP[p])byP[p]=[];
+        byP[p].push({date:ts.date,day:ts.day,exam_time:ts.exam_time,room:rn,subject:r.subject,department:r.department,year:r.year});
+      }
+    }
+  }
+  const names=Object.keys(byP).sort((a,b)=>a.localeCompare(b,'ar'));
+  let html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>جداول المراقبين — HTI</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Cairo',sans-serif;font-size:11pt;color:#111;background:#fff;padding:20px}h1{font-size:15pt;margin-bottom:20px;border-bottom:2px solid #333;padding-bottom:8px}.pc{border:1px solid #ccc;margin-bottom:22px;page-break-inside:avoid;border-radius:4px;overflow:hidden}.pc-hdr{background:#f0f0f0;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #ccc}.pc-name{font-size:13pt;font-weight:700;flex:1}.badge{font-size:9pt;padding:1px 8px;border-radius:3px;border:1px solid #ccc;background:#e8e8e8}table{width:100%;border-collapse:collapse}th{background:#f7f7f7;font-size:9pt;font-weight:700;padding:5px 10px;border-bottom:1px solid #ddd;text-align:right;color:#555}td{padding:5px 10px;border-bottom:1px solid #eee;font-size:10pt;vertical-align:top}.total{font-size:9pt;color:#666;padding:5px 14px;background:#f7f7f7;display:flex;justify-content:space-between;border-top:1px solid #ddd}@media print{.pc{page-break-inside:avoid}}</style>
+</head><body><h1>جداول المراقبين — HTI Midterm ${new Date().toLocaleDateString('ar-EG')}</h1>`;
+  for(const name of names){
+    const m=proctorMeta[name]||{};
+    const entries=byP[name].sort((a,b)=>(a.date+a.exam_time).localeCompare(b.date+b.exam_time));
+    html+=`<div class="pc"><div class="pc-hdr"><span class="pc-name">${name}</span><span class="badge">${m.type==='hard'?'مراقب أساسي':'مراقب مساعد'}${m.is_academic?' | أكاديمي':''}</span><span class="badge">${entries.length} جلسة</span></div>
+    <table><thead><tr><th>اليوم / التاريخ</th><th>الوقت</th><th>المادة</th><th>القسم</th><th>القاعة</th></tr></thead><tbody>
+    ${entries.map(e=>`<tr><td>${e.day}<br><small style="color:#888">${e.date}</small></td><td>${e.exam_time}</td><td>${e.subject||''}</td><td>${e.department||''}${e.year?' - السنة '+e.year:''}</td><td>${e.room}</td></tr>`).join('')}
+    </tbody></table><div class="total"><span>${entries.length} جلسة مراقبة</span><span>الوزن الإجمالي: ${entries.length*(m.weight||1)}</span></div></div>`;
+  }
+  html+='</body></html>';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+  a.download=`proctor_schedules_${new Date().toISOString().slice(0,10)}.html`;
+  a.click(); showToast('تم تصدير جداول المراقبين ✓');
+}
+
+// ── DRAG & DROP ──
+function onDragStart(e){const c=e.target;dragData={name:decodeURIComponent(c.dataset.name),fromTsKey:decodeURIComponent(c.dataset.fromTs),fromRoom:decodeURIComponent(c.dataset.fromRoom)};c.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function onDragEnd(e){e.target.classList.remove('dragging');}
+function onDragOver(e,target){e.preventDefault();e.dataTransfer.dropEffect='move';if(target==='room')e.currentTarget.classList.add('drag-over');else document.getElementById('stagingDrop').classList.add('drag-over');}
+function onDragLeave(e,target){if(target==='room')e.currentTarget.classList.remove('drag-over');else document.getElementById('stagingDrop').classList.remove('drag-over');}
+function onDrop(e,target,dest){
+  e.preventDefault();
+  if(target==='room')e.currentTarget.classList.remove('drag-over');
+  else document.getElementById('stagingDrop').classList.remove('drag-over');
+  if(!dragData)return;
+  const {name,fromTsKey,fromRoom}=dragData; dragData=null;
+  if(target==='staging'){if(fromRoom==='__staging__')return;const v=validateMove(name,fromTsKey,fromRoom,null,null);showConfirmModal(name,fromTsKey,fromRoom,'staging',null,v,()=>executeMove(name,fromTsKey,fromRoom,'staging',null));return;}
+  const {tsKey:toTsKey,room:toRoom}=dest;
+  if(fromRoom===toRoom&&fromTsKey===toTsKey)return;
+  const v=validateMove(name,fromTsKey,fromRoom,toTsKey,toRoom);
+  const hasErr=v.some(i=>i.type==='error');
+  const hasWarn=v.some(i=>i.type==='warn');
+  if(!hasErr){
+    executeMove(name,fromTsKey,fromRoom,'room',dest);
+    if(hasWarn) flashCard(toTsKey,toRoom);
+    return;
+  }
+  showConfirmModal(name,fromTsKey,fromRoom,'room',dest,v,()=>executeMove(name,fromTsKey,fromRoom,'room',dest));
+}
+
+// ── VALIDATION ──
+function validateMove(name,fromTsKey,fromRoom,toTsKey,toRoom){
+  const issues=[],meta=proctorMeta[name]||{};
+  if(toTsKey&&toRoom){
+    const toTs=schedule[toTsKey];
+    const existing=Object.entries(schedule[toTsKey]?.rooms||{}).filter(([rn,r])=>rn!==toRoom&&!(fromTsKey===toTsKey&&rn===fromRoom)&&r.proctors.includes(name));
+    if(existing.length)issues.push({type:'error',msg:`⛔ تعارض — المراقب معين بالفعل في قاعة ${existing[0][0]} في هذا الوقت`});
+    if(toTs&&meta.avail_days&&!meta.avail_days.includes(toTs.day))issues.push({type:'error',msg:`📅 المراقب غير متاح يوم ${toTs.day}`});
+    if(schedule[toTsKey]?.rooms[toRoom]?.proctors.includes(name))issues.push({type:'warn',msg:`⚠ المراقب معين بالفعل في هذه القاعة`});
+    const dest=schedule[toTsKey]?.rooms[toRoom];
+    if(dest){const nw=dest.proctors.reduce((s,p)=>s+(proctorMeta[p]?.weight||1),0)+(meta.weight||1);issues.push({type:'ok',msg:`📊 الوزن بعد الإضافة: ${nw} (مطلوب: ${dest.required_w})`});}
+  }
+  if(fromRoom&&fromRoom!=='__staging__'){
+    const src=schedule[fromTsKey]?.rooms[fromRoom];
+    if(src){
+      const rem=src.proctors.filter(p=>p!==name);
+      if(src.room_has_academic&&meta.is_academic&&!rem.some(p=>proctorMeta[p]?.is_academic))issues.push({type:'error',msg:`🎓 ستترك قاعة ${fromRoom} بدون مراقب أكاديمي!`});
+      if(rem.length<src.required_n)issues.push({type:'warn',msg:`👥 عدد المراقبين في ${fromRoom} سيصبح ${rem.length} (مطلوب: ${src.required_n})`});
+      const nw=rem.reduce((s,p)=>s+(proctorMeta[p]?.weight||1),0);
+      if(nw<src.required_w)issues.push({type:'warn',msg:`⚖ وزن ${fromRoom} سينخفض إلى ${nw} (مطلوب: ${src.required_w})`});
+    }
+  }
+  if(!issues.length)issues.push({type:'ok',msg:'✅ لا توجد انتهاكات — النقل آمن'});
+  return issues;
+}
+
+function getViolations(tsKey,roomName,roomData){
+  const {required_n,required_w,room_has_academic,proctors}=roomData,v=[];
+  const cw=proctors.reduce((s,p)=>s+(proctorMeta[p]?.weight||1),0);
+  if(room_has_academic&&!proctors.some(p=>proctorMeta[p]?.is_academic))v.push('academic');
+  if(cw<required_w)v.push('weight');
+  if(proctors.length<required_n)v.push('count');
+  const tsData=schedule[tsKey];
+  if(tsData)for(const p of proctors)if(Object.entries(tsData.rooms).some(([rn,r])=>rn!==roomName&&r.proctors.includes(p))){v.push('double');break;}
+  return v;
+}
+
+// ── EXECUTE ──
+function executeMove(name,fromTsKey,fromRoom,target,dest){
+  if(fromRoom==='__staging__'){staging=staging.filter(s=>!(s.name===name&&s.fromTsKey===fromTsKey));}
+  else{const src=schedule[fromTsKey]?.rooms[fromRoom];if(src)src.proctors=src.proctors.filter(p=>p!==name);}
+  if(target==='staging'){staging.push({name,fromTsKey,fromRoom});}
+  else{const {tsKey,room}=dest;if(!schedule[tsKey].rooms[room].proctors.includes(name))schedule[tsKey].rooms[room].proctors.push(name);}
+  renderSchedule(schedule,document.getElementById('searchInput').value);
+  renderStaging(); updateStats(); saveState();
+  showToast(target==='staging'?`نُقل "${name}" إلى الانتظار`:`نُقل "${name}" إلى ${dest.room}`);
+}
+
+// ── MODAL ──
+function showConfirmModal(name,fromTsKey,fromRoom,target,dest,issues,onConfirm){
+  const fromTs=schedule[fromTsKey];
+  const fromLbl=fromRoom==='__staging__'?'منطقة الانتظار':`${fromRoom} (${fromTs?.day} ${fromTs?.exam_time})`;
+  const toLbl=target==='staging'?'منطقة الانتظار':`${dest.room} (${schedule[dest.tsKey]?.day} ${schedule[dest.tsKey]?.exam_time})`;
+  document.getElementById('movePreview').innerHTML=`<div class="mp-item"><div class="mp-lbl">المراقب</div><div class="mp-val">${name}</div></div><div class="mp-item"><div class="mp-lbl">من</div><div class="mp-val">${fromLbl}</div></div><div class="mp-item"><div class="mp-lbl">إلى</div><div class="mp-val">${toLbl}</div></div>`;
+  document.getElementById('validList').innerHTML=issues.map(v=>`<div class="vitem ${v.type}"><div class="vicon">${v.type==='error'?'❌':v.type==='warn'?'⚠️':'✅'}</div><div>${v.msg}</div></div>`).join('');
+  const hasErr=issues.some(v=>v.type==='error');
+  const btn=document.getElementById('confirmBtn'); btn.textContent=hasErr?'تجاوز الأخطاء والمتابعة':'تأكيد النقل'; btn.className=hasErr?'btn btn-danger':'btn btn-amber';
+  document.getElementById('modalTitle').textContent=hasErr?'⚠ تحذير: نقل مراقب':'تأكيد نقل المراقب';
+  pendingMove=onConfirm; document.getElementById('validModal').style.display='flex';
+}
+function confirmMove(){document.getElementById('validModal').style.display='none';if(pendingMove){pendingMove();pendingMove=null;}}
+function cancelMove(){document.getElementById('validModal').style.display='none';pendingMove=null;showToast('تم إلغاء النقل');}
+
+// ── FLASH WARN ──
+function flashCard(tsKey,roomName){
+  const cards=document.querySelectorAll('.room-card');
+  for(const card of cards){
+    const nameEl=card.querySelector('.room-name');
+    if(nameEl&&nameEl.textContent===roomName){
+      const ts=card.closest('.ts-section');
+      const badge=ts?.querySelector('.ts-badge');
+      if(badge&&schedule[tsKey]&&badge.textContent===schedule[tsKey].exam_time){
+        card.classList.add('flash-warn');
+        break;
+      }
+    }
+  }
+}
+
+// ── UTILS ──
+function matchesFilter(r,f){return (r.subject||'').includes(f)||(r.department||'').includes(f);}
+function filterSchedule(v){renderSchedule(schedule,v);}
+function toggleDay(hdr){hdr.closest('.day-section').classList.toggle('collapsed');}
+function updateStats(){
+  let rooms=0,assign=0,viols=0;
+  for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms)){rooms++;assign+=r.proctors.length;viols+=getViolations(tsKey,rn,r).length;}
+  document.getElementById('statTs').textContent=Object.keys(schedule).length;
+  document.getElementById('statRooms').textContent=rooms;
+  document.getElementById('statAssign').textContent=assign+staging.length;
+  const vEl=document.getElementById('statViolations');vEl.style.display=viols?'flex':'none';document.getElementById('statViolCount').textContent=viols;
+}
+function clearStaging(){if(!staging.length)return;if(!confirm(`إزالة ${staging.length} مراقب من الانتظار؟`))return;staging=[];renderStaging();updateStats();saveState();}
+function resetAll(){if(!confirm('إعادة تحميل ملف جديد؟ ستضيع التغييرات.'))return;localStorage.removeItem(STORAGE_KEY);proctorMeta={};schedule={};staging=[];document.getElementById('appShell').style.display='none';document.getElementById('uploadScreen').style.display='flex';document.getElementById('csvInput').value='';}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function exportCSV(){
+  const h=['date','day','exam_time','department','year','room','subject','student_count','proctor','proctor_weight','proctor_type','is_academic','room_required_n','room_required_w','room_has_academic','avail_days'];
+  const rows=[h.join(',')];
+  for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms))for(const p of r.proctors){const m=proctorMeta[p]||{};rows.push([ts.date,ts.day,ts.exam_time,r.department,r.year,rn,r.subject,r.student_count,p,m.weight||1,m.type||'easy',m.is_academic?'yes':'no',r.required_n,r.required_w,r.room_has_academic?'yes':'no',(m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
+  for(const s of staging){const ts=schedule[s.fromTsKey];const m=proctorMeta[s.name]||{};rows.push([ts?.date||'',ts?.day||'',ts?.exam_time||'','','','UNASSIGNED','','',s.name,m.weight||1,m.type||'easy',m.is_academic?'yes':'no','','','',( m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`proctor_assignments_edited_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('تم تصدير الجدول ✓');
+}
+</script>
+</body>
+</html>

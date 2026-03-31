@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thumbnail Generator — Mahmoud Gamal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #f2f2f4;
+    --bg-card:    #e8e8ec;
+    --bg-deep:    #dcdce2;
+    --fg:         #141418;
+    --fg-dim:     #48484e;
+    --fg-faint:   #b0b0b8;
+    --blue:       #4a6878;
+    --blue-dim:   #6a8898;
+    --rule:       rgba(20,20,24,.12);
+    --ff-display: 'Playfair Display', Georgia, serif;
+    --ff-mono:    'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #e0e0e4;
+    font-family: var(--ff-mono);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px;
+    gap: 36px;
+  }
+
+  /* ── EDITOR PANEL ─────────────────────────────────────────── */
+  .editor {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 28px 32px;
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 4px 24px rgba(20,20,24,.08);
+  }
+
+  .editor-title {
+    font-family: var(--ff-mono);
+    font-size: .65rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 4px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: .6rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  input, select {
+    font-family: var(--ff-mono);
+    font-size: .8rem;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input:focus, select:focus { border-color: var(--blue); }
+
+  .editor-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .hint {
+    font-size: .58rem;
+    letter-spacing: .08em;
+    color: var(--fg-faint);
+    margin-top: 2px;
+    text-align: center;
+  }
+
+  /* ── THUMBNAIL WRAPPER ────────────────────────────────────── */
+  .thumb-wrap {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .thumb-label {
+    font-size: .6rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  /* Scale the 1200×630 card to fit screen */
+  .scale-wrapper {
+    width: 100%;
+    max-width: 900px;
+    aspect-ratio: 1200 / 630;
+    position: relative;
+  }
+
+  .scale-inner {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1200px;
+    height: 630px;
+    transform-origin: top left;
+  }
+
+  /* ── THE THUMBNAIL ────────────────────────────────────────── */
+  .thumb {
+    width: 1200px;
+    height: 630px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0;
+  }
+
+  /* Grain overlay */
+  .thumb::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Steel-blue top bar */
+  .thumb-topbar {
+    height: 4px;
+    background: var(--blue);
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  /* Faint watermark section number */
+  .thumb-watermark {
+    position: absolute;
+    right: -10px;
+    top: -30px;
+    font-family: var(--ff-display);
+    font-weight: 900;
+    font-size: 360px;
+    color: rgba(20,20,24,.04);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+    letter-spacing: -.02em;
+  }
+
+  /* Decorative diagonal lines (top-right) */
+  .thumb-deco {
+    position: absolute;
+    right: 0; top: 0;
+    width: 320px;
+    height: 630px;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .thumb-deco svg {
+    position: absolute;
+    right: 0; top: 0;
+    width: 100%; height: 100%;
+  }
+
+  /* Content area */
+  .thumb-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 64px 88px 32px 88px;
+    position: relative;
+    z-index: 2;
+    gap: 0;
+  }
+
+  /* Category tag */
+  .thumb-category {
+    font-family: var(--ff-mono);
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: .20em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .thumb-category::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1.5px;
+    background: var(--blue);
+    flex-shrink: 0;
+  }
+
+  /* Rule above title */
+  .thumb-rule {
+    width: 100%;
+    height: 1px;
+    background: var(--rule);
+    margin-bottom: 40px;
+    display: none; /* optional */
+  }
+
+  /* Article title */
+  .thumb-headline {
+    font-family: var(--ff-display);
+    font-weight: 900;
+    font-size: 78px;
+    line-height: 1.07;
+    color: var(--fg);
+    letter-spacing: -.02em;
+    max-width: 820px;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  .thumb-headline em {
+    font-style: italic;
+    color: var(--blue-dim);
+  }
+
+  /* Subtitle / tagline */
+  .thumb-sub {
+    font-family: var(--ff-mono);
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--fg-dim);
+    margin-top: 28px;
+    letter-spacing: .04em;
+    max-width: 680px;
+    line-height: 1.6;
+  }
+
+  /* Bottom footer strip */
+  .thumb-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 88px 44px;
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+    margin: 0 88px;
+    margin-bottom: 44px;
+  }
+
+  .thumb-author {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .thumb-author-name {
+    font-family: var(--ff-display);
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--fg);
+    letter-spacing: -.01em;
+  }
+
+  .thumb-author-role {
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .thumb-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  .thumb-meta-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--fg-faint);
+  }
+
+  .thumb-num-badge {
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--blue);
+    letter-spacing: .10em;
+    border: 1px solid rgba(74,104,120,.3);
+    border-radius: 3px;
+    padding: 3px 8px;
+  }
+
+  /* ── SCREENSHOT HINT ──────────────────────────────────────── */
+  .actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: var(--ff-mono);
+    font-size: .65rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    background: white;
+    color: var(--fg-dim);
+    transition: all .2s;
+  }
+  .btn:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-primary {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .btn-primary:hover { background: var(--blue); border-color: var(--blue); color: white; }
+</style>
+</head>
+<body>
+
+<!-- ── EDITOR ──────────────────────────────────────────────── -->
+<div class="editor">
+  <div class="editor-title">§ Thumbnail Generator — Mahmoud Gamal</div>
+
+  <div class="field">
+    <label>Article Title</label>
+    <input id="inp-title" type="text"
+      value="Colour Palette Extraction Using K-Means Clustering"
+      oninput="update()" />
+  </div>
+
+  <div class="field">
+    <label>Subtitle / Tagline <span style="opacity:.5">(optional)</span></label>
+    <input id="inp-sub" type="text"
+      value="Algorithmic approach and Python implementation"
+      oninput="update()" />
+  </div>
+
+  <div class="editor-row">
+    <div class="field">
+      <label>Category</label>
+      <input id="inp-cat" type="text"
+        value="Machine Learning"
+        oninput="update()" />
+    </div>
+    <div class="field">
+      <label>Article № </label>
+      <input id="inp-num" type="text" value="01" oninput="update()" />
+    </div>
+    <div class="field">
+      <label>Year</label>
+      <input id="inp-year" type="text" value="2025" oninput="update()" />
+    </div>
+  </div>
+
+  <p class="hint">Screenshot the preview below at full resolution — or open the page, zoom to 100%, and use your OS screenshot tool.</p>
+</div>
+
+<!-- ── PREVIEW LABEL ──────────────────────────────────────── -->
+<div class="thumb-wrap">
+  <span class="thumb-label">Preview — 1200 × 630 px</span>
+
+  <div class="scale-wrapper" id="scale-wrapper">
+    <div class="scale-inner" id="scale-inner">
+      <!-- THE ACTUAL THUMBNAIL -->
+      <div class="thumb" id="thumb">
+        <div class="thumb-topbar"></div>
+
+        <!-- Faint watermark number -->
+        <div class="thumb-watermark" id="wm">01</div>
+
+        <!-- Decorative right-side hatching -->
+        <div class="thumb-deco">
+          <svg viewBox="0 0 320 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid of small dots -->
+            <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.2" fill="#141418" opacity=".07"/>
+            </pattern>
+            <rect width="320" height="630" fill="url(#dots)"/>
+            <!-- Fading gradient to left -->
+            <rect width="320" height="630" fill="url(#fade)"/>
+            <defs>
+              <linearGradient id="fade" x1="0" y1="0" x2="320" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#f2f2f4" stop-opacity="1"/>
+                <stop offset="55%" stop-color="#f2f2f4" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Thin diagonal lines -->
+            <line x1="180" y1="0"   x2="320" y2="200" stroke="#4a6878" stroke-width="1" opacity=".10"/>
+            <line x1="220" y1="0"   x2="320" y2="130" stroke="#4a6878" stroke-width="1" opacity=".07"/>
+            <line x1="240" y1="0"   x2="320" y2="100" stroke="#4a6878" stroke-width="1" opacity=".05"/>
+            <line x1="200" y1="630" x2="320" y2="430" stroke="#4a6878" stroke-width="1" opacity=".10"/>
+            <line x1="140" y1="630" x2="320" y2="330" stroke="#4a6878" stroke-width="1" opacity=".07"/>
+          </svg>
+        </div>
+
+        <!-- Main content -->
+        <div class="thumb-body">
+          <div class="thumb-category" id="t-category">Machine Learning</div>
+          <h1 class="thumb-headline" id="t-headline">Colour Palette Extraction<br>Using K-Means Clustering</h1>
+          <p class="thumb-sub" id="t-sub">Algorithmic approach and Python implementation</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="thumb-footer">
+          <div class="thumb-author">
+            <div class="thumb-author-name">Mahmoud Gamal</div>
+            <div class="thumb-author-role">ML Engineer · Mechatronics</div>
+          </div>
+          <div class="thumb-meta">
+            <span class="thumb-num-badge" id="t-badge">§ 01</span>
+            <div class="thumb-meta-dot"></div>
+            <span id="t-year">2025</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="openFull()">Open at Full Resolution ↗</button>
+    <button class="btn" onclick="copyHint()">Copy Thumbnail HTML</button>
+  </div>
+</div>
+
+<script>
+  // ── Live update ─────────────────────────────────────────────
+  function update() {
+    const title = document.getElementById('inp-title').value.trim();
+    const sub   = document.getElementById('inp-sub').value.trim();
+    const cat   = document.getElementById('inp-cat').value.trim();
+    const num   = document.getElementById('inp-num').value.trim().padStart(2,'0');
+    const year  = document.getElementById('inp-year').value.trim();
+
+    // Break long titles at natural word boundary around midpoint
+    const words = title.split(' ');
+    let h = title;
+    if (words.length >= 5) {
+      const mid = Math.ceil(words.length / 2);
+      h = words.slice(0, mid).join(' ') + '<br>' + words.slice(mid).join(' ');
+    }
+
+    document.getElementById('t-headline').innerHTML = h;
+    document.getElementById('t-sub').textContent = sub;
+    document.getElementById('t-category').textContent = cat || 'Article';
+    document.getElementById('t-badge').textContent = '§ ' + num;
+    document.getElementById('t-year').textContent = year;
+    document.getElementById('wm').textContent = num;
+  }
+
+  // ── Responsive scale ────────────────────────────────────────
+  function rescale() {
+    const wrapper = document.getElementById('scale-wrapper');
+    const inner   = document.getElementById('scale-inner');
+    const w = wrapper.getBoundingClientRect().width;
+    const scale = w / 1200;
+    inner.style.transform = `scale(${scale})`;
+    wrapper.style.height = (630 * scale) + 'px';
+  }
+
+  window.addEventListener('resize', rescale);
+  document.fonts.ready.then(rescale);
+  rescale();
+
+  // ── Open full resolution in new tab ─────────────────────────
+  function openFull() {
+    const html = buildStandalone();
+    const blob = new Blob([html], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  }
+
+  function copyHint() {
+    const html = buildStandalone();
+    navigator.clipboard.writeText(html).then(() => {
+      const btn = event.target;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+
+  function buildStandalone() {
+    // Snapshot current thumb state
+    const thumb = document.getElementById('thumb').outerHTML;
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>Thumbnail</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f2f4;--fg:#141418;--fg-dim:#48484e;--fg-faint:#b0b0b8;--blue:#4a6878;--blue-dim:#6a8898;--rule:rgba(20,20,24,.12);--ff-display:'Playfair Display',Georgia,serif;--ff-mono:'IBM Plex Mono','Courier New',monospace;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{width:1200px;height:630px;overflow:hidden;background:#f2f2f4;}
+.thumb{width:1200px;height:630px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:0;}
+.thumb::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:10;}
+.thumb-topbar{height:4px;background:var(--blue);width:100%;flex-shrink:0;}
+.thumb-watermark{position:absolute;right:-10px;top:-30px;font-family:var(--ff-display);font-weight:900;font-size:360px;color:rgba(20,20,24,.04);line-height:1;user-select:none;pointer-events:none;z-index:0;letter-spacing:-.02em;}
+.thumb-deco{position:absolute;right:0;top:0;width:320px;height:630px;pointer-events:none;z-index:0;overflow:hidden;}
+.thumb-deco svg{position:absolute;right:0;top:0;width:100%;height:100%;}
+.thumb-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:64px 88px 32px 88px;position:relative;z-index:2;}
+.thumb-category{font-family:var(--ff-mono);font-size:18px;font-weight:400;letter-spacing:.20em;text-transform:uppercase;color:var(--blue);margin-bottom:28px;display:flex;align-items:center;gap:16px;}
+.thumb-category::before{content:'';display:block;width:40px;height:1.5px;background:var(--blue);flex-shrink:0;}
+.thumb-headline{font-family:var(--ff-display);font-weight:900;font-size:78px;line-height:1.07;color:var(--fg);letter-spacing:-.02em;max-width:820px;}
+.thumb-sub{font-family:var(--ff-mono);font-size:18px;font-weight:300;color:var(--fg-dim);margin-top:28px;letter-spacing:.04em;max-width:680px;line-height:1.6;}
+.thumb-footer{display:flex;justify-content:space-between;align-items:flex-end;padding-top:24px;margin:0 88px 44px;position:relative;z-index:2;border-top:1px solid var(--rule);}
+.thumb-author{display:flex;flex-direction:column;gap:4px;}
+.thumb-author-name{font-family:var(--ff-display);font-weight:700;font-size:20px;color:var(--fg);letter-spacing:-.01em;}
+.thumb-author-role{font-family:var(--ff-mono);font-size:12px;font-weight:300;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim);}
+.thumb-meta{display:flex;align-items:center;gap:20px;font-family:var(--ff-mono);font-size:12px;font-weight:300;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-faint);}
+.thumb-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--fg-faint);}
+.thumb-num-badge{font-family:var(--ff-mono);font-size:12px;font-weight:400;color:var(--blue);letter-spacing:.10em;border:1px solid rgba(74,104,120,.3);border-radius:3px;padding:3px 8px;}
+</style>
+</head>
+<body>${thumb}</body>
+</html>`;
+  }
+</script>
+</body>
+</html>
