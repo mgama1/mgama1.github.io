@@ -250,6 +250,9 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .chip.dragging{opacity:.4;}
 .chip.hard{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
 .chip.easy{background:#f0fdf4;border-color:#bbf7d0;color:#166534;}
+.chip.w1{background:var(--green-dim);border-color:var(--green-b);color:var(--green);}
+.chip.w2{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent-text);}
+.chip.w3{background:var(--indigo-dim);border-color:#c7d2fe;color:var(--indigo);}
 
 .chip-acad{
   background:var(--indigo);color:#fff;font-size:10px;padding:2px 4px;
@@ -829,7 +832,8 @@ function renderMatrixCell(tsKey, roomName, roomData){
 
 function chipHTML(name,tsKey,fromRoom){
   const m=proctorMeta[name]||{weight:1,type:'easy',is_academic:false};
-  return `<div class="chip ${m.type}" draggable="true" data-name="${encodeURIComponent(name)}" data-from-ts="${encodeURIComponent(tsKey)}" data-from-room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name}">
+  const weightClass = `w${m.weight||1}`;
+  return `<div class="chip ${m.type} ${weightClass}" draggable="true" data-name="${encodeURIComponent(name)}" data-from-ts="${encodeURIComponent(tsKey)}" data-from-room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name} (Weight: ${m.weight||1})">
     <span class="chip-name">${name}</span>
     ${m.is_academic?'<span class="chip-acad">أ</span>':''}
   </div>`;
