@@ -374,7 +374,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   #appShell{height:auto;overflow:visible;display:block!important}
   .hdr,.tabs,.filter-bar,.staging,.pv-toolbar .btn,.pv-toolbar .pv-search{display:none!important}
   .app-body{display:block;overflow:visible}
-  #scheduleWrapper{display:none!important}
+  #scheduleWrapper,#indexPanel{display:none!important}
   #proctorPanel{display:block!important;padding:0;overflow:visible}
   .pv-grid{display:block}
   .pc{border:1px solid #ccc;margin-bottom:24px;page-break-inside:avoid;}
@@ -425,6 +425,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 
   <div class="tabs">
     <div class="tab active" id="tab-schedule" onclick="switchTab('schedule')"> الجدول الزمني </div>
+    <div class="tab" id="tab-index" onclick="switchTab('index')"> إحصائيات المراقبين </div>
     <div class="tab" id="tab-proctor" onclick="switchTab('proctor')"> جداول المراقبين</div>
   </div>
 
@@ -456,6 +457,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
           <div id="stagingList"></div>
         </div>
       </div>
+    </div>
+
+    <div class="tab-panel" id="indexPanel" style="display:none; padding:32px 40px;">
+      <div class="pv-toolbar">
+        <div class="pv-title">إحصائيات المراقبين <span class="badge badge-indigo" id="indexTotalCount">0</span></div>
+        <input type="text" class="pv-search" id="indexSearch"
+          placeholder="بحث باسم المراقب..." oninput="renderProctorIndex(this.value)">
+      </div>
+      <div id="indexContainer" class="matrix-wrapper" style="background:var(--s1); border-radius:var(--r-lg); box-shadow:var(--shadow-sm); border:1px solid var(--border); overflow:hidden;"></div>
     </div>
 
     <div class="tab-panel" id="proctorPanel">
@@ -683,7 +693,7 @@ function parseCSVLine(line){
 function renderApp(){
   document.getElementById('uploadScreen').style.display='none';
   const s=document.getElementById('appShell'); s.style.display='flex';
-  updateStats(); renderSchedule(schedule); renderStaging(); renderProctorView('');
+  updateStats(); renderSchedule(schedule); renderStaging(); renderProctorView(''); renderProctorIndex('');
 }
 
 // ── TABS ──
@@ -692,13 +702,68 @@ function switchTab(name){
   currentTab=name;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  const isSch=name==='schedule';
-  document.getElementById('scheduleWrapper').style.display=isSch?'flex':'none';
-  document.getElementById('proctorPanel').style.display=isSch?'none':'block';
-  document.getElementById('filterBar').style.display=isSch?'flex':'none';
-  if(name==='proctor') renderProctorView(document.getElementById('pvSearch').value);
+  
+  document.getElementById('scheduleWrapper').style.display = name === 'schedule' ? 'flex' : 'none';
+  document.getElementById('proctorPanel').style.display = name === 'proctor' ? 'block' : 'none';
+  document.getElementById('indexPanel').style.display = name === 'index' ? 'block' : 'none';
+  
+  document.getElementById('filterBar').style.display = name === 'schedule' ? 'flex' : 'none';
+  
+  if(name === 'proctor') renderProctorView(document.getElementById('pvSearch').value);
+  if(name === 'index') renderProctorIndex(document.getElementById('indexSearch').value);
 }
 
+function renderProctorIndex(filter = '') {
+  const container = document.getElementById('indexContainer');
+  if (!container) return;
+
+  const counts = {};
+  for (const ts of Object.values(schedule)) {
+    for (const r of Object.values(ts.rooms)) {
+      for (const p of r.proctors) {
+        counts[p] = (counts[p] || 0) + 1;
+      }
+    }
+  }
+
+  const names = Object.keys(proctorMeta).sort((a, b) => a.localeCompare(b, 'ar'));
+  const filtered = filter ? names.filter(n => n.includes(filter)) : names;
+
+  const totalBadge = document.getElementById('indexTotalCount');
+  if (totalBadge) totalBadge.textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-3); font-weight:700;">لا توجد نتائج مطابقة</div>`;
+    return;
+  }
+
+  let html = `
+    <table class="matrix-table" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th style="text-align:right; padding:14px 24px; background:var(--s2); border-bottom:2px solid var(--border);">اسم المراقب</th>
+          <th style="text-align:center; width:180px; background:var(--s2); border-bottom:2px solid var(--border);">إجمالي الجلسات</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  filtered.forEach(name => {
+    const count = counts[name] || 0;
+    html += `
+      <tr style="cursor:pointer; border-bottom:1px solid var(--border-sub); transition:background 0.1s;" 
+          onmouseover="this.style.background='var(--s2)'" 
+          onmouseout="this.style.background='transparent'"
+          onclick="switchTab('proctor'); document.getElementById('pvSearch').value='${name}'; renderProctorView('${name}');">
+        <td style="padding:14px 24px; font-weight:700; color:var(--text);">${name}</td>
+        <td style="text-align:center; padding:14px; font-weight:800; color:var(--accent); font-size:16px;">${count}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
 // ── MATRIX SCHEDULE RENDER ──
 function renderSchedule(sched, filter=''){
   const area=document.getElementById('scheduleArea'); area.innerHTML='';
@@ -833,7 +898,7 @@ function renderMatrixCell(tsKey, roomName, roomData){
 function chipHTML(name,tsKey,fromRoom){
   const m=proctorMeta[name]||{weight:1,type:'easy',is_academic:false};
   const weightClass = `w${m.weight||1}`;
-  return `<div class="chip ${m.type} ${weightClass}" draggable="true" data-name="${encodeURIComponent(name)}" data-from-ts="${encodeURIComponent(tsKey)}" data-from-room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name} (Weight: ${m.weight||1})">
+  return `<div class="chip ${m.type} ${weightClass}" draggable="true" data-name="${encodeURIComponent(name)}" data-from_ts="${encodeURIComponent(tsKey)}" data-from_room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name} (Weight: ${m.weight||1})">
     <span class="chip-name">${name}</span>
     ${m.is_academic?'<span class="chip-acad">أ</span>':''}
   </div>`;
@@ -964,7 +1029,7 @@ function exportProctorHTML(){
 }
 
 // ── DRAG & DROP ──
-function onDragStart(e){const c=e.target;dragData={name:decodeURIComponent(c.dataset.name),fromTsKey:decodeURIComponent(c.dataset.fromTs),fromRoom:decodeURIComponent(c.dataset.fromRoom)};c.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function onDragStart(e){const c=e.target;dragData={name:decodeURIComponent(c.dataset.name),fromTsKey:decodeURIComponent(c.dataset.from_ts),fromRoom:decodeURIComponent(c.dataset.from_room)};c.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
 function onDragEnd(e){e.target.classList.remove('dragging');}
 function onDragOver(e,target){e.preventDefault();e.dataTransfer.dropEffect='move';if(target==='room')e.currentTarget.classList.add('drag-over');else document.getElementById('stagingDrop').classList.add('drag-over');}
 function onDragLeave(e,target){if(target==='room')e.currentTarget.classList.remove('drag-over');else document.getElementById('stagingDrop').classList.remove('drag-over');}
@@ -1073,10 +1138,6 @@ function exportCSV(){
   for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms))for(const p of r.proctors){const m=proctorMeta[p]||{};rows.push([ts.date,ts.day,ts.exam_time,r.department,r.year,rn,r.subject,r.student_count,p,m.weight||1,m.type||'easy',m.is_academic?'yes':'no',r.required_n,r.required_w,r.room_has_academic?'yes':'no',(m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
   for(const s of staging){const ts=schedule[s.fromTsKey];const m=proctorMeta[s.name]||{};rows.push([ts?.date||'',ts?.day||'',ts?.exam_time||'','','','UNASSIGNED','','',s.name,m.weight||1,m.type||'easy',m.is_academic?'yes':'no','','','',( m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`proctor_assignments_edited_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('تم تصدير الجدول ✓');
-}
-</script>
-</body>
-</html>wToast('تم تصدير الجدول ✓');
 }
 </script>
 </body>
