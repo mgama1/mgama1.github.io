@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>محرر جدول المراقبة — HTI</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -259,6 +260,16 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   border-radius:4px;line-height:1;margin-left:4px;font-weight:800;
 }
 .chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chip-remove{
+  margin-right:4px;
+  width:18px;height:18px;border-radius:50%;
+  border:1px solid var(--border);background:var(--s1);
+  color:var(--text-3);font-weight:900;font-size:12px;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;opacity:0;transition:all .12s;flex-shrink:0;
+}
+.chip:hover .chip-remove{opacity:1}
+.chip-remove:hover{background:var(--red-dim);border-color:#fecaca;color:var(--red)}
 
 /* ── STAGING (SIDEBAR) ── */
 .staging{
@@ -420,7 +431,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     <div class="save-indicator" id="saveIndicator">● محفوظ</div>
     <div class="hdr-sep"></div>
     <button class="btn btn-outline" onclick="resetAll()">↺ إعادة تحميل</button>
-    <button class="btn btn-amber" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn btn-amber" onclick="exportCSV()"><i class="fa-solid fa-download"></i></button>
   </div>
 
   <div class="tabs">
@@ -434,6 +445,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
       placeholder="بحث بالاسم أو القاعة أو المادة..."
       oninput="filterSchedule(this.value)">
     <button class="btn btn-outline" onclick="document.getElementById('searchInput').value='';filterSchedule('')">مسح الفلتر</button>
+    <button class="btn btn-indigo" onclick="exportToExcel()">تصدير <i class="fa-solid fa-file-excel" style="color: rgb(12, 114, 56);"></i></button>
   </div>
 
   <div class="app-body">
@@ -464,6 +476,11 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
         <div class="pv-title">إحصائيات المراقبين <span class="badge badge-indigo" id="indexTotalCount">0</span></div>
         <input type="text" class="pv-search" id="indexSearch"
           placeholder="بحث باسم المراقب..." oninput="renderProctorIndex(this.value)">
+        <select class="pv-search" id="indexAcademicFilter" onchange="renderProctorIndex(document.getElementById('indexSearch').value)" style="max-width:180px;">
+          <option value="all">الكل</option>
+          <option value="academic">أكاديمي</option>
+          <option value="non_academic">غير أكاديمي</option>
+        </select>
       </div>
       <div id="indexContainer" class="matrix-wrapper" style="background:var(--s1); border-radius:var(--r-lg); box-shadow:var(--shadow-sm); border:1px solid var(--border); overflow:hidden;"></div>
     </div>
@@ -473,8 +490,12 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
         <div class="pv-title">جداول المراقبين الشخصية</div>
         <input type="text" class="pv-search" id="pvSearch"
           placeholder="بحث باسم المراقب..." oninput="renderProctorView(this.value)">
+        <select class="pv-search" id="pvAcademicFilter" onchange="renderProctorView(document.getElementById('pvSearch').value)" style="max-width:180px;">
+          <option value="all">الكل</option>
+          <option value="academic">أكاديمي</option>
+          <option value="non_academic">غير أكاديمي</option>
+        </select>
         <button class="btn btn-indigo" onclick="window.print()">🖨 طباعة الكل</button>
-        <button class="btn btn-outline" onclick="exportProctorHTML()">⬇ حفظ HTML</button>
       </div>
       <div class="pv-grid" id="pvGrid"></div>
     </div>
@@ -509,6 +530,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const STORAGE_KEY = 'hti_proctor_v2';
 let proctorMeta = {}, schedule = {}, staging = [], pendingMove = null, dragData = null, saveTimer = null;
@@ -671,13 +693,19 @@ function parseCSV(text) {
     const {date,day,exam_time,room,subject,department,year,student_count,
       proctor,proctor_weight,proctor_type,is_academic,
       room_required_n,room_required_w,room_has_academic,avail_days}=row;
+    const professor = row['professor'] || row['أستاذ المادة'] || '';
     const tsKey=`${date}|${exam_time}`;
     if(proctor&&!proctorMeta[proctor]){
       const days=avail_days?avail_days.split(',').map(d=>d.trim()).filter(Boolean):['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','السبت'];
       proctorMeta[proctor]={avail_days:days,weight:parseInt(proctor_weight)||1,type:proctor_type||'easy',is_academic:(is_academic||'').toLowerCase()==='yes'};
     }
     if(!schedule[tsKey]) schedule[tsKey]={date,day,exam_time,rooms:{}};
-    if(room&&!schedule[tsKey].rooms[room]) schedule[tsKey].rooms[room]={subject,department,year,student_count,required_n:parseInt(room_required_n)||0,required_w:parseInt(room_required_w)||0,room_has_academic:(room_has_academic||'').toLowerCase()==='yes',proctors:[]};
+    const isUnassigned = (room||'').trim().toUpperCase() === 'UNASSIGNED';
+    if (proctor && isUnassigned) {
+      staging.push({name: proctor, fromTsKey: tsKey, fromRoom: '__staging__'});
+      continue;
+    }
+    if(room&&!schedule[tsKey].rooms[room]) schedule[tsKey].rooms[room]={subject,department,year,student_count,professor,required_n:parseInt(room_required_n)||0,required_w:parseInt(room_required_w)||0,room_has_academic:(room_has_academic||'').toLowerCase()==='yes',proctors:[]};
     if(proctor&&room){const rm=schedule[tsKey].rooms[room];if(!rm.proctors.includes(proctor))rm.proctors.push(proctor);}
   }
   renderApp(); saveState();
@@ -716,6 +744,7 @@ function switchTab(name){
 function renderProctorIndex(filter = '') {
   const container = document.getElementById('indexContainer');
   if (!container) return;
+  const academicFilter = document.getElementById('indexAcademicFilter')?.value || 'all';
 
   const counts = {};
   for (const ts of Object.values(schedule)) {
@@ -727,7 +756,15 @@ function renderProctorIndex(filter = '') {
   }
 
   const names = Object.keys(proctorMeta).sort((a, b) => a.localeCompare(b, 'ar'));
-  const filtered = filter ? names.filter(n => n.includes(filter)) : names;
+  const filtered = names.filter(name => {
+    const matchesName = !filter || name.includes(filter);
+    const isAcademic = !!proctorMeta[name]?.is_academic;
+    const matchesAcademic =
+      academicFilter === 'all' ||
+      (academicFilter === 'academic' && isAcademic) ||
+      (academicFilter === 'non_academic' && !isAcademic);
+    return matchesName && matchesAcademic;
+  });
 
   const totalBadge = document.getElementById('indexTotalCount');
   if (totalBadge) totalBadge.textContent = filtered.length;
@@ -748,7 +785,12 @@ function renderProctorIndex(filter = '') {
       <tbody>
   `;
 
-  filtered.forEach(name => {
+  filtered
+    .sort((a, b) => {
+      const countDiff = (counts[a] || 0) - (counts[b] || 0);
+      return countDiff || a.localeCompare(b, 'ar');
+    })
+    .forEach(name => {
     const count = counts[name] || 0;
     html += `
       <tr style="cursor:pointer; border-bottom:1px solid var(--border-sub); transition:background 0.1s;" 
@@ -879,7 +921,7 @@ function renderMatrixCell(tsKey, roomName, roomData){
          ondrop="onDrop(event, 'room', {tsKey: '${tsKey}', room: '${roomName}'})">
       <div class="mc-info">
         <div class="mc-hdr">
-           <div class="mc-subj">${subject || 'بدون مادة'} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${department ? department : ''}</div></div>
+           <div class="mc-subj">${subject || 'بدون مادة'} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${(department||'') + (year||'')}</div></div>
            <div style="display:flex;gap:4px;">
              <button class="room-info-btn" onclick="event.stopPropagation();showAddProctorModal('${tsKey}', '${roomName}')" title="إضافة مراقب" style="color:var(--accent);border-color:var(--accent-mid);">+</button>
              <button class="room-info-btn" onclick="event.stopPropagation();this.closest('.mc-info').querySelector('.room-info-panel').classList.toggle('open')" title="التفاصيل">ℹ</button>
@@ -898,7 +940,11 @@ function renderMatrixCell(tsKey, roomName, roomData){
 function chipHTML(name,tsKey,fromRoom){
   const m=proctorMeta[name]||{weight:1,type:'easy',is_academic:false};
   const weightClass = `w${m.weight||1}`;
+  const removeBtn = (fromRoom && fromRoom !== '__staging__')
+    ? `<button class="chip-remove" title="إزالة" onclick="event.stopPropagation();event.preventDefault();removeProctorFromRoom('${encodeURIComponent(name)}','${encodeURIComponent(tsKey)}','${encodeURIComponent(fromRoom)}')">×</button>`
+    : '';
   return `<div class="chip ${m.type} ${weightClass}" draggable="true" data-name="${encodeURIComponent(name)}" data-from_ts="${encodeURIComponent(tsKey)}" data-from_room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name} (Weight: ${m.weight||1})">
+    ${removeBtn}
     <span class="chip-name">${name}</span>
     ${m.is_academic?'<span class="chip-acad">أ</span>':''}
   </div>`;
@@ -923,6 +969,7 @@ function renderStaging(){
 // ── PROCTOR VIEW ──
 function renderProctorView(filter=''){
   const grid=document.getElementById('pvGrid'); grid.innerHTML='';
+  const academicFilter = document.getElementById('pvAcademicFilter')?.value || 'all';
   const byP={};
   for(const [tsKey,ts] of Object.entries(schedule)){
     for(const [rn,r] of Object.entries(ts.rooms)){
@@ -933,7 +980,15 @@ function renderProctorView(filter=''){
     }
   }
   const names=Object.keys(byP).sort((a,b)=>a.localeCompare(b,'ar'));
-  const filtered=filter?names.filter(n=>n.includes(filter)):names;
+  const filtered=names.filter(name => {
+    const matchesName = !filter || name.includes(filter);
+    const isAcademic = !!proctorMeta[name]?.is_academic;
+    const matchesAcademic =
+      academicFilter === 'all' ||
+      (academicFilter === 'academic' && isAcademic) ||
+      (academicFilter === 'non_academic' && !isAcademic);
+    return matchesName && matchesAcademic;
+  });
   for(const name of filtered){
     const m=proctorMeta[name]||{};
     const entries=byP[name].sort((a,b) => a.date !== b.date ? a.date.localeCompare(b.date) : sortTimes(a.exam_time, b.exam_time));
@@ -983,49 +1038,244 @@ function renderProctorView(filter=''){
   if(!filtered.length) grid.innerHTML=`<div style="color:var(--text-3);font-size:16px;padding:40px;text-align:center;font-weight:700;">لا توجد نتائج</div>`;
 }
 
-function exportProctorHTML(){
-  const byP={};
-  for(const [tsKey,ts] of Object.entries(schedule)){
-    for(const [rn,r] of Object.entries(ts.rooms)){
-      for(const p of r.proctors){
-        if(!byP[p])byP[p]=[];
-        byP[p].push({date:ts.date,day:ts.day,exam_time:ts.exam_time,room:rn,subject:r.subject,department:r.department,year:r.year});
-      }
-    }
+function exportToExcel(){
+  if(!Object.keys(schedule).length){ showToast('لا يوجد جدول للتصدير'); return; }
+  if(!window.XLSX){
+    showToast('مكتبة Excel غير متاحة — تحقق من الاتصال بالإنترنت');
+    return;
   }
-  const names=Object.keys(byP).sort((a,b)=>a.localeCompare(b,'ar'));
-  let html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>جداول المراقبين — HTI</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-<style>body{font-family:'Cairo',sans-serif;font-size:12pt;color:#111;background:#fff;padding:20px}h1{font-size:18pt;margin-bottom:20px;border-bottom:2px solid #333;padding-bottom:8px}.pc{border:1px solid #ccc;margin-bottom:24px;page-break-inside:avoid;border-radius:6px;overflow:hidden}.pc-hdr{background:#f0f0f0;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #ccc}.pc-name{font-size:14pt;font-weight:700;flex:1}.badge{font-size:10pt;padding:2px 10px;border-radius:4px;border:1px solid #ccc;background:#e8e8e8}table{width:100%;border-collapse:collapse;table-layout:fixed;}th{background:#f7f7f7;font-size:10pt;font-weight:700;padding:8px 12px;border-bottom:1px solid #ddd;text-align:center;color:#555}td{padding:8px 12px;border-bottom:1px solid #eee;font-size:11pt;vertical-align:top;text-align:center;overflow:hidden;}.row-hdr{text-align:right;width:120px;}.total{font-size:10pt;color:#666;padding:8px 16px;background:#f7f7f7;display:flex;justify-content:space-between;border-top:1px solid #ddd}@media print{.pc{page-break-inside:avoid}}</style>
-</head><body><h1>جداول المراقبين — HTI Midterm ${new Date().toLocaleDateString('ar-EG')}</h1>`;
-  for(const name of names){
-    const m=proctorMeta[name]||{};
-    const entries=byP[name].sort((a,b) => a.date !== b.date ? a.date.localeCompare(b.date) : sortTimes(a.exam_time, b.exam_time));
-    
-    const pTimes = Array.from(new Set(entries.map(e=>e.exam_time))).sort(sortTimes);
-    const byDate = {};
-    for (const e of entries) {
-      if(!byDate[e.date]) byDate[e.date] = { day: e.day, date: e.date, times: {} };
-      byDate[e.date].times[e.exam_time] = e;
-    }
-    const pDates = Object.keys(byDate).sort();
+  const wb = buildFinalScheduleWorkbook();
+  const filename = `hti_schedule_${new Date().toISOString().slice(0,10)}.xlsx`;
+  XLSX.writeFile(wb, filename, { bookType: 'xlsx', compression: true });
+  showToast('تم تصدير ملف Excel ✓');
+}
 
-    html+=`<div class="pc"><div class="pc-hdr"><span class="pc-name">${name}</span>${m.is_academic?'<span class="badge">أكاديمي</span>':''}<span class="badge">${entries.length} جلسة</span></div>
-    <table><thead><tr><th class="row-hdr">اليوم / التاريخ</th>${pTimes.map(t=>`<th>${t}</th>`).join('')}</tr></thead><tbody>
-    ${pDates.map(d=>{
-      const row=byDate[d];
-      return `<tr><td class="row-hdr">${row.day}<br><small style="color:#888">${row.date}</small></td>`+pTimes.map(t=>{
-        const e=row.times[t];
-        return e?`<td><strong>${e.room}</strong><br><small style="color:#666">${(e.department||'') + (e.year||'')}</small></td>`:`<td style="background:#fafafa"></td>`;
-      }).join('')+`</tr>`;
-    }).join('')}
-    </tbody></table><div class="total"><span>${entries.length} جلسة مراقبة</span></div></div>`;
+function buildFinalScheduleHTML(){
+  const byYearTime = {};
+  for(const ts of Object.values(schedule)){
+    for(const [rn, r] of Object.entries(ts.rooms||{})){
+      const y = (r.year || 'غير محدد').trim();
+      const t = ts.exam_time;
+      if(!byYearTime[y]) byYearTime[y] = {};
+      if(!byYearTime[y][t]) byYearTime[y][t] = [];
+      byYearTime[y][t].push({
+        day: ts.day,
+        date: ts.date,
+        exam_time: ts.exam_time,
+        room: rn,
+        subject: r.subject,
+        professor: r.professor || '',
+        department: r.department,
+        student_count: r.student_count,
+        proctors: r.proctors || []
+      });
+    }
   }
-  html+='</body></html>';
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
-  a.download=`proctor_schedules_${new Date().toISOString().slice(0,10)}.html`;
-  a.click(); showToast('تم تصدير جداول المراقبين ✓');
+  const years = Object.keys(byYearTime).sort((a,b)=>a.localeCompare(b,'ar'));
+  const today = new Date().toLocaleDateString('ar-EG');
+
+  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+  <head><meta charset="UTF-8">
+  <xml>
+   <x:ExcelWorkbook>
+    <x:ExcelWorksheets>
+     <x:ExcelWorksheet>
+      <x:Name>HTI Schedule</x:Name>
+      <x:WorksheetOptions>
+       <x:DisplayRightToLeft/>
+       <x:RightToLeft/>
+      </x:WorksheetOptions>
+     </x:ExcelWorksheet>
+    </x:ExcelWorksheets>
+   </x:ExcelWorkbook>
+  </xml>
+  <style>
+    html,body{direction:rtl;}
+    @page{mso-rtl-page:yes;}
+    table{border-collapse:collapse;width:100%;margin-bottom:30px;direction:rtl;mso-direction-alt:rtl;}
+    th,td{border:1px solid #000;padding:8px;vertical-align:middle;text-align:center;font-family:'Cairo',sans-serif;font-size:11pt;white-space:pre-line;}
+    .title-row td{font-size:16pt;font-weight:bold;background:#f2f2f2;height:40px;}
+    .header-row td{font-weight:bold;background:#e2e2e2;}
+    .bold{font-weight:bold;}
+  </style></head><body dir="rtl">`;
+
+  for(const year of years){
+    const times = Object.keys(byYearTime[year]).sort(sortTimes);
+    for(const time of times){
+      const tableRows = byYearTime[year][time].sort((a,b) => {
+        if(a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.room.localeCompare(b.room, undefined, {numeric: true});
+      });
+
+      const dateGroups = [];
+      tableRows.forEach(row => {
+        let dateGroup = dateGroups.find(dg => dg.date === row.date);
+        if(!dateGroup) {
+          dateGroup = { date: row.date, day: row.day, subjects: [], totalRows: 0 };
+          dateGroups.push(dateGroup);
+        }
+        let subjGroup = dateGroup.subjects.find(sg => sg.subject === row.subject && sg.professor === row.professor);
+        if(!subjGroup) {
+          subjGroup = { subject: row.subject, professor: row.professor, rows: [] };
+          dateGroup.subjects.push(subjGroup);
+        }
+        subjGroup.rows.push(row);
+        dateGroup.totalRows++;
+      });
+
+      html += `<table dir="rtl" style="direction:rtl;">
+        <tr class="title-row"><td colspan="8">جدول ${year} ( من الساعة ${time} )</td></tr>
+        <tr class="header-row">
+          <td style="width:8%;">اليوم</td>
+          <td style="width:12%;">التاريخ</td>
+          <td style="width:20%;">اسم المادة</td>
+          <td style="width:15%;">أستاذ المادة</td>
+          <td style="width:8%;">المكان</td>
+          <td style="width:8%;">عدد الطلاب</td>
+          <td style="width:10%;">القسم</td>
+          <td style="width:19%;">المراقبون</td>
+        </tr>`;
+
+      dateGroups.forEach(dg => {
+        dg.subjects.forEach((sg, sIdx) => {
+          sg.rows.forEach((row, rIdx) => {
+            html += `<tr>`;
+            if(sIdx === 0 && rIdx === 0) {
+              html += `<td rowspan="${dg.totalRows}">${dg.day || '—'}</td>`;
+              html += `<td rowspan="${dg.totalRows}">${dg.date || '—'}</td>`;
+            }
+            if(rIdx === 0) {
+              html += `<td rowspan="${sg.rows.length}" class="bold">${sg.subject || '—'}</td>`;
+              html += `<td rowspan="${sg.rows.length}">${sg.professor || '—'}</td>`;
+            }
+            html += `<td class="bold">${row.room || '—'}</td>`;
+            html += `<td>${row.student_count || '—'}</td>`;
+            html += `<td>${row.department || '—'}</td>`;
+            html += `<td>${(row.proctors || []).join('<br>')}</td>`;
+            html += `</tr>`;
+          });
+        });
+      });
+      html += `</table>`;
+    }
+  }
+  html += `</body></html>`;
+  return html;
+}
+
+function buildFinalScheduleWorkbook(){
+  const byYearTime = {};
+  for(const ts of Object.values(schedule)){
+    for(const [rn, r] of Object.entries(ts.rooms||{})){
+      const y = (r.year || 'غير محدد').trim();
+      const t = ts.exam_time;
+      if(!byYearTime[y]) byYearTime[y] = {};
+      if(!byYearTime[y][t]) byYearTime[y][t] = [];
+      byYearTime[y][t].push({
+        day: ts.day,
+        date: ts.date,
+        exam_time: ts.exam_time,
+        room: rn,
+        subject: r.subject,
+        professor: r.professor || '',
+        department: r.department,
+        student_count: r.student_count,
+        proctors: r.proctors || []
+      });
+    }
+  }
+
+  const wb = XLSX.utils.book_new();
+  const years = Object.keys(byYearTime).sort((a,b)=>a.localeCompare(b,'ar'));
+  const header = ['اليوم','التاريخ','اسم المادة','أستاذ المادة','المكان','عدد الطلاب','القسم','المراقبون'];
+
+  for(const year of years){
+    const times = Object.keys(byYearTime[year]).sort(sortTimes);
+    const rows = [];
+    const merges = [];
+
+    times.forEach((time, timeIdx) => {
+      const titleRow = rows.length;
+      rows.push([`جدول ${year} ( من الساعة ${time} )`, '', '', '', '', '', '', '']);
+      rows.push(header);
+      merges.push({ s: { r: titleRow, c: 0 }, e: { r: titleRow, c: 7 } });
+
+      const tableRows = byYearTime[year][time].sort((a,b) => {
+        if(a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.room.localeCompare(b.room, undefined, {numeric: true});
+      });
+
+      const dateGroups = [];
+      tableRows.forEach(row => {
+        let dateGroup = dateGroups.find(dg => dg.date === row.date);
+        if(!dateGroup) {
+          dateGroup = { date: row.date, day: row.day, subjects: [], totalRows: 0 };
+          dateGroups.push(dateGroup);
+        }
+        let subjGroup = dateGroup.subjects.find(sg => sg.subject === row.subject && sg.professor === row.professor);
+        if(!subjGroup) {
+          subjGroup = { subject: row.subject, professor: row.professor, rows: [] };
+          dateGroup.subjects.push(subjGroup);
+        }
+        subjGroup.rows.push(row);
+        dateGroup.totalRows++;
+      });
+
+      let currentRow = rows.length;
+      dateGroups.forEach(dg => {
+        const dateStart = currentRow;
+        dg.subjects.forEach(sg => {
+          const subjStart = currentRow;
+          sg.rows.forEach((r, rIdx) => {
+            rows.push([
+              (dateStart === currentRow && rIdx === 0) ? (dg.day || '—') : '',
+              (dateStart === currentRow && rIdx === 0) ? (dg.date || '—') : '',
+              (rIdx === 0) ? (sg.subject || '—') : '',
+              (rIdx === 0) ? (sg.professor || '—') : '',
+              r.room || '—',
+              r.student_count || '—',
+              r.department || '—',
+              (r.proctors || []).join('\n')
+            ]);
+            currentRow++;
+          });
+          if(sg.rows.length > 1){
+            merges.push({ s: { r: subjStart, c: 2 }, e: { r: subjStart + sg.rows.length - 1, c: 2 } });
+            merges.push({ s: { r: subjStart, c: 3 }, e: { r: subjStart + sg.rows.length - 1, c: 3 } });
+          }
+        });
+        if(dg.totalRows > 1){
+          merges.push({ s: { r: dateStart, c: 0 }, e: { r: dateStart + dg.totalRows - 1, c: 0 } });
+          merges.push({ s: { r: dateStart, c: 1 }, e: { r: dateStart + dg.totalRows - 1, c: 1 } });
+        }
+      });
+
+      if(timeIdx !== times.length - 1){
+        rows.push(['', '', '', '', '', '', '', '']);
+      }
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!rtl'] = true;
+    ws['!views'] = [{ rightToLeft: true }];
+    ws['!cols'] = [
+      { wch: 10 }, { wch: 12 }, { wch: 28 }, { wch: 20 },
+      { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 30 }
+    ];
+    ws['!merges'] = merges;
+
+    const sheetName = makeSafeSheetName(`السنة ${year}`);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  }
+  wb.Workbook = wb.Workbook || {};
+  wb.Workbook.Views = [{ RTL: true }];
+  return wb;
+}
+
+function makeSafeSheetName(name){
+  const clean = name.replace(/[:\\/?*[\]]/g,' ').trim();
+  const trimmed = clean.length ? clean : 'Sheet';
+  return trimmed.length <= 31 ? trimmed : trimmed.slice(0, 31);
 }
 
 // ── DRAG & DROP ──
@@ -1094,6 +1344,19 @@ function executeMove(name,fromTsKey,fromRoom,target,dest){
   showToast(target==='staging'?`نُقل "${name}" إلى الانتظار`:`نُقل "${name}" إلى ${dest.room}`);
 }
 
+function removeProctorFromRoom(nameEnc, tsKeyEnc, roomEnc){
+  const name = decodeURIComponent(nameEnc);
+  const tsKey = decodeURIComponent(tsKeyEnc);
+  const room = decodeURIComponent(roomEnc);
+  if(!confirm(`إزالة "${name}" من القاعة ${room} في هذا الوقت؟`)) return;
+  const src = schedule[tsKey]?.rooms[room];
+  if(!src) return;
+  src.proctors = src.proctors.filter(p => p !== name);
+  renderSchedule(schedule, document.getElementById('searchInput').value);
+  renderStaging(); updateStats(); saveState();
+  showToast(`تمت إزالة "${name}" من ${room}`);
+}
+
 // ── MODAL ──
 function showConfirmModal(name,fromTsKey,fromRoom,target,dest,issues,onConfirm){
   const fromTs=schedule[fromTsKey];
@@ -1133,11 +1396,11 @@ function clearStaging(){if(!staging.length)return;if(!confirm(`إزالة ${stag
 function resetAll(){if(!confirm('إعادة تحميل ملف جديد؟ ستضيع التغييرات.'))return;localStorage.removeItem(STORAGE_KEY);proctorMeta={};schedule={};staging=[];document.getElementById('appShell').style.display='none';document.getElementById('uploadScreen').style.display='flex';document.getElementById('csvInput').value='';}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function exportCSV(){
-  const h=['date','day','exam_time','department','year','room','subject','student_count','proctor','proctor_weight','proctor_type','is_academic','room_required_n','room_required_w','room_has_academic','avail_days'];
+  const h=['date','day','exam_time','department','year','room','subject','student_count','professor','proctor','proctor_weight','proctor_type','is_academic','room_required_n','room_required_w','room_has_academic','avail_days'];
   const rows=[h.join(',')];
-  for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms))for(const p of r.proctors){const m=proctorMeta[p]||{};rows.push([ts.date,ts.day,ts.exam_time,r.department,r.year,rn,r.subject,r.student_count,p,m.weight||1,m.type||'easy',m.is_academic?'yes':'no',r.required_n,r.required_w,r.room_has_academic?'yes':'no',(m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
-  for(const s of staging){const ts=schedule[s.fromTsKey];const m=proctorMeta[s.name]||{};rows.push([ts?.date||'',ts?.day||'',ts?.exam_time||'','','','UNASSIGNED','','',s.name,m.weight||1,m.type||'easy',m.is_academic?'yes':'no','','','',( m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`proctor_assignments_edited_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('تم تصدير الجدول ✓');
+  for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms))for(const p of r.proctors){const m=proctorMeta[p]||{};rows.push([ts.date,ts.day,ts.exam_time,r.department,r.year,rn,r.subject,r.student_count,r.professor||'',p,m.weight||1,m.type||'easy',m.is_academic?'yes':'no',r.required_n,r.required_w,r.room_has_academic?'yes':'no',(m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
+  for(const s of staging){const ts=schedule[s.fromTsKey];const m=proctorMeta[s.name]||{};rows.push([ts?.date||'',ts?.day||'',ts?.exam_time||'','','','UNASSIGNED','','','',s.name,m.weight||1,m.type||'easy',m.is_academic?'yes':'no','','','',( m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`proctor_assignments_edited_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('تم تحميل نسخة احتياطية');
 }
 </script>
 </body>
