@@ -9,34 +9,34 @@
 <style>
 :root {
   /* ── CLEAN PALETTE ── */
-  --bg:         #f4f6f8;
-  --s1:         #ffffff;
-  --s2:         #f9fafb;
-  --s3:         #f3f4f6;
-  --border:     #e5e7eb;
-  --border-sub: #f3f4f6;
-  --text:       #111827;
-  --text-2:     #4b5563;
-  --text-3:     #9ca3af;
+  --bg:         #f3f4f6;
+  --s1:         #f8fafc;
+  --s2:         #f1f5f9;
+  --s3:         #e9eef4;
+  --border:     #d8e1ea;
+  --border-sub: #e9eef4;
+  --text:       #1e293b;
+  --text-2:     #475569;
+  --text-3:     #94a3b8;
 
   /* ── ACCENT ── */
-  --accent:       #0d9488;
-  --accent-light: #f0fdfa;
-  --accent-mid:   #ccfbf1;
-  --accent-text:  #0f766e;
+  --accent:       #06609f;
+  --accent-light: #edf3f7;
+  --accent-mid:   #d8e7f2;
+  --accent-text:  #1e293b;
 
   /* ── SEMANTIC COLORS ── */
-  --amber:      #d97706;
-  --amber-dim:  #fffbeb;
-  --amber-b:    #fde68a;
-  --green:      #16a34a;
-  --green-dim:  #f0fdf4;
-  --green-b:    #bbf7d0;
-  --indigo:     #4f46e5;
-  --indigo-dim: #eef2ff;
-  --blue:       #2563eb;
-  --red:        #dc2626;
-  --red-dim:    #fef2f2;
+  --amber:      #b56a1a;
+  --amber-dim:  #fbf5ec;
+  --amber-b:    #f1d7a4;
+  --green:      #2f7d57;
+  --green-dim:  #eef7f2;
+  --green-b:    #c7e4d2;
+  --indigo:     #2a4a7f;
+  --indigo-dim: #edf2f7;
+  --blue:       #2b5b87;
+  --red:        #b64141;
+  --red-dim:    #faeeee;
 
   /* ── SHAPE & SHADOW ── */
   --r:          8px;
@@ -70,7 +70,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .upload-btn{
   margin-top:24px;display:inline-block;padding:10px 32px;background:var(--accent);
   color:#fff;border-radius:var(--r);font-weight:700;font-size:15px;cursor:pointer;
-  transition:background .15s;box-shadow:0 4px 12px rgba(13,148,136,.25);
+  transition:background .15s;box-shadow:0 4px 12px rgba(6,96,159,.25);
 }
 .upload-btn:hover{background:var(--accent-text)}
 #csvInput{display:none}
@@ -126,7 +126,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   outline:none;transition:all .15s;
 }
 .search-input::placeholder{color:var(--text-3)}
-.search-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.15)}
+.search-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(6,96,159,.15)}
 
 /* ── BTNS ── */
 .btn{
@@ -249,15 +249,14 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .chip:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
 .chip:active{cursor:grabbing;transform:scale(.98);}
 .chip.dragging{opacity:.4;}
-.chip.hard{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
-.chip.easy{background:#f0fdf4;border-color:#bbf7d0;color:#166534;}
-.chip.w1{background:var(--green-dim);border-color:var(--green-b);color:var(--green);}
-.chip.w2{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent-text);}
-.chip.w3{background:var(--indigo-dim);border-color:#c7d2fe;color:var(--indigo);}
+.chip.hard{background:#eef2f7;border-color:#d3dde8;color:#3b5366;}
+.chip.easy{background:#eef2f7;border-color:#d3dde8;color:#3b5366;}
+.chip.w1{background:#cfeee0;border-color:#8fcdb1;color:#1a6a47;}
+.chip.w2{background:#d6e6fb;border-color:#91b9ee;color:#165a9e;}
+.chip.w3{background:#e6e0f5;border-color:#bfb1e6;color:#54398c;}
 
 .chip-acad{
-  background:var(--indigo);color:#fff;font-size:10px;padding:2px 4px;
-  border-radius:4px;line-height:1;margin-left:4px;font-weight:800;
+  color:var(--indigo);font-size:14px;margin-left:6px;line-height:1;
 }
 .chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .chip-remove{
@@ -298,7 +297,12 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:160px;color:var(--text-3);font-size:15px;gap:12px;text-align:center;font-weight:600;
 }
-.staging-empty-icon{font-size:42px;opacity:.4}
+.staging-empty-icon{
+  width:64px;height:64px;border-radius:50%;
+  border:2px dashed var(--text-3);background:var(--s2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);font-size:28px;opacity:.65;
+}
 .staging-group{margin-bottom:20px}
 .staging-group-lbl{
   font-size:13px;font-weight:800;color:var(--text-2);background:var(--s2);
@@ -322,7 +326,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   color:var(--text);font-family:'Cairo',sans-serif;font-size:15px;
   padding:10px 16px;outline:none;width:280px;transition:all .15s;
 }
-.pv-search:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.15)}
+.pv-search:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(6,96,159,.15)}
 .pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:24px}
 .pc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
 .pc-hdr{padding:16px 20px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
@@ -452,7 +456,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
       placeholder="بحث بالاسم أو القاعة أو المادة..."
       oninput="filterSchedule(this.value)">
     <button class="btn btn-outline" onclick="document.getElementById('searchInput').value='';filterSchedule('')">مسح الفلتر</button>
-    <button class="btn btn-indigo" onclick="exportToExcel()">تصدير <i class="fa-solid fa-file-excel" style="color: rgb(12, 114, 56);"></i></button>
+    <button class="btn btn-indigo" onclick="exportToExcel()"><span style="color: #0c7238;">تصدير</span> <i class="fa-solid fa-file-excel" style="color: rgb(12, 114, 56);"></i></button>
   </div>
 
   <div class="app-body">
@@ -470,7 +474,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
           ondragleave="onDragLeave(event,'staging')"
           ondrop="onDrop(event,'staging',null)">
           <div class="staging-empty" id="stagingEmpty">
-            <div class="staging-empty-icon">🧑‍💼</div>
+            <div class="staging-empty-icon"><i class="fa-regular fa-user"></i></div>
             <div>لا يوجد مراقبون في الانتظار</div>
           </div>
           <div id="stagingList"></div>
@@ -977,7 +981,7 @@ function chipHTML(name,tsKey,fromRoom){
   return `<div class="chip ${m.type} ${weightClass}" draggable="true" data-name="${encodeURIComponent(name)}" data-from_ts="${encodeURIComponent(tsKey)}" data-from_room="${encodeURIComponent(fromRoom)}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" title="${name} (Weight: ${m.weight||1})">
     ${removeBtn}
     <span class="chip-name">${name}</span>
-    ${m.is_academic?'<span class="chip-acad">أ</span>':''}
+    ${m.is_academic?'<i class="chip-acad fa-brands fa-google-scholar"></i>':''}
   </div>`;
 }
 
@@ -1079,119 +1083,6 @@ function exportToExcel(){
   const filename = `hti_schedule_${new Date().toISOString().slice(0,10)}.xlsx`;
   XLSX.writeFile(wb, filename, { bookType: 'xlsx', compression: true });
   showToast('تم تصدير ملف Excel ✓');
-}
-
-function buildFinalScheduleHTML(){
-  const byYearTime = {};
-  for(const ts of Object.values(schedule)){
-    for(const [rn, r] of Object.entries(ts.rooms||{})){
-      const y = (r.year || 'غير محدد').trim();
-      const t = ts.exam_time;
-      if(!byYearTime[y]) byYearTime[y] = {};
-      if(!byYearTime[y][t]) byYearTime[y][t] = [];
-      byYearTime[y][t].push({
-        day: ts.day,
-        date: ts.date,
-        exam_time: ts.exam_time,
-        room: rn,
-        subject: r.subject,
-        professor: r.professor || '',
-        department: r.department,
-        student_count: r.student_count,
-        proctors: r.proctors || []
-      });
-    }
-  }
-  const years = Object.keys(byYearTime).sort((a,b)=>a.localeCompare(b,'ar'));
-  const today = new Date().toLocaleDateString('ar-EG');
-
-  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-  <head><meta charset="UTF-8">
-  <xml>
-   <x:ExcelWorkbook>
-    <x:ExcelWorksheets>
-     <x:ExcelWorksheet>
-      <x:Name>HTI Schedule</x:Name>
-      <x:WorksheetOptions>
-       <x:DisplayRightToLeft/>
-       <x:RightToLeft/>
-      </x:WorksheetOptions>
-     </x:ExcelWorksheet>
-    </x:ExcelWorksheets>
-   </x:ExcelWorkbook>
-  </xml>
-  <style>
-    html,body{direction:rtl;}
-    @page{mso-rtl-page:yes;}
-    table{border-collapse:collapse;width:100%;margin-bottom:30px;direction:rtl;mso-direction-alt:rtl;}
-    th,td{border:1px solid #000;padding:8px;vertical-align:middle;text-align:center;font-family:'Cairo',sans-serif;font-size:11pt;white-space:pre-line;}
-    .title-row td{font-size:16pt;font-weight:bold;background:#f2f2f2;height:40px;}
-    .header-row td{font-weight:bold;background:#e2e2e2;}
-    .bold{font-weight:bold;}
-  </style></head><body dir="rtl">`;
-
-  for(const year of years){
-    const times = Object.keys(byYearTime[year]).sort(sortTimes);
-    for(const time of times){
-      const tableRows = byYearTime[year][time].sort((a,b) => {
-        if(a.date !== b.date) return a.date.localeCompare(b.date);
-        return a.room.localeCompare(b.room, undefined, {numeric: true});
-      });
-
-      const dateGroups = [];
-      tableRows.forEach(row => {
-        let dateGroup = dateGroups.find(dg => dg.date === row.date);
-        if(!dateGroup) {
-          dateGroup = { date: row.date, day: row.day, subjects: [], totalRows: 0 };
-          dateGroups.push(dateGroup);
-        }
-        let subjGroup = dateGroup.subjects.find(sg => sg.subject === row.subject && sg.professor === row.professor);
-        if(!subjGroup) {
-          subjGroup = { subject: row.subject, professor: row.professor, rows: [] };
-          dateGroup.subjects.push(subjGroup);
-        }
-        subjGroup.rows.push(row);
-        dateGroup.totalRows++;
-      });
-
-      html += `<table dir="rtl" style="direction:rtl;">
-        <tr class="title-row"><td colspan="8">جدول ${year} ( من الساعة ${time} )</td></tr>
-        <tr class="header-row">
-          <td style="width:8%;">اليوم</td>
-          <td style="width:12%;">التاريخ</td>
-          <td style="width:20%;">اسم المادة</td>
-          <td style="width:15%;">أستاذ المادة</td>
-          <td style="width:8%;">المكان</td>
-          <td style="width:8%;">عدد الطلاب</td>
-          <td style="width:10%;">القسم</td>
-          <td style="width:19%;">المراقبون</td>
-        </tr>`;
-
-      dateGroups.forEach(dg => {
-        dg.subjects.forEach((sg, sIdx) => {
-          sg.rows.forEach((row, rIdx) => {
-            html += `<tr>`;
-            if(sIdx === 0 && rIdx === 0) {
-              html += `<td rowspan="${dg.totalRows}">${dg.day || '—'}</td>`;
-              html += `<td rowspan="${dg.totalRows}">${dg.date || '—'}</td>`;
-            }
-            if(rIdx === 0) {
-              html += `<td rowspan="${sg.rows.length}" class="bold">${sg.subject || '—'}</td>`;
-              html += `<td rowspan="${sg.rows.length}">${sg.professor || '—'}</td>`;
-            }
-            html += `<td class="bold">${row.room || '—'}</td>`;
-            html += `<td>${row.student_count || '—'}</td>`;
-            html += `<td>${row.department || '—'}</td>`;
-            html += `<td>${(row.proctors || []).join('<br>')}</td>`;
-            html += `</tr>`;
-          });
-        });
-      });
-      html += `</table>`;
-    }
-  }
-  html += `</body></html>`;
-  return html;
 }
 
 function buildFinalScheduleWorkbook(){
