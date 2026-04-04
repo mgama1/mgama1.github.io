@@ -305,6 +305,13 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   padding:6px 10px;border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border);
 }
 .staging-group-chips{display:flex;flex-wrap:wrap;gap:8px}
+#addProctorModal .vitem.unavailable{
+  background:var(--red-dim);
+  border-color:#fecaca;
+  color:var(--red);
+}
+#addProctorModal .vitem.unavailable .vicon{color:var(--red)}
+#addProctorModal .vitem.unavailable .subtle{color:#b91c1c}
 
 /* ── PROCTOR VIEW ── */
 #proctorPanel{padding:32px 40px;display:none}
@@ -520,6 +527,9 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     <div class="modal-hdr"><div class="modal-title">إضافة مراقب للجدول</div></div>
     <div class="modal-body">
       <div id="addProctorMeta" style="margin-bottom:16px;font-weight:700;color:var(--text-2)"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <button class="btn btn-outline" id="addProctorToggle" onclick="toggleAddProctorAvailability()">عرض كل المراقبين</button>
+      </div>
       <input type="text" class="search-input" id="addProctorSearch" placeholder="بحث باسم المراقب..." oninput="filterAddProctorList(this.value)" style="width:100%;margin-bottom:16px;">
       <div id="addProctorList" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px;"></div>
     </div>
@@ -535,12 +545,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 const STORAGE_KEY = 'hti_proctor_v2';
 let proctorMeta = {}, schedule = {}, staging = [], pendingMove = null, dragData = null, saveTimer = null;
 let currentAddProctorTs = null, currentAddProctorRoom = null, currentAddProctorFilter = '';
+let showAllAddProctors = false;
 
 function showAddProctorModal(tsKey, roomName) {
   currentAddProctorTs = tsKey; currentAddProctorRoom = roomName; currentAddProctorFilter = '';
+  showAllAddProctors = false;
   const tsData = schedule[tsKey];
   document.getElementById('addProctorMeta').textContent = `${tsData.day} — ${tsData.exam_time} | قاعة ${roomName}`;
   document.getElementById('addProctorSearch').value = '';
+  updateAddProctorToggle();
   document.getElementById('addProctorModal').style.display = 'flex';
   renderAddProctorList();
 }
@@ -552,6 +565,18 @@ function closeAddProctorModal() {
 
 function filterAddProctorList(v) { currentAddProctorFilter = v; renderAddProctorList(); }
 
+function toggleAddProctorAvailability() {
+  showAllAddProctors = !showAllAddProctors;
+  updateAddProctorToggle();
+  renderAddProctorList();
+}
+
+function updateAddProctorToggle() {
+  const btn = document.getElementById('addProctorToggle');
+  if (!btn) return;
+  btn.textContent = showAllAddProctors ? 'إخفاء غير المتاحين' : 'عرض كل المراقبين';
+}
+
 function renderAddProctorList() {
   const list = document.getElementById('addProctorList'); list.innerHTML = '';
   const tsData = schedule[currentAddProctorTs];
@@ -561,7 +586,8 @@ function renderAddProctorList() {
   const avail = Object.keys(proctorMeta).filter(name => {
     const meta = proctorMeta[name];
     if (currentAddProctorFilter && !name.includes(currentAddProctorFilter)) return false;
-    if (!meta.avail_days.includes(tsData.day)) return false;
+    const isAvailable = !meta.avail_days || meta.avail_days.includes(tsData.day);
+    if (!showAllAddProctors && !isAvailable) return false;
     if (proctorsInTs.includes(name)) return false;
     return true;
   }).sort((a,b) => a.localeCompare(b, 'ar'));
@@ -573,16 +599,20 @@ function renderAddProctorList() {
 
   avail.forEach(name => {
     const meta = proctorMeta[name];
+    const isAvailable = !meta.avail_days || meta.avail_days.includes(tsData.day);
     const isStaged = staging.some(s => s.name === name);
     const div = document.createElement('div');
-    div.className = 'vitem ok';
+    div.className = `vitem ok${!isAvailable ? ' unavailable' : ''}`;
     div.style.cursor = 'pointer';
     div.style.padding = '8px 12px';
     div.onclick = () => addProctorToRoom(name);
     div.innerHTML = `
       <div style="flex:1;">
         <div style="font-weight:800;">${name} ${isStaged ? ' <span class="badge badge-danger">في الانتظار</span>' : ''}</div>
-        <div style="font-size:11px;color:var(--text-2);">${meta.type === 'hard' ? 'أساسي' : 'مساعد'} ${meta.is_academic ? '| أكاديمي' : ''}</div>
+        <div class="subtle" style="font-size:11px;color:var(--text-2);">
+          ${meta.type === 'hard' ? 'أساسي' : 'مساعد'} ${meta.is_academic ? '| أكاديمي' : ''}
+          ${!isAvailable ? ' | غير متاح هذا اليوم' : ''}
+        </div>
       </div>
       <div class="vicon" style="color:var(--accent); font-size: 20px;">+</div>
     `;
@@ -596,6 +626,7 @@ function addProctorToRoom(name) {
   const issues = validateMove(name, inStaged ? null : null, inStaged ? '__staging__' : null, tsKey, room);
   
   if (issues.some(i => i.type === 'error')) {
+     closeAddProctorModal();
      showConfirmModal(name, null, inStaged ? '__staging__' : null, 'room', {tsKey, room}, issues, () => {
        actuallyAddProctor(name, tsKey, room, inStaged);
      });
