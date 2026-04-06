@@ -120,13 +120,20 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   padding:12px 24px;background:var(--s1);border-bottom:1px solid var(--border);
   display:flex;gap:12px;align-items:center;flex-shrink:0;
 }
+.search-wrap{position:relative;flex:1;display:flex;align-items:center;}
 .search-input{
-  flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
-  color:var(--text);font-family:'Cairo',sans-serif;font-size:15px;padding:10px 16px;
+  width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-family:'Cairo',sans-serif;font-size:15px;padding:10px 40px 10px 16px;
   outline:none;transition:all .15s;
 }
 .search-input::placeholder{color:var(--text-3)}
 .search-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(6,96,159,.15)}
+.search-clear{
+  position:absolute;left:12px;background:none;border:none;cursor:pointer;
+  color:var(--text-3);font-size:16px;line-height:1;padding:4px;border-radius:50%;
+  display:none;transition:color .15s;
+}
+.search-clear:hover{color:var(--text)}
 
 /* ── BTNS ── */
 .btn{
@@ -452,16 +459,19 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
   </div>
 
   <div class="filter-bar" id="filterBar">
-    <input type="text" class="search-input" id="searchInput"
-      placeholder="بحث بالاسم أو القاعة أو المادة..."
-      oninput="filterSchedule(this.value)">
-    <button class="btn btn-outline" onclick="document.getElementById('searchInput').value='';filterSchedule('')">مسح الفلتر</button>
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="بحث بالاسم أو القاعة أو المادة..."
+        oninput="filterSchedule(this.value);document.querySelector('.search-clear').style.display=this.value?'block':'none'">
+      <button class="search-clear" onclick="document.getElementById('searchInput').value='';filterSchedule('');this.style.display='none'">✕</button>
+    </div>
+    <button class="btn btn-outline" onclick="scrollToToday()" title="الانتقال إلى اليوم الحالي"><i class="fa-regular fa-calendar-check"></i> اليوم</button>
     <button class="btn btn-indigo" onclick="exportToExcel()"><span style="color: #0c7238;">تصدير</span> <i class="fa-solid fa-file-excel" style="color: rgb(12, 114, 56);"></i></button>
   </div>
 
   <div class="app-body">
     <div class="tab-panel" id="scheduleWrapper" style="display:flex;flex:1;overflow:hidden">
-      <div style="flex:1;overflow-y:auto;overflow-x:auto;padding:24px;" id="scheduleArea"></div>
+      <div style="flex:1;overflow-y:auto;overflow-x:auto;padding:24px;" id="scheduleScroll"><div id="scheduleArea"></div></div>
       
       <div class="staging">
         <div class="staging-hdr">
@@ -842,6 +852,13 @@ function renderProctorIndex(filter = '') {
   container.innerHTML = html;
 }
 // ── MATRIX SCHEDULE RENDER ──
+function scrollToToday(){
+  const today = new Date().toISOString().slice(0,10);
+  const target = document.getElementById('day-'+today);
+  if(target){ const scroller=document.getElementById('scheduleScroll'); scroller.scrollTo({top:target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop, behavior:'smooth'}); }
+  else showToast('لا توجد جلسات اليوم');
+}
+
 function renderSchedule(sched, filter=''){
   const area=document.getElementById('scheduleArea'); area.innerHTML='';
   
@@ -878,6 +895,7 @@ function renderSchedule(sched, filter=''){
     // Build the Day Container
     const dayEl = document.createElement('div');
     dayEl.className = 'day-section';
+    dayEl.id = 'day-' + date;
     dayEl.innerHTML = `
       <div class="day-hdr">
         <span class="day-name">${dayData.day}</span>
