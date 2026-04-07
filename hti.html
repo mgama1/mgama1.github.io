@@ -231,6 +231,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .matrix-cell.understaffed .room-info-panel { background: #fef3c7; border-color: #fde68a; }
 
 .room-info-panel.open { display: flex; }
+
+.student-count-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 700; color: var(--text-3);
+  background: var(--s3); border: 1px solid var(--border);
+  border-radius: 20px; padding: 1px 7px 1px 5px;
+  margin-top: 4px; width: fit-content; line-height: 1.6;
+  letter-spacing: 0;
+}
 .room-info-row { display: flex; justify-content: space-between; align-items: center; }
 .room-info-lbl { color: var(--text-2); font-weight: 700; font-size: 11px; }
 .room-info-val.warn { color: var(--red); font-weight: 800; }
@@ -945,7 +954,7 @@ function renderSchedule(sched, filter=''){
 }
 
 function renderMatrixCell(tsKey, roomName, roomData){
-  const {subject, department, year, required_n, required_w, room_has_academic, proctors} = roomData;
+  const {subject, department, year, student_count, required_n, required_w, room_has_academic, proctors} = roomData;
   const hasAc = proctors.some(p => proctorMeta[p]?.is_academic);
   const viols = getViolations(tsKey, roomName, roomData);
 
@@ -974,7 +983,7 @@ function renderMatrixCell(tsKey, roomName, roomData){
          ondrop="onDrop(event, 'room', {tsKey: '${tsKey}', room: '${roomName}'})">
       <div class="mc-info">
         <div class="mc-hdr">
-           <div class="mc-subj">${subject || 'بدون مادة'} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${(department||'') + (year||'')}</div></div>
+           <div class="mc-subj">${subject || 'بدون مادة'} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${(department||'') + (year||'')}</div>${student_count ? `<div class="student-count-badge"><i class="fa-solid fa-user-group" style="font-size:9px;opacity:.7;"></i>${student_count}</div>` : ''}</div>
            <div style="display:flex;gap:4px;">
              <button class="room-info-btn" onclick="event.stopPropagation();showAddProctorModal('${tsKey}', '${roomName}')" title="إضافة مراقب" style="color:var(--accent);border-color:var(--accent-mid);">+</button>
              <button class="room-info-btn" onclick="event.stopPropagation();this.closest('.mc-info').querySelector('.room-info-panel').classList.toggle('open')" title="التفاصيل">ℹ</button>
