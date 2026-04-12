@@ -2007,11 +2007,55 @@ function renderHistory() {
         </div>`;
       }).join('');
 
+  // ── This week's volume per muscle group ────────────────
+  const dowIdx = (today.getDay()+6)%7;
+  const weekStart = new Date(today); weekStart.setDate(today.getDate() - dowIdx);
+  const weekDays = [];
+  for(let d=0; d<7; d++) {
+    const dt = new Date(weekStart); dt.setDate(weekStart.getDate()+d);
+    if(dt > today) break;
+    weekDays.push(dt.toISOString().slice(0,10));
+  }
+  const muscleVol = {};
+  Object.entries(DATA).forEach(([k,g]) => {
+    let sets = 0;
+    weekDays.forEach(ds => {
+      try {
+        const dp = JSON.parse(localStorage.getItem('wd_'+ds)||'{}');
+        g.exercises.forEach(ex => {
+          if(dp[ex.id]) sets += Object.values(dp[ex.id]).filter(Boolean).length;
+        });
+      } catch {}
+    });
+    muscleVol[k] = { label: g.label, sets, target: g.exercises.reduce((s,e)=>s+e.sets,0) };
+  });
+  const maxMuscleVol = Math.max(...Object.values(muscleVol).map(m=>m.sets), 1);
+  const muscleVolBars = Object.values(muscleVol).map(m => {
+    const barH = Math.max(m.sets / maxMuscleVol * 68, m.sets > 0 ? 4 : 1);
+    const done = m.sets >= m.target;
+    return `<div class="vol-bar-col">
+        <div class="vol-bar-val">${m.sets > 0 ? m.sets : ''}</div>
+        <div class="vol-bar ${m.sets>0?'has-data':''} ${done?'this-week':''}"
+          style="height:${barH}px" title="${m.label}: ${m.sets}/${m.target} sets"></div>
+        <div class="vol-bar-lbl">${m.label}</div>
+      </div>`;
+  }).join('');
+  const weekLabel = weekStart.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  const volChart = `<div class="vol-chart-wrap">
+      <div class="vol-bar-area">${muscleVolBars}</div>
+      <div style="font-size:0.44rem;color:var(--text-dim);letter-spacing:0.15em;text-transform:uppercase;margin-top:6px;">
+        Week of ${weekLabel} &nbsp;·&nbsp; <span style="color:var(--green-text)">■</span> full target reached
+      </div>
+    </div>`;
+
   // ── Weekly volume sparklines (last 8 weeks, total reps per muscle) ───
   const SPARKWEEKS = 8;
+  function localDateStr(d) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
   function getWeekStarts(n) {
-    const t = new Date(); t.setHours(0,0,0,0);
-    const dow = (t.getDay() + 6) % 7;
+    const t = new Date();
+    const dow = (t.getDay() + 6) % 7; // Mon=0
     const thisMonday = new Date(t); thisMonday.setDate(t.getDate() - dow);
     const starts = [];
     for (let w = n - 1; w >= 0; w--) {
@@ -2027,7 +2071,7 @@ function renderHistory() {
       let total = 0;
       for (let d = 0; d < 7; d++) {
         const dt = new Date(start); dt.setDate(start.getDate() + d);
-        const ds = dt.toISOString().slice(0, 10);
+        const ds = localDateStr(dt);
         try {
           const dp = JSON.parse(localStorage.getItem('wd_' + ds) || '{}');
           g.exercises.forEach(ex => {
@@ -2100,6 +2144,8 @@ function renderHistory() {
   document.getElementById('history-content').innerHTML = `
     <div class="history-section-label">12-Week Overview</div>
     ${grid}
+    <div class="history-section-label" style="margin-top:8px;">This Week's Volume</div>
+    ${volChart}
     <div class="history-section-label" style="margin-top:8px;">Weekly Volume &mdash; Reps</div>
     ${sparklineHtml}
   `;
