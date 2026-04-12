@@ -194,6 +194,11 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .matrix-cell.understaffed{background:var(--amber-dim);box-shadow:inset 0 0 0 2px var(--amber);}
 .matrix-cell.flash-warn{animation:flash 1.5s ease-out;}
 @keyframes flash { 0%{background:var(--amber-b)} 100%{background:var(--s1)} }
+.matrix-cell.violation-focus{animation:violation-pulse 2.5s ease-out forwards;}
+@keyframes violation-pulse {
+  0%,60%{box-shadow:inset 0 0 0 3px var(--red),0 0 0 5px rgba(182,65,65,.3);}
+  100%{box-shadow:inset 0 0 0 2px var(--red),0 0 0 0 rgba(182,65,65,0);}
+}
 
 .matrix-cell-empty{
   height:100%;min-height:140px;background:repeating-linear-gradient(45deg, var(--bg), var(--bg) 10px, var(--s2) 10px, var(--s2) 20px);
@@ -215,7 +220,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 }
 .room-info-btn {
   background: none; border: 1px solid var(--border); border-radius: 50%;
-  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: var(--text-3); font-size: 12px; font-weight: 700;
   transition: all .15s; flex-shrink: 0; padding: 0;
 }
@@ -405,6 +410,8 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+#statViolations{cursor:pointer;transition:background .15s,box-shadow .15s;}
+#statViolations:hover{background:#fecaca!important;box-shadow:0 0 0 2px rgba(182,65,65,.25);}
 
 /* ── PRINT ── */
 @media print {
@@ -451,8 +458,8 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     <div class="hdr-sep"></div>
     <div class="hdr-stat"><span>تعيينات:</span><strong id="statAssign">-</strong></div>
     <div class="hdr-sep"></div>
-    <div class="hdr-stat" id="statViolations" style="display:none;color:var(--red);background:var(--red-dim);border-color:#fecaca;">
-      ⚠ <strong id="statViolCount">0</strong> انتهاك
+    <div class="hdr-stat" id="statViolations" style="display:none;color:var(--red);background:var(--red-dim);border-color:#fecaca;" onclick="cycleViolation()" title="انقر للانتقال إلى الانتهاك التالي">
+      ⚠ <strong id="statViolCount">0</strong> انتهاك <i class="fa-solid fa-angles-down" style="font-size:11px;opacity:.65;margin-right:3px;"></i>
     </div>
     <div class="hdr-spacer"></div>
     <div class="save-indicator" id="saveIndicator">● محفوظ</div>
@@ -569,6 +576,7 @@ const STORAGE_KEY = 'hti_proctor_v2';
 let proctorMeta = {}, schedule = {}, staging = [], pendingMove = null, dragData = null, saveTimer = null;
 let currentAddProctorTs = null, currentAddProctorRoom = null, currentAddProctorFilter = '';
 let showAllAddProctors = false;
+let violationList = [], violationIndex = -1;
 
 function showAddProctorModal(tsKey, roomName) {
   currentAddProctorTs = tsKey; currentAddProctorRoom = roomName; currentAddProctorFilter = '';
@@ -863,9 +871,24 @@ function renderProctorIndex(filter = '') {
 // ── MATRIX SCHEDULE RENDER ──
 function scrollToToday(){
   const today = new Date().toISOString().slice(0,10);
+  const scroller = document.getElementById('scheduleScroll');
   const target = document.getElementById('day-'+today);
-  if(target){ const scroller=document.getElementById('scheduleScroll'); scroller.scrollTo({top:target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop, behavior:'smooth'}); }
-  else showToast('لا توجد جلسات اليوم');
+  if (target) {
+    scroller.scrollTo({top:target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop, behavior:'smooth'});
+    return;
+  }
+  const dayEls = Array.from(document.querySelectorAll('[id^="day-"]'));
+  const dates = dayEls
+    .map(el => el.id.replace('day-',''))
+    .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
+    .sort();
+  const nextDate = dates.find(d => d > today);
+  if (nextDate) {
+    const nextEl = document.getElementById('day-'+nextDate);
+    if (nextEl) scroller.scrollTo({top:nextEl.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop, behavior:'smooth'});
+  } else {
+    showToast('لا توجد جلسات قادمة');
+  }
 }
 
 function renderSchedule(sched, filter=''){
@@ -888,7 +911,7 @@ function renderSchedule(sched, filter=''){
     // Sort rooms (numeric if possible)
     const rooms = Array.from(dayData.rooms).sort((a,b)=>a.localeCompare(b, undefined, {numeric: true}));
     
-    // Apply Filter: Only keep rooms that match, OR rooms that contain a matching proctor/subject at any time
+    // Apply Filter: keep rooms that match or contain any matching cell
     const visibleRooms = rooms.filter(rn => {
       if(!filter) return true;
       if(rn.includes(filter)) return true;
@@ -927,6 +950,7 @@ function renderSchedule(sched, filter=''){
     
     // Build Rows for each Room
     for(const rn of visibleRooms){
+      const roomMatchAll = !!filter && rn.includes(filter);
       const tr = document.createElement('tr');
       tr.innerHTML = `<td class="room-header-cell">${rn}</td>`;
       
@@ -937,6 +961,9 @@ function renderSchedule(sched, filter=''){
         
         if(!rData) {
           td.innerHTML = `<div class="matrix-cell-empty"></div>`;
+        } else if (filter && !roomMatchAll) {
+          const cellMatch = matchesFilter(rData, filter) || rData.proctors.some(p => p.includes(filter));
+          td.innerHTML = cellMatch ? renderMatrixCell(tsDataObj.tsKey, rn, rData) : `<div class="matrix-cell-empty"></div>`;
         } else {
           td.innerHTML = renderMatrixCell(tsDataObj.tsKey, rn, rData);
         }
@@ -985,7 +1012,7 @@ function renderMatrixCell(tsKey, roomName, roomData){
         <div class="mc-hdr">
            <div class="mc-subj">${subject || 'بدون مادة'} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${(department||'') + (year||'')}</div>${student_count ? `<div class="student-count-badge"><i class="fa-solid fa-user-group" style="font-size:9px;opacity:.7;"></i>${student_count}</div>` : ''}</div>
            <div style="display:flex;gap:4px;">
-             <button class="room-info-btn" onclick="event.stopPropagation();showAddProctorModal('${tsKey}', '${roomName}')" title="إضافة مراقب" style="color:var(--accent);border-color:var(--accent-mid);">+</button>
+             <button class="room-info-btn" onclick="event.stopPropagation();showAddProctorModal('${tsKey}', '${roomName}')" title="إضافة مراقب" style="color:var(--accent);border-color:var(--accent-mid);"><i class="fa-solid fa-user-plus" style="font-size:11px;"></i></button>
              <button class="room-info-btn" onclick="event.stopPropagation();this.closest('.mc-info').querySelector('.room-info-panel').classList.toggle('open')" title="التفاصيل">ℹ</button>
            </div>
         </div>
@@ -1340,6 +1367,34 @@ function updateStats(){
   document.getElementById('statRooms').textContent=rooms;
   document.getElementById('statAssign').textContent=assign+staging.length;
   const vEl=document.getElementById('statViolations');vEl.style.display=viols?'flex':'none';document.getElementById('statViolCount').textContent=viols;
+  buildViolationList();
+}
+
+function buildViolationList(){
+  violationList=[];
+  for(const [tsKey,ts] of Object.entries(schedule))
+    for(const [rn,r] of Object.entries(ts.rooms))
+      if(getViolations(tsKey,rn,r).length) violationList.push({tsKey,roomName:rn,date:ts.date});
+  violationList.sort((a,b)=>a.date.localeCompare(b.date)||a.roomName.localeCompare(b.roomName,undefined,{numeric:true}));
+  violationIndex=-1;
+}
+
+function cycleViolation(){
+  if(!violationList.length) return;
+  violationIndex=(violationIndex+1)%violationList.length;
+  const {tsKey,roomName}=violationList[violationIndex];
+  if(currentTab!=='schedule') switchTab('schedule');
+  const cell=document.querySelector(`.matrix-cell[data-ts="${tsKey}"][data-room="${roomName}"]`);
+  if(!cell){showToast('تعذّر تحديد موقع الانتهاك');return;}
+  const scroller=document.getElementById('scheduleScroll');
+  const scrollerRect=scroller.getBoundingClientRect();
+  const cellRect=cell.getBoundingClientRect();
+  scroller.scrollTo({top:scroller.scrollTop+cellRect.top-scrollerRect.top-120,behavior:'smooth'});
+  cell.classList.remove('violation-focus');
+  void cell.offsetWidth;
+  cell.classList.add('violation-focus');
+  setTimeout(()=>cell.classList.remove('violation-focus'),2500);
+  showToast(`انتهاك ${violationIndex+1} / ${violationList.length} — قاعة ${roomName}`);
 }
 function clearStaging(){if(!staging.length)return;if(!confirm(`إزالة ${staging.length} مراقب من الانتظار؟`))return;staging=[];renderStaging();updateStats();saveState();}
 function resetAll(){if(!confirm('إعادة تحميل ملف جديد؟ ستضيع التغييرات.'))return;localStorage.removeItem(STORAGE_KEY);proctorMeta={};schedule={};staging=[];document.getElementById('appShell').style.display='none';document.getElementById('uploadScreen').style.display='flex';document.getElementById('csvInput').value='';}
