@@ -663,6 +663,105 @@
   }
   .rest-info-msg { font-size: 0.55rem; color: var(--text-dim); }
 
+  /* FULL-SCREEN TIMER OVERLAY */
+  .timer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,5,0.97);
+    z-index: 800;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+  }
+  .timer-overlay.active { display: flex; }
+
+  .timer-overlay-dismiss {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    font-size: 0.44rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .timer-overlay-label {
+    font-size: 0.52rem;
+    letter-spacing: 0.45em;
+    color: var(--amber-text);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .timer-overlay-exname {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 48px;
+  }
+
+  .timer-overlay-ring {
+    position: relative;
+    width: min(70vw, 70vh, 420px);
+    height: min(70vw, 70vh, 420px);
+    flex-shrink: 0;
+  }
+  .timer-overlay-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .tor-bg  { fill: none; stroke: var(--border); stroke-width: 4; }
+  .tor-arc { fill: none; stroke: var(--amber-text); stroke-width: 4; stroke-linecap: round;
+             transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+  .tor-arc.urgent { stroke: #e74c3c; }
+
+  .timer-overlay-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .timer-overlay-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: min(22vw, 22vh, 130px);
+    letter-spacing: 0.04em;
+    color: var(--amber-text);
+    line-height: 1;
+  }
+  .timer-overlay-num.urgent { color: #e74c3c; }
+  .timer-overlay-go {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: min(22vw, 22vh, 130px);
+    letter-spacing: 0.04em;
+    color: var(--green-text);
+    line-height: 1;
+  }
+  .timer-overlay-sub {
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .timer-overlay-msg {
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 40px;
+    opacity: 0.6;
+  }
+
   /* NOTES */
   .notes-wrap { margin-top: 10px; }
 
@@ -1292,6 +1391,25 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- FULL-SCREEN REST TIMER OVERLAY -->
+<div class="timer-overlay" id="timerOverlay" onclick="dismissTimerOverlay()">
+  <div class="timer-overlay-dismiss">Tap anywhere to dismiss</div>
+  <div class="timer-overlay-label">Rest Timer</div>
+  <div class="timer-overlay-exname" id="tor-exname">—</div>
+  <div class="timer-overlay-ring">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle class="tor-bg" cx="100" cy="100" r="90"/>
+      <circle class="tor-arc" id="tor-arc" cx="100" cy="100" r="90"
+        stroke-dasharray="565.5" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-overlay-center">
+      <div class="timer-overlay-num" id="tor-num">0:00</div>
+      <div class="timer-overlay-sub" id="tor-sub">seconds remaining</div>
+    </div>
+  </div>
+  <div class="timer-overlay-msg" id="tor-msg">Breathe. Next set coming.</div>
+</div>
+
 <!-- REPS POPUP -->
 <div id="repsPopup" class="reps-popup">
   <div class="reps-popup-backdrop" onclick="closeRepsPopup()"></div>
@@ -1765,46 +1883,70 @@ function toggleSet(exId, i) {
 
 
 function startRest(id, sec) {
-  // find exercise name
   let exName = '';
   Object.values(DATA).forEach(g=>g.exercises.forEach(e=>{ if(e.id===id) exName=e.name; }));
-
-  const wrap = document.getElementById('global-rest-timer');
-  if (!wrap) return;
-  wrap.classList.add('active');
 
   // clear any running timer
   if (restTimers._active) { clearInterval(restTimers._active); delete restTimers._active; }
 
-  const CIRC = 2 * Math.PI * 27; // r=27 → 169.6
+  const CIRC = 2 * Math.PI * 90; // r=90 → 565.5
   let rem = sec, warned = false;
 
-  const numEl  = document.getElementById('rcd-global');
-  const arcEl  = document.getElementById('rarc-global');
-  const msgEl  = document.getElementById('rmsg-global');
-  const exEl   = document.getElementById('rmsg-exname');
+  // show overlay
+  const overlay = document.getElementById('timerOverlay');
+  const numEl   = document.getElementById('tor-num');
+  const arcEl   = document.getElementById('tor-arc');
+  const msgEl   = document.getElementById('tor-msg');
+  const exEl    = document.getElementById('tor-exname');
+  const subEl   = document.getElementById('tor-sub');
 
   if (exEl)  exEl.textContent = exName;
-  if (numEl) { numEl.textContent = fmt(rem); numEl.className = 'rest-ring-num'; }
-  if (arcEl) { arcEl.style.strokeDashoffset = 0; arcEl.className = 'rest-ring-arc'; }
+  if (numEl) { numEl.textContent = fmt(rem); numEl.className = 'timer-overlay-num'; }
+  if (subEl) subEl.textContent = 'seconds remaining';
+  if (arcEl) { arcEl.style.strokeDashoffset = 0; arcEl.className = 'tor-arc'; }
   if (msgEl) msgEl.textContent = 'Breathe. Next set coming.';
+  if (overlay) overlay.classList.add('active');
+
+  // also keep the small inline timer visible (hidden by overlay but kept in DOM)
+  const wrap = document.getElementById('global-rest-timer');
+  if (wrap) wrap.classList.add('active');
+  const inlineNum = document.getElementById('rcd-global');
+  const inlineArc = document.getElementById('rarc-global');
+  const inlineEx  = document.getElementById('rmsg-exname');
+  if (inlineEx)  inlineEx.textContent = exName;
+  if (inlineNum) { inlineNum.textContent = fmt(rem); inlineNum.className = 'rest-ring-num'; }
+  if (inlineArc) { inlineArc.style.strokeDashoffset = 0; inlineArc.className = 'rest-ring-arc'; }
 
   restTimers._active = setInterval(() => {
     rem--;
-    const n = document.getElementById('rcd-global');
-    const a = document.getElementById('rarc-global');
-    const m = document.getElementById('rmsg-global');
+    const n = document.getElementById('tor-num');
+    const a = document.getElementById('tor-arc');
+    const m = document.getElementById('tor-msg');
+    const s = document.getElementById('tor-sub');
+    const in_n = document.getElementById('rcd-global');
+    const in_a = document.getElementById('rarc-global');
     if (!n) { clearInterval(restTimers._active); return; }
 
     if (rem <= 0) {
       clearInterval(restTimers._active); delete restTimers._active;
-      const center = n.closest('.rest-ring-center');
-      if (center) center.innerHTML = '<span class="rest-ring-go">Go</span>';
+      n.style.display = 'none';
+      if (s) s.style.display = 'none';
+      const center = n.closest('.timer-overlay-center');
+      if (center) {
+        const go = document.createElement('div');
+        go.className = 'timer-overlay-go'; go.textContent = 'GO';
+        center.appendChild(go);
+      }
       if (a) { a.style.strokeDashoffset = CIRC; a.classList.add('urgent'); }
       if (m) m.textContent = 'Start your next set!';
+      // update inline too
+      if (in_n) { in_n.closest('.rest-ring-center').innerHTML = '<span class="rest-ring-go">Go</span>'; }
+      if (in_a) { in_a.style.strokeDashoffset = 2*Math.PI*27; in_a.classList.add('urgent'); }
       playRestDone();
       showToast('Rest complete. Next set.');
       setTimeout(() => {
+        const ov = document.getElementById('timerOverlay');
+        if (ov) ov.classList.remove('active');
         const b = document.getElementById('global-rest-timer');
         if (b) b.classList.remove('active');
       }, 2500);
@@ -1812,21 +1954,31 @@ function startRest(id, sec) {
       if (rem <= 3 && !warned) { warned = true; playWarningBeep(); }
       n.textContent = fmt(rem);
       const urgent = rem <= 5;
-      n.className = 'rest-ring-num' + (urgent ? ' urgent' : '');
+      n.className = 'timer-overlay-num' + (urgent ? ' urgent' : '');
       if (a) {
         a.style.strokeDashoffset = CIRC * (1 - rem / sec);
-        a.className = 'rest-ring-arc' + (urgent ? ' urgent' : '');
+        a.className = 'tor-arc' + (urgent ? ' urgent' : '');
       }
       const msgs = ['Breathe. Next set coming.', 'Stay loose. Keep breathing.', 'Almost ready. Stay focused.'];
       if (m) m.textContent = msgs[Math.min(Math.floor((1 - rem/sec) * msgs.length), msgs.length-1)];
+      // sync inline
+      if (in_n) { in_n.textContent = fmt(rem); in_n.className = 'rest-ring-num' + (urgent ? ' urgent' : ''); }
+      if (in_a) { in_a.style.strokeDashoffset = 2*Math.PI*27*(1-rem/sec); }
     }
   }, 1000);
 }
 
 function stopRest(id) {
   if (restTimers._active) { clearInterval(restTimers._active); delete restTimers._active; }
+  const ov = document.getElementById('timerOverlay');
+  if (ov) ov.classList.remove('active');
   const b = document.getElementById('global-rest-timer');
   if (b) b.classList.remove('active');
+}
+
+function dismissTimerOverlay() {
+  const ov = document.getElementById('timerOverlay');
+  if (ov) ov.classList.remove('active');
 }
 
 function fmt(s){return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
