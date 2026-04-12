@@ -1163,6 +1163,85 @@
     .stat-block { padding: 0 14px; }
     .section-title { font-size: 3rem; }
   }
+
+  /* REPS POPUP */
+  .reps-popup {
+    position: fixed; inset: 0; z-index: 700;
+    display: none; align-items: center; justify-content: center;
+  }
+  .reps-popup.open { display: flex; }
+  .reps-popup-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  }
+  .reps-popup-inner {
+    position: relative; z-index: 1;
+    background: var(--s2); border: 1px solid var(--border2);
+    padding: 28px 40px; display: flex; flex-direction: column;
+    align-items: center; min-width: 180px;
+    animation: rise 0.15s ease forwards;
+  }
+  .reps-popup-label {
+    font-size: 0.44rem; letter-spacing: 0.32em; color: var(--text-dim);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .reps-popup-exname {
+    font-size: 0.58rem; color: var(--text); letter-spacing: 0.06em;
+    margin-bottom: 20px; text-align: center; max-width: 200px;
+    line-height: 1.5;
+  }
+  .reps-stepper-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim); width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 1.4rem; line-height: 1;
+    transition: all 0.12s; user-select: none;
+  }
+  .reps-stepper-btn:hover { border-color: var(--border2); color: var(--text); }
+  .reps-stepper-btn:active { background: var(--s3); }
+  .reps-stepper-val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 5rem;
+    color: var(--text-hi); letter-spacing: 0.05em; line-height: 1;
+    padding: 12px 0; min-width: 80px; text-align: center;
+  }
+  .reps-popup-range {
+    font-size: 0.42rem; color: var(--text-dim); letter-spacing: 0.2em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .reps-confirm-btn {
+    background: var(--green); border: 1px solid var(--green-bdr);
+    color: var(--green-text); padding: 11px 0;
+    font-family: 'DM Mono', monospace; font-size: 0.52rem;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.15s; width: 100%;
+    margin-top: 14px;
+  }
+  .reps-confirm-btn:hover { background: var(--done-bg); border-color: var(--green-text); }
+
+
+  /* SPARKLINES */
+  .sparkline-list { margin-bottom: 28px; }
+  .sparkline-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .sparkline-label {
+    font-size: 0.5rem; letter-spacing: 0.22em; color: var(--text-dim);
+    text-transform: uppercase; width: 76px; flex-shrink: 0;
+  }
+  .sparkline-svg { flex: 1; display: block; overflow: visible; }
+  .sparkline-val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
+    color: var(--text-hi); letter-spacing: 0.06em;
+    width: 48px; text-align: right; flex-shrink: 0;
+  }
+  .sparkline-val.zero { color: var(--text-dim); }
+  .sparkline-week-axis {
+    display: flex; align-items: center; gap: 14px;
+    padding: 6px 0 2px;
+  }
+  .sparkline-axis-gap { width: 76px; flex-shrink: 0; }
+  .sparkline-axis-svg { flex: 1; display: block; }
+  .sparkline-axis-end { width: 48px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -1212,6 +1291,20 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- REPS POPUP -->
+<div id="repsPopup" class="reps-popup">
+  <div class="reps-popup-backdrop" onclick="closeRepsPopup()"></div>
+  <div class="reps-popup-inner">
+    <div class="reps-popup-label">Reps Completed</div>
+    <div class="reps-popup-exname" id="repsPopupExname"></div>
+    <div class="reps-popup-range" id="repsPopupRange"></div>
+    <button class="reps-stepper-btn" onclick="adjustReps(1)">&#8963;</button>
+    <div class="reps-stepper-val" id="repsStepperVal">8</div>
+    <button class="reps-stepper-btn" onclick="adjustReps(-1)">&#8964;</button>
+    <button class="reps-confirm-btn" onclick="confirmReps()">Log Set</button>
+  </div>
+</div>
 
 <!-- ADD EXERCISE MODAL -->
 <div class="ae-overlay" id="aeOverlay">
@@ -1532,12 +1625,14 @@ function renderCard(ex, p, notes, idx) {
     </div>`).join('');
 
   const setsHtml=Array.from({length:ex.sets},(_,i)=>{
-    const isDone=!!ep[`s${i}`];
+    const val=ep[`s${i}`];
+    const isDone=!!val;
+    const loggedReps=isDone?getRepsValue(val,ex.id):null;
     return `<div class="set-row ${isDone?'done':''}" onclick="toggleSet('${ex.id}',${i})">
       <div class="check-box">${isDone?'&#10003;':''}</div>
       <div class="set-info">
         <div class="set-num">Set ${i+1} of ${ex.sets}</div>
-        <div class="set-reps">${ex.reps} reps</div>
+        <div class="set-reps">${isDone?`${loggedReps} reps`:ex.reps+' reps'}</div>
         <div class="set-tempo">Tempo ${ex.tempo.join('-')}</div>
       </div>
     </div>`;
@@ -1581,34 +1676,93 @@ function renderCard(ex, p, notes, idx) {
 
 const restTimers={};
 
-function toggleSet(exId, i) {
-  const p=loadProgress();
-  if(!p[exId]) p[exId]={};
-  const k=`s${i}`;
-  p[exId][k]=!p[exId][k];
-  const isDone=p[exId][k];
-  saveProgress(p);
-  let restSec=90, muscleKey=null, exSets=4;
-  Object.entries(DATA).forEach(([mk,g])=>g.exercises.forEach(e=>{
-    if(e.id===exId){restSec=e.rest;muscleKey=mk;exSets=e.sets;}
-  }));
-  const doneSets=Object.values(p[exId]).filter(Boolean).length;
-  recordExSets(exId, doneSets);
-  if(isDone){
-    stampSession(muscleKey);
-    if(doneSets===exSets){
-      const streak=getExStreak(exId,exSets);
-      if(streak>=3) showToast(`🔥 ${streak} sessions in a row!`);
-      else showToast(`Exercise complete! Rest ${restSec}s.`);
-    } else {
-      showToast(`Set ${i+1} complete. Rest ${restSec}s.`);
-    }
-  } else {
-    stopRest();
-  }
-  if(activeKey){ renderMain(activeKey); }
-  if(isDone){ startRest(exId, restSec); }
+// ── REPS HELPERS ─────────────────────────────────────────
+function parseMinReps(repsStr) {
+  const m = String(repsStr).match(/(\d+)/);
+  return m ? parseInt(m[1]) : 1;
 }
+function parseMaxReps(repsStr) {
+  const nums = String(repsStr).match(/\d+/g);
+  return nums && nums.length >= 2 ? parseInt(nums[nums.length - 1]) : parseMinReps(repsStr);
+}
+function getExerciseByID(exId) {
+  for (const g of Object.values(DATA)) {
+    for (const ex of g.exercises) { if (ex.id === exId) return ex; }
+  }
+  return null;
+}
+function getRepsValue(val, exId) {
+  if (!val) return 0;
+  if (typeof val === 'number') return val;
+  if (val === true) { const ex = getExerciseByID(exId); return ex ? parseMinReps(ex.reps) : 1; }
+  return 0;
+}
+
+// ── REPS POPUP ───────────────────────────────────────────
+let _repsPopupState = null;
+
+function showRepsPopup(exId, setIdx) {
+  const ex = getExerciseByID(exId);
+  const minR = ex ? parseMinReps(ex.reps) : 1;
+  const maxR = ex ? parseMaxReps(ex.reps) * 2 : 40;
+  _repsPopupState = { exId, setIdx, current: minR, min: 1, max: maxR };
+  document.getElementById('repsStepperVal').textContent = minR;
+  document.getElementById('repsPopupRange').textContent = `Target: ${ex ? ex.reps : ''} reps`;
+  document.getElementById('repsPopupExname').textContent = ex ? `${ex.name} · Set ${setIdx + 1}` : '';
+  document.getElementById('repsPopup').classList.add('open');
+}
+
+function adjustReps(delta) {
+  if (!_repsPopupState) return;
+  _repsPopupState.current = Math.max(_repsPopupState.min, Math.min(_repsPopupState.max, _repsPopupState.current + delta));
+  document.getElementById('repsStepperVal').textContent = _repsPopupState.current;
+}
+
+function closeRepsPopup() {
+  document.getElementById('repsPopup').classList.remove('open');
+  _repsPopupState = null;
+}
+
+function confirmReps() {
+  if (!_repsPopupState) return;
+  const { exId, setIdx, current } = _repsPopupState;
+  closeRepsPopup();
+  const p = loadProgress();
+  if (!p[exId]) p[exId] = {};
+  p[exId][`s${setIdx}`] = current;
+  let restSec = 90, muscleKey = null, exSets = 4;
+  Object.entries(DATA).forEach(([mk, g]) => g.exercises.forEach(e => {
+    if (e.id === exId) { restSec = e.rest; muscleKey = mk; exSets = e.sets; }
+  }));
+  saveProgress(p);
+  const doneSets = Object.values(p[exId]).filter(Boolean).length;
+  recordExSets(exId, doneSets);
+  stampSession(muscleKey);
+  if (doneSets === exSets) {
+    const streak = getExStreak(exId, exSets);
+    if (streak >= 3) showToast(`🔥 ${streak} sessions in a row!`);
+    else showToast(`Exercise complete! Rest ${restSec}s.`);
+  } else {
+    showToast(`Set ${setIdx + 1} done — ${current} reps. Rest ${restSec}s.`);
+  }
+  if (activeKey) renderMain(activeKey);
+  startRest(exId, restSec);
+}
+
+function toggleSet(exId, i) {
+  const p = loadProgress();
+  if (!p[exId]) p[exId] = {};
+  const k = `s${i}`;
+  if (p[exId][k]) {
+    delete p[exId][k];
+    saveProgress(p);
+    stopRest();
+    if (activeKey) renderMain(activeKey);
+  } else {
+    showRepsPopup(exId, i);
+  }
+}
+
 
 function startRest(id, sec) {
   // find exercise name
@@ -1853,83 +2007,101 @@ function renderHistory() {
         </div>`;
       }).join('');
 
-  // ── This week's volume per muscle group ────────────────
-  const dowIdx = (today.getDay()+6)%7; // Mon=0
-  const weekStart = new Date(today); weekStart.setDate(today.getDate() - dowIdx);
-
-  // collect all days this week up to today
-  const weekDays = [];
-  for(let d=0; d<7; d++) {
-    const dt = new Date(weekStart); dt.setDate(weekStart.getDate()+d);
-    if(dt > today) break;
-    weekDays.push(dt.toISOString().slice(0,10));
+  // ── Weekly volume sparklines (last 8 weeks, total reps per muscle) ───
+  const SPARKWEEKS = 8;
+  function getWeekStarts(n) {
+    const t = new Date(); t.setHours(0,0,0,0);
+    const dow = (t.getDay() + 6) % 7;
+    const thisMonday = new Date(t); thisMonday.setDate(t.getDate() - dow);
+    const starts = [];
+    for (let w = n - 1; w >= 0; w--) {
+      const d = new Date(thisMonday); d.setDate(thisMonday.getDate() - w * 7);
+      starts.push(d);
+    }
+    return starts;
   }
-
-  // tally sets per muscle group this week
-  const muscleVol = {};
-  Object.entries(DATA).forEach(([k,g]) => {
-    let sets = 0;
-    weekDays.forEach(ds => {
-      try {
-        const dp = JSON.parse(localStorage.getItem('wd_'+ds)||'{}');
-        g.exercises.forEach(ex => {
-          if(dp[ex.id]) sets += Object.values(dp[ex.id]).filter(Boolean).length;
-        });
-      } catch {}
+  const weekStarts = getWeekStarts(SPARKWEEKS);
+  const sparkData = {};
+  Object.entries(DATA).forEach(([key, g]) => {
+    sparkData[key] = weekStarts.map(start => {
+      let total = 0;
+      for (let d = 0; d < 7; d++) {
+        const dt = new Date(start); dt.setDate(start.getDate() + d);
+        const ds = dt.toISOString().slice(0, 10);
+        try {
+          const dp = JSON.parse(localStorage.getItem('wd_' + ds) || '{}');
+          g.exercises.forEach(ex => {
+            const ep = dp[ex.id] || {};
+            Object.values(ep).forEach(v => { total += getRepsValue(v, ex.id); });
+          });
+        } catch {}
+      }
+      return total;
     });
-    muscleVol[k] = { label: g.label, sets, target: g.exercises.reduce((s,e)=>s+e.sets,0) };
   });
 
-  const maxMuscleVol = Math.max(...Object.values(muscleVol).map(m=>m.sets), 1);
-  const muscleVolBars = Object.values(muscleVol).map(m => {
-    const pct = m.sets / Math.max(m.sets, m.target);
-    const barH = Math.max(m.sets / maxMuscleVol * 68, m.sets > 0 ? 4 : 1);
-    const done = m.sets >= m.target;
-    return `
-      <div class="vol-bar-col">
-        <div class="vol-bar-val">${m.sets > 0 ? m.sets : ''}</div>
-        <div class="vol-bar ${m.sets>0?'has-data':''} ${done?'this-week':''}"
-          style="height:${barH}px" title="${m.label}: ${m.sets}/${m.target} sets"></div>
-        <div class="vol-bar-lbl">${m.label}</div>
-      </div>`;
+  const W = 220, H = 52, TPAD = 14, BPAD = 6, LPAD = 4, RPAD = 4;
+  const xStep = (W - LPAD - RPAD) / (SPARKWEEKS - 1);
+
+  const sparkRows = Object.entries(DATA).map(([key, g]) => {
+    const vols = sparkData[key];
+    const latest = vols[vols.length - 1];
+    const localMax = Math.max(...vols, 1);
+
+    function xt(i) { return LPAD + i * xStep; }
+    function yt(v) { return TPAD + (1 - v / localMax) * (H - TPAD - BPAD); }
+
+    const pts = vols.map((v, i) => `${xt(i).toFixed(1)},${yt(v).toFixed(1)}`).join(' ');
+
+    const dots = vols.map((v, i) => {
+      const x = xt(i).toFixed(1), y = yt(v).toFixed(1);
+      const isLast = i === SPARKWEEKS - 1;
+      if (isLast) {
+        // highlighted dot + label always shown
+        const labelY = (parseFloat(y) - 7).toFixed(1);
+        return `
+          <circle cx="${x}" cy="${y}" r="3.5" fill="var(--green-text)" stroke="none"/>
+          ${latest > 0 ? `<text x="${x}" y="${labelY}" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="var(--green-text)" letter-spacing="0.04em">${latest}</text>` : ''}`;
+      } else if (v > 0) {
+        const labelY = (parseFloat(y) - 6).toFixed(1);
+        return `
+          <circle cx="${x}" cy="${y}" r="2" fill="var(--accent)" stroke="none" opacity="0.7"/>
+          <text x="${x}" y="${labelY}" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="var(--text-dim)" letter-spacing="0">${v}</text>`;
+      } else {
+        return `<circle cx="${x}" cy="${y}" r="1.5" fill="var(--border2)" stroke="none" opacity="0.5"/>`;
+      }
+    }).join('');
+
+    return `<div class="sparkline-row">
+      <div class="sparkline-label">${g.label}</div>
+      <svg class="sparkline-svg" viewBox="0 0 ${W} ${H}" height="${H}" preserveAspectRatio="none">
+        <polyline points="${pts}" fill="none" stroke="var(--border2)" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}
+      </svg>
+    </div>`;
   }).join('');
 
-  const weekLabel = weekStart.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-  const volChart = `
-    <div class="vol-chart-wrap">
-      <div class="vol-bar-area">${muscleVolBars}</div>
-      <div style="font-size:0.44rem;color:var(--text-dim);letter-spacing:0.15em;text-transform:uppercase;margin-top:6px;">
-        Week of ${weekLabel} &nbsp;·&nbsp; <span style="color:var(--green-text)">■</span> full target reached
-      </div>
-    </div>`;
+  // shared week-tick axis aligned to same X positions
+  const tickSvg = `<svg class="sparkline-axis-svg" viewBox="0 0 ${W} 10" height="10" preserveAspectRatio="none">
+    ${Array.from({length: SPARKWEEKS}, (_, i) => {
+      const x = (LPAD + i * xStep).toFixed(1);
+      const isLast = i === SPARKWEEKS - 1;
+      return `<line x1="${x}" y1="0" x2="${x}" y2="${isLast ? 8 : 5}" stroke="${isLast ? 'var(--green-text)' : 'var(--border2)'}" stroke-width="1" opacity="${isLast ? '1' : '0.6'}"/>`;
+    }).join('')}
+  </svg>`;
 
-  // ── Per-exercise stats ──────────────────────────────────
-  const allExercises = Object.values(DATA).flatMap(g=>g.exercises);
-  const exStatsHtml = (() => {
-    const cards = allExercises.map(ex => {
-      const streak = getExStreak(ex.id, ex.sets);
-      const total = getTotalExSessions(ex.id, ex.sets);
-      if(total === 0) return '';
-      return `<div class="ex-stat-card">
-        <div class="ex-stat-name">${ex.name}</div>
-        <div class="ex-stat-nums">
-          <div class="ex-stat-num"><div class="n">${total}</div><div class="l">Sessions</div></div>
-          ${streak>0?`<div class="ex-stat-num"><div class="n" style="color:var(--amber-text)">${streak}</div><div class="l">Streak</div></div>`:''}
-        </div>
-      </div>`;
-    }).filter(Boolean).join('');
-    return cards ? `<div class="ex-stat-grid">${cards}</div>` : '';
-  })();
+  const sparklineHtml = `
+    <div class="sparkline-list">${sparkRows}</div>
+    <div class="sparkline-week-axis">
+      <div class="sparkline-axis-gap"></div>
+      ${tickSvg}
+    </div>`;
 
   document.getElementById('history-content').innerHTML = `
     <div class="history-section-label">12-Week Overview</div>
     ${grid}
-    <div class="history-section-label" style="margin-top:8px;">This Week's Volume</div>
-    ${volChart}
-    <div class="history-section-label" style="margin-top:8px;">Exercise Records</div>
-    ${exStatsHtml || '<div class="history-empty">Complete exercises to see records.</div>'}
-    <div class="history-section-label" style="margin-top:8px;">Session Log</div>
-    <div class="day-log">${logHtml}</div>
+    <div class="history-section-label" style="margin-top:8px;">Weekly Volume &mdash; Reps</div>
+    ${sparklineHtml}
   `;
 }
 
