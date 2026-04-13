@@ -2454,7 +2454,24 @@ function deleteCustomExercise(muscleKey, exId) {
   }
   saveCustomExercises(custom);
   mergeCustomExercises();
-  renderMain(muscleKey);
+
+  // Remove this exercise's sets from today's progress so the history grid
+  // un-stamps the day if no other sets remain (saveProgress handles that check).
+  const p = loadProgress();
+  if (p[exId]) {
+    delete p[exId];
+    saveProgress(p); // also calls renderMain + updateHeader
+  } else {
+    renderMain(muscleKey);
+  }
+
+  // Remove orphaned streak / session history for this exercise.
+  const exHist = loadExHistory();
+  if (exHist[exId]) {
+    delete exHist[exId];
+    saveExHistory(exHist);
+  }
+
   showToast('Exercise removed.');
 }
 
