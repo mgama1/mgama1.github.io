@@ -1588,7 +1588,22 @@ const MUSCLE_ICONS = {
 
 function todayKey() { return 'wd_' + new Date().toISOString().slice(0,10); }
 function loadProgress() { try { return JSON.parse(localStorage.getItem(todayKey())||'{}'); } catch { return {}; } }
-function saveProgress(p) { localStorage.setItem(todayKey(), JSON.stringify(p)); updateHeader(); if(activeKey) renderMain(activeKey); }
+function saveProgress(p) {
+  localStorage.setItem(todayKey(), JSON.stringify(p));
+  // If no sets remain completed today, remove today from history and muscle log
+  const totalDone = Object.values(p).reduce((sum, ep) => sum + Object.values(ep).filter(Boolean).length, 0);
+  if (totalDone === 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    const h = loadHistory();
+    delete h[today];
+    localStorage.setItem('wd_hist', JSON.stringify(h));
+    const mg = JSON.parse(localStorage.getItem('wd_muscles') || '{}');
+    delete mg[today];
+    localStorage.setItem('wd_muscles', JSON.stringify(mg));
+  }
+  updateHeader();
+  if(activeKey) renderMain(activeKey);
+}
 function loadNotes() { try { return JSON.parse(localStorage.getItem('wd_notes')||'{}'); } catch { return {}; } }
 function saveNote(id, txt) { const n=loadNotes(); n[id]=txt; localStorage.setItem('wd_notes', JSON.stringify(n)); }
 function loadHistory() { try { return JSON.parse(localStorage.getItem('wd_hist')||'{}'); } catch { return {}; } }
