@@ -1915,9 +1915,13 @@ function startRest(id, sec) {
   const exEl    = document.getElementById('tor-exname');
   const subEl   = document.getElementById('tor-sub');
 
+  // Clean up any leftover state from a previously completed timer
+  const torCenter = document.querySelector('.timer-overlay-center');
+  if (torCenter) torCenter.querySelectorAll('.timer-overlay-go').forEach(el => el.remove());
+
   if (exEl)  exEl.textContent = exName;
-  if (numEl) { numEl.textContent = fmt(rem); numEl.className = 'timer-overlay-num'; }
-  if (subEl) subEl.textContent = 'seconds remaining';
+  if (numEl) { numEl.style.display = ''; numEl.textContent = fmt(rem); numEl.className = 'timer-overlay-num'; }
+  if (subEl) { subEl.style.display = ''; subEl.textContent = 'seconds remaining'; }
   if (arcEl) { arcEl.style.strokeDashoffset = 0; arcEl.className = 'tor-arc'; }
   if (msgEl) msgEl.textContent = 'Breathe. Next set coming.';
   if (overlay) overlay.classList.add('active');
