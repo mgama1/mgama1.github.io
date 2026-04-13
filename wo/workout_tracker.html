@@ -1586,14 +1586,17 @@ const MUSCLE_ICONS = {
   legs:      'legs.png'
 };
 
-function todayKey() { return 'wd_' + new Date().toISOString().slice(0,10); }
+function localDateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function todayKey() { return 'wd_' + localDateStr(new Date()); }
 function loadProgress() { try { return JSON.parse(localStorage.getItem(todayKey())||'{}'); } catch { return {}; } }
 function saveProgress(p) {
   localStorage.setItem(todayKey(), JSON.stringify(p));
   // If no sets remain completed today, remove today from history and muscle log
   const totalDone = Object.values(p).reduce((sum, ep) => sum + Object.values(ep).filter(Boolean).length, 0);
   if (totalDone === 0) {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDateStr(new Date());
     const h = loadHistory();
     delete h[today];
     localStorage.setItem('wd_hist', JSON.stringify(h));
@@ -1608,7 +1611,7 @@ function loadNotes() { try { return JSON.parse(localStorage.getItem('wd_notes')|
 function saveNote(id, txt) { const n=loadNotes(); n[id]=txt; localStorage.setItem('wd_notes', JSON.stringify(n)); }
 function loadHistory() { try { return JSON.parse(localStorage.getItem('wd_hist')||'{}'); } catch { return {}; } }
 function stampSession(muscle) {
-  const h=loadHistory(), d=new Date().toISOString().slice(0,10);
+  const h=loadHistory(), d=localDateStr(new Date());
   h[d]=(h[d]||0)+1;
   localStorage.setItem('wd_hist',JSON.stringify(h));
   // record muscle groups per day
@@ -1626,7 +1629,7 @@ function updateHeader() {
   const h=loadHistory(), today=new Date(); let streak=0;
   for(let i=0;i<365;i++){
     const d=new Date(today); d.setDate(d.getDate()-i);
-    if(h[d.toISOString().slice(0,10)]) streak++; else if(i>0) break;
+    if(h[localDateStr(d)]) streak++; else if(i>0) break;
   }
   document.getElementById('hdr-streak').textContent=streak;
   document.getElementById('hdr-sessions').textContent=Object.keys(h).length;
@@ -1651,7 +1654,7 @@ function buildLanding() {
     let lastDays = null;
     for(let i=0; i<60; i++){
       const d = new Date(today); d.setDate(d.getDate()-i);
-      const ds = d.toISOString().slice(0,10);
+      const ds = localDateStr(d);
       if(muscles[ds] && muscles[ds].includes(k)){ lastDays=i; break; }
     }
     let pipClass = 'cold';
@@ -2032,7 +2035,7 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `workout_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `workout_backup_${localDateStr(new Date())}.json`;
   a.click();
   URL.revokeObjectURL(url);
   showToast('Data exported successfully.');
@@ -2080,7 +2083,7 @@ function renderHistory() {
   const hist = loadHistory();
   const muscles = JSON.parse(localStorage.getItem('wd_muscles')||'{}');
   const today = new Date();
-  const todayStr = today.toISOString().slice(0,10);
+  const todayStr = localDateStr(today);
 
   // ── 12-week contribution grid ──────────────────────────
   // Build a grid: 7 rows (Mon–Sun) x 12 cols (weeks), ending today
@@ -2125,7 +2128,7 @@ function renderHistory() {
   const gridRows = DOW_LABELS.map((lbl, di) => {
     const cells = weeks.map(week => {
       const dt = week[di];
-      const ds = dt.toISOString().slice(0,10);
+      const ds = localDateStr(dt);
       const worked = !!hist[ds];
       const isToday = ds === todayStr;
       const isFuture = dt > today;
@@ -2147,7 +2150,7 @@ function renderHistory() {
   const logDays = [];
   for(let i=0; i<120; i++) {
     const d = new Date(today); d.setDate(d.getDate()-i);
-    const ds = d.toISOString().slice(0,10);
+    const ds = localDateStr(d);
     if(hist[ds]) logDays.push({ ds, d });
     if(logDays.length >= 30) break;
   }
@@ -2185,7 +2188,7 @@ function renderHistory() {
   for(let d=0; d<7; d++) {
     const dt = new Date(weekStart); dt.setDate(weekStart.getDate()+d);
     if(dt > today) break;
-    weekDays.push(dt.toISOString().slice(0,10));
+    weekDays.push(localDateStr(dt));
   }
   const muscleVol = {};
   Object.entries(DATA).forEach(([k,g]) => {
@@ -2221,9 +2224,6 @@ function renderHistory() {
 
   // ── Weekly volume sparklines (last 8 weeks, total reps per muscle) ───
   const SPARKWEEKS = 8;
-  function localDateStr(d) {
-    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-  }
   function getWeekStarts(n) {
     const t = new Date();
     const dow = (t.getDay() + 6) % 7; // Mon=0
@@ -2355,17 +2355,17 @@ function saveExHistory(h) { localStorage.setItem('wd_ex_hist', JSON.stringify(h)
 function recordExSets(exId, count) {
   const h = loadExHistory();
   if (!h[exId]) h[exId] = {};
-  h[exId][new Date().toISOString().slice(0,10)] = count;
+  h[exId][localDateStr(new Date())] = count;
   saveExHistory(h);
 }
 function getExStreak(exId, totalSets) {
   const exH = (loadExHistory()[exId]) || {};
-  const today = new Date(), todayStr = today.toISOString().slice(0,10);
+  const today = new Date(), todayStr = localDateStr(today);
   const startI = (exH[todayStr]||0) >= totalSets ? 0 : 1;
   let streak = 0;
   for (let i = startI; i < 365; i++) {
     const d = new Date(today); d.setDate(d.getDate()-i);
-    if ((exH[d.toISOString().slice(0,10)]||0) >= totalSets) streak++;
+    if ((exH[localDateStr(d)]||0) >= totalSets) streak++;
     else break;
   }
   return streak;
@@ -2453,25 +2453,57 @@ function deleteCustomExercise(muscleKey, exId) {
     if (custom[muscleKey].length === 0) delete custom[muscleKey];
   }
   saveCustomExercises(custom);
-  mergeCustomExercises();
+  mergeCustomExercises(); // exercise is now gone from DATA
 
-  // Remove this exercise's sets from today's progress so the history grid
-  // un-stamps the day if no other sets remain (saveProgress handles that check).
-  const p = loadProgress();
-  if (p[exId]) {
-    delete p[exId];
-    saveProgress(p); // also calls renderMain + updateHeader
-  } else {
-    renderMain(muscleKey);
-  }
+  // Scrub this exercise from every stored daily-progress key (wd_YYYY-MM-DD),
+  // then recalculate wd_hist and wd_muscles so the 12-week grid stays accurate.
+  const hist    = loadHistory();
+  const muscles = JSON.parse(localStorage.getItem('wd_muscles') || '{}');
+  const dateRe  = /^wd_(\d{4}-\d{2}-\d{2})$/;
+
+  Object.keys(localStorage).forEach(key => {
+    const m = key.match(dateRe);
+    if (!m) return;
+    const dateStr = m[1];
+    try {
+      const dp = JSON.parse(localStorage.getItem(key) || '{}');
+      if (!dp[exId]) return; // exercise wasn't logged this day
+
+      delete dp[exId];
+
+      const totalDone = Object.values(dp)
+        .reduce((sum, ep) => sum + Object.values(ep).filter(Boolean).length, 0);
+
+      if (totalDone === 0) {
+        // No sets left for this day at all — remove the day entirely
+        localStorage.removeItem(key);
+        delete hist[dateStr];
+        delete muscles[dateStr];
+      } else {
+        // Other sets remain — save cleaned data and rebuild muscle-group list
+        localStorage.setItem(key, JSON.stringify(dp));
+        const activeMuscles = new Set();
+        Object.keys(dp).forEach(eid => {
+          if (Object.values(dp[eid]).some(v => v)) {
+            for (const [mk, g] of Object.entries(DATA)) {
+              if (g.exercises.some(e => e.id === eid)) { activeMuscles.add(mk); break; }
+            }
+          }
+        });
+        muscles[dateStr] = [...activeMuscles];
+      }
+    } catch {}
+  });
+
+  localStorage.setItem('wd_hist',    JSON.stringify(hist));
+  localStorage.setItem('wd_muscles', JSON.stringify(muscles));
 
   // Remove orphaned streak / session history for this exercise.
   const exHist = loadExHistory();
-  if (exHist[exId]) {
-    delete exHist[exId];
-    saveExHistory(exHist);
-  }
+  if (exHist[exId]) { delete exHist[exId]; saveExHistory(exHist); }
 
+  updateHeader();
+  renderMain(muscleKey);
   showToast('Exercise removed.');
 }
 
