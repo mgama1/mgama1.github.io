@@ -765,13 +765,34 @@
   /* NOTES */
   .notes-wrap { margin-top: 10px; }
 
+  .notes-lbl-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
   .notes-lbl {
     font-size: 0.52rem;
     letter-spacing: 0.25em;
     color: var(--text-dim);
     text-transform: uppercase;
-    margin-bottom: 6px;
   }
+
+  .notes-save-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 3px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.46rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .notes-save-btn:hover { border-color: var(--green-bdr); color: var(--green-text); }
+  .notes-save-btn.saved { border-color: var(--green-bdr); color: var(--green-text); }
 
   .notes-input {
     width: 100%;
@@ -1607,8 +1628,42 @@ function saveProgress(p) {
   updateHeader();
   if(activeKey) renderMain(activeKey);
 }
-function loadNotes() { try { return JSON.parse(localStorage.getItem('wd_notes')||'{}'); } catch { return {}; } }
-function saveNote(id, txt) { const n=loadNotes(); n[id]=txt; localStorage.setItem('wd_notes', JSON.stringify(n)); }
+function loadNotes(dateStr) {
+  try {
+    const raw = JSON.parse(localStorage.getItem('wd_notes') || '{}');
+    const d = dateStr || localDateStr(new Date());
+    // Migrate old flat format (values are strings) to date-keyed format
+    const firstVal = Object.values(raw)[0];
+    if (firstVal !== undefined && typeof firstVal === 'string') {
+      const migrated = { [localDateStr(new Date())]: raw };
+      localStorage.setItem('wd_notes', JSON.stringify(migrated));
+      return migrated[d] || {};
+    }
+    return raw[d] || {};
+  } catch { return {}; }
+}
+function saveNote(id, txt) {
+  try {
+    const raw = JSON.parse(localStorage.getItem('wd_notes') || '{}');
+    const d = localDateStr(new Date());
+    const firstVal = Object.values(raw)[0];
+    const all = (firstVal !== undefined && typeof firstVal === 'string') ? { [d]: raw } : raw;
+    if (!all[d]) all[d] = {};
+    if (txt.trim()) all[d][id] = txt; else delete all[d][id];
+    localStorage.setItem('wd_notes', JSON.stringify(all));
+  } catch {}
+}
+function saveExerciseNote(id) {
+  const el = document.getElementById('note-' + id);
+  if (!el) return;
+  saveNote(id, el.value);
+  const btn = document.getElementById('notebtn-' + id);
+  if (btn) {
+    btn.textContent = 'Saved \u2713';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = 'Save'; btn.classList.remove('saved'); }, 1500);
+  }
+}
 function loadHistory() { try { return JSON.parse(localStorage.getItem('wd_hist')||'{}'); } catch { return {}; } }
 function stampSession(muscle) {
   const h=loadHistory(), d=localDateStr(new Date());
@@ -1802,8 +1857,11 @@ function renderCard(ex, p, notes, idx) {
         <div class="sets-header">Sets</div>
         ${setsHtml}
         <div class="notes-wrap">
-          <div class="notes-lbl">Notes</div>
-          <textarea class="notes-input" placeholder="How did this feel?" onchange="saveNote('${ex.id}',this.value)">${note}</textarea>
+          <div class="notes-lbl-row">
+            <div class="notes-lbl">Session Notes</div>
+            <button class="notes-save-btn" id="notebtn-${ex.id}" onclick="saveExerciseNote('${ex.id}')">Save</button>
+          </div>
+          <textarea class="notes-input" id="note-${ex.id}" placeholder="How did this feel?">${note}</textarea>
         </div>
       </div>
     </div>
