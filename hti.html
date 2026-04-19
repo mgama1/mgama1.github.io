@@ -53,20 +53,43 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 /* ── UPLOAD SCREEN ── */
 #uploadScreen{
   position:fixed;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:24px;padding:40px;
-  z-index:200;background:var(--bg);
+  align-items:center;justify-content:flex-start;gap:20px;padding:24px 24px 40px;
+  z-index:200;background:var(--bg);overflow-y:auto;
 }
 .upload-logo{font-size:32px;font-weight:900;letter-spacing:-.5px;color:var(--accent);display:flex;align-items:center;gap:12px;}
 .upload-logo span{color:var(--text-2);font-weight:400;font-size:18px;border-right:2px solid var(--border);padding-right:12px;}
+.upload-layout{
+  width:min(860px, 100%);display:flex;flex-direction:column;gap:18px;align-items:center;
+  margin:auto 0;
+}
+.upload-main{display:flex;flex-direction:column;gap:16px;width:100%;align-items:center}
+.resume-hero{
+  background:linear-gradient(135deg, #f7fbff 0%, #eef5fa 100%);
+  border:1px solid var(--accent-mid);border-radius:20px;padding:34px 36px;
+  min-height:0;box-shadow:var(--shadow-md);display:none;flex-direction:column;justify-content:space-between;
+  width:min(760px, 100%);gap:28px;
+}
+.resume-hero-top{display:flex;flex-direction:column;gap:16px}
+.resume-kicker{
+  width:fit-content;padding:6px 12px;border-radius:999px;background:rgba(6,96,159,.08);
+  color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.2px;
+}
+.resume-hero-title{font-size:36px;font-weight:900;line-height:1.2;color:var(--text)}
+.resume-hero-sub{font-size:16px;color:var(--text-2);max-width:48ch}
+.resume-meta-card{
+  background:rgba(255,255,255,.8);border:1px solid var(--accent-mid);border-radius:16px;
+  padding:16px 18px;color:var(--text-2);font-size:14px;font-weight:700;
+}
+.resume-hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start}
 .upload-card{
   background:var(--s1);border:2px dashed var(--border);border-radius:var(--r-lg);
-  padding:52px 80px;text-align:center;cursor:pointer;transition:all .2s;
-  max-width:500px;width:100%;box-shadow:var(--shadow-sm);
+  padding:28px 32px;text-align:center;cursor:pointer;transition:all .2s;
+  max-width:none;width:100%;box-shadow:none;
 }
 .upload-card:hover,.upload-card.drag-over{border-color:var(--accent);background:var(--accent-light);box-shadow:var(--shadow-md);}
-.upload-icon{font-size:54px;margin-bottom:16px;}
-.upload-title{font-size:22px;font-weight:800;margin-bottom:8px;color:var(--text)}
-.upload-sub{font-size:15px;color:var(--text-2);line-height:1.7}
+.upload-icon{display:none}
+.upload-title{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text)}
+.upload-sub{font-size:14px;color:var(--text-2);line-height:1.7}
 .upload-btn{
   margin-top:24px;display:inline-block;padding:10px 32px;background:var(--accent);
   color:#fff;border-radius:var(--r);font-weight:700;font-size:15px;cursor:pointer;
@@ -82,6 +105,33 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .resume-title{font-size:15px;font-weight:700;color:var(--accent)}
 .resume-sub{font-size:13px;color:var(--text-2);margin-top:2px}
 .resume-btns{display:flex;gap:8px}
+.upload-side-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow-sm);
+  width:min(620px, 100%);
+}
+.side-card-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
+.side-card-sub{font-size:13px;color:var(--text-2);margin-bottom:14px}
+.backup-banner{
+  background:var(--s1);border:1px solid var(--amber-b);border-radius:var(--r);
+  padding:16px 20px;max-width:none;width:min(620px, 100%);display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);
+}
+.backup-title{font-size:15px;font-weight:700;color:var(--amber)}
+.backup-list{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding-left:2px}
+.backup-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--s1)}
+.backup-item-main{flex:1;min-width:0}
+.backup-item-title{font-size:14px;font-weight:800;color:var(--text)}
+.backup-item-sub{font-size:12px;color:var(--text-2);margin-top:4px}
+.backup-item-empty{padding:28px;text-align:center;color:var(--text-3);font-weight:700}
+
+@media (max-width: 900px) {
+  #uploadScreen{padding:20px 16px 28px}
+  .upload-layout{margin:0}
+  .resume-hero{min-height:auto;padding:28px 24px}
+  .resume-hero-title{font-size:28px}
+  .upload-card{max-width:none;padding:24px 18px}
+  .backup-banner{flex-direction:column;align-items:stretch}
+  .resume-btns{flex-wrap:wrap}
+}
 
 /* ── APP SHELL ── */
 #appShell{display:none;flex-direction:column;height:100vh}
@@ -430,22 +480,40 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 
 <div id="uploadScreen">
   <div class="upload-logo">HTI <span>Proctor Scheduler</span></div>
-  <div class="resume-banner" id="resumeBanner" style="display:none">
-    <div class="resume-info">
-      <div class="resume-title">📂 توجد جلسة محفوظة</div>
-      <div class="resume-sub" id="resumeMeta">جاري التحميل…</div>
+  <div class="upload-layout">
+    <div class="upload-main">
+      <div class="resume-hero" id="resumeHero" style="display:none">
+        <div class="resume-hero-top">
+          <div class="resume-kicker">جلسة محفوظة</div>
+          <div class="resume-hero-title">استكمال العمل من آخر نقطة محفوظة</div>
+          <div class="resume-meta-card" id="resumeMeta">جاري التحميل…</div>
+        </div>
+        <div class="resume-hero-actions">
+          <button class="btn btn-amber" onclick="resumeSession()">استكمال الجلسة</button>
+          <button class="btn btn-outline" onclick="discardSession()">تجاهلها</button>
+        </div>
+      </div>
     </div>
-    <div class="resume-btns">
-      <button class="btn btn-amber" onclick="resumeSession()">استكمال</button>
-      <button class="btn btn-outline" onclick="discardSession()">تجاهل</button>
+    <div class="backup-banner" id="backupBanner" style="display:none">
+      <div class="resume-info">
+        <div class="backup-title">🛟 أو استعد نسخة سابقة</div>
+        <div class="resume-sub" id="backupMeta">جاري التحميل…</div>
+      </div>
+      <div class="resume-btns">
+        <button class="btn btn-amber" onclick="restoreLatestBackup()">الأخيرة</button>
+        <button class="btn btn-outline" onclick="openBackupHistory()">السجل</button>
+      </div>
     </div>
-  </div>
-  <div class="upload-card" id="uploadCard">
-    <div class="upload-icon">📋</div>
-    <div class="upload-title">تحميل جدول المراقبة</div>
-    <div class="upload-sub">اسحب ملف proctor_assignments.csv هنا<br>أو انقر للاختيار</div>
-    <label class="upload-btn" for="csvInput">اختر الملف</label>
-    <input type="file" id="csvInput" accept=".csv">
+    <div class="upload-side-card">
+      <div class="side-card-title">أو ارفع ملفاً جديداً</div>
+      <div class="side-card-sub">استخدم هذا عند النقل بين الأجهزة أو عند البدء من CSV جديد تماماً.</div>
+      <div class="upload-card" id="uploadCard">
+        <div class="upload-title">تحميل جدول المراقبة</div>
+        <div class="upload-sub">اسحب ملف proctor_assignments.csv هنا<br>أو انقر للاختيار</div>
+        <label class="upload-btn" for="csvInput">اختر الملف</label>
+        <input type="file" id="csvInput" accept=".csv">
+      </div>
+    </div>
   </div>
 </div>
 
@@ -464,6 +532,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     <div class="hdr-spacer"></div>
     <div class="save-indicator" id="saveIndicator">● محفوظ</div>
     <div class="hdr-sep"></div>
+    <button class="btn btn-outline" onclick="openBackupHistory()" title="سجل النسخ التلقائية"><i class="fa-solid fa-clock-rotate-left"></i></button>
     <button class="btn btn-outline" onclick="resetAll()">↺ إعادة تحميل</button>
     <button class="btn btn-amber" onclick="exportCSV()"><i class="fa-solid fa-download"></i></button>
   </div>
@@ -568,15 +637,280 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     </div>
   </div>
 </div>
+<div class="overlay" id="backupHistoryModal" style="display:none">
+  <div class="modal" style="width:760px;max-width:94vw;">
+    <div class="modal-hdr"><div class="modal-title">سجل النسخ التلقائية</div></div>
+    <div class="modal-body">
+      <div id="backupHistorySummary" style="margin-bottom:16px;font-weight:700;color:var(--text-2)"></div>
+      <div class="backup-list" id="backupHistoryList"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-outline" onclick="closeBackupHistory()">إغلاق</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const STORAGE_KEY = 'hti_proctor_v2';
+const BACKUP_STORAGE_KEY = 'hti_proctor_backups_v1';
+const MAX_BACKUPS = 128;
+const BACKUP_MIN_INTERVAL_MS = 60 * 60 * 1000;
+const KEEP_RECENT_HOURLY_HOURS = 72;
+const KEEP_DAILY_DAYS = 30;
+const KEEP_FORCED_BACKUPS = 24;
 let proctorMeta = {}, schedule = {}, staging = [], pendingMove = null, dragData = null, saveTimer = null;
 let currentAddProctorTs = null, currentAddProctorRoom = null, currentAddProctorFilter = '';
 let showAllAddProctors = false;
 let violationList = [], violationIndex = -1;
+let dismissedSavedSessionPrompt = false;
+let hasPendingPersistence = false;
+let hasChangesSinceForcedBackup = false;
+
+function countRooms(snapshot) {
+  return Object.values(snapshot?.schedule || {}).reduce((sum, ts) => sum + Object.keys(ts.rooms || {}).length, 0);
+}
+
+function countAssignments(snapshot) {
+  let total = 0;
+  for (const ts of Object.values(snapshot?.schedule || {})) {
+    for (const room of Object.values(ts.rooms || {})) total += (room.proctors || []).length;
+  }
+  return total + (snapshot?.staging || []).length;
+}
+
+function hasMeaningfulState(snapshot) {
+  if (!snapshot) return false;
+  return !!(
+    Object.keys(snapshot.schedule || {}).length ||
+    Object.keys(snapshot.proctorMeta || {}).length ||
+    (snapshot.staging || []).length
+  );
+}
+
+function buildSnapshot(reason = 'auto') {
+  return {
+    ts: new Date().toISOString(),
+    reason,
+    proctorMeta,
+    schedule,
+    staging
+  };
+}
+
+function readPrimaryState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function readBackupHistory() {
+  try {
+    const raw = localStorage.getItem(BACKUP_STORAGE_KEY);
+    const backups = raw ? JSON.parse(raw) : [];
+    return Array.isArray(backups) ? backups : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function isForcedBackup(reason) {
+  return reason === 'before-import' || reason === 'before-reset' || reason === 'before-restore' || reason === 'before-close';
+}
+
+function pruneBackupHistory(backups) {
+  const now = Date.now();
+  const hourlyCutoff = now - (KEEP_RECENT_HOURLY_HOURS * 60 * 60 * 1000);
+  const dailyCutoff = now - (KEEP_DAILY_DAYS * 24 * 60 * 60 * 1000);
+  const kept = [];
+  const seenDaily = new Set();
+  let forcedCount = 0;
+
+  for (const backup of backups) {
+    if (!backup?.ts) continue;
+    const ts = new Date(backup.ts).getTime();
+    if (!ts) continue;
+
+    if (isForcedBackup(backup.reason)) {
+      if (forcedCount < KEEP_FORCED_BACKUPS) {
+        kept.push(backup);
+        forcedCount++;
+      }
+      continue;
+    }
+
+    if (ts >= hourlyCutoff) {
+      kept.push(backup);
+      continue;
+    }
+
+    if (ts >= dailyCutoff) {
+      const dayKey = backup.ts.slice(0, 10);
+      if (!seenDaily.has(dayKey)) {
+        seenDaily.add(dayKey);
+        kept.push(backup);
+      }
+    }
+  }
+
+  return kept.slice(0, MAX_BACKUPS);
+}
+
+function writeBackupHistory(backups) {
+  let next = pruneBackupHistory(backups);
+  while (next.length) {
+    try {
+      localStorage.setItem(BACKUP_STORAGE_KEY, JSON.stringify(next));
+      return true;
+    } catch (e) {
+      next.pop();
+    }
+  }
+  try {
+    localStorage.removeItem(BACKUP_STORAGE_KEY);
+  } catch (e) {}
+  return false;
+}
+
+function createBackupSnapshot(snapshot, { force = false } = {}) {
+  if (!hasMeaningfulState(snapshot)) return false;
+  const backups = readBackupHistory();
+  const payload = JSON.stringify({
+    proctorMeta: snapshot.proctorMeta || {},
+    schedule: snapshot.schedule || {},
+    staging: snapshot.staging || []
+  });
+  if (backups[0]?.payload === payload) return false;
+  const now = new Date(snapshot.ts || Date.now()).getTime();
+  const latestTs = backups[0]?.ts ? new Date(backups[0].ts).getTime() : 0;
+  if (!force && latestTs && now - latestTs < BACKUP_MIN_INTERVAL_MS) return false;
+  const entry = {
+    ts: snapshot.ts || new Date().toISOString(),
+    reason: snapshot.reason || 'auto',
+    proctorMeta: snapshot.proctorMeta || {},
+    schedule: snapshot.schedule || {},
+    staging: snapshot.staging || [],
+    payload
+  };
+  const next = [entry, ...backups.filter(b => b.payload !== payload)];
+  const ok = writeBackupHistory(next);
+  if (ok) updateRecoveryUI();
+  return ok;
+}
+
+function savePrimaryState(snapshot) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+}
+
+function formatSnapshotMeta(snapshot, label) {
+  if (!snapshot?.ts) return '';
+  const d = new Date(snapshot.ts);
+  const fmt = d.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
+    ' — ' + d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  return `${label}${fmt} | ${countRooms(snapshot)} قاعة`;
+}
+
+function getBackupReasonLabel(reason) {
+  if (reason === 'before-import') return 'قبل الاستيراد';
+  if (reason === 'before-reset') return 'قبل إعادة التحميل';
+  if (reason === 'restore') return 'بعد الاستعادة';
+  return 'نسخة تلقائية';
+}
+
+function updateRecoveryUI() {
+  const saved = readPrimaryState();
+  const resumeHero = document.getElementById('resumeHero');
+  const backupBanner = document.getElementById('backupBanner');
+  if (saved && saved.ts && !dismissedSavedSessionPrompt) {
+    document.getElementById('resumeMeta').textContent = formatSnapshotMeta(saved, '');
+    resumeHero.style.display = 'flex';
+  } else {
+    resumeHero.style.display = 'none';
+  }
+  const latestBackup = readBackupHistory()[0];
+  if (latestBackup?.ts) {
+    const label = latestBackup.reason === 'before-import' ? 'قبل الاستيراد: ' : 'آخر نسخة تلقائية: ';
+    document.getElementById('backupMeta').textContent = formatSnapshotMeta(latestBackup, label);
+    backupBanner.style.display = 'flex';
+  } else {
+    backupBanner.style.display = 'none';
+  }
+}
+
+function applySnapshot(snapshot) {
+  proctorMeta = snapshot.proctorMeta || {};
+  schedule = snapshot.schedule || {};
+  staging = snapshot.staging || [];
+  savePrimaryState(buildSnapshot('restore'));
+  renderApp();
+  setSaveIndicator('saved');
+  updateRecoveryUI();
+}
+
+function protectCurrentState(reason) {
+  const currentSnapshot = hasMeaningfulState(buildSnapshot(reason)) ? buildSnapshot(reason) : readPrimaryState();
+  if (!currentSnapshot) return false;
+  currentSnapshot.reason = reason;
+  return createBackupSnapshot(currentSnapshot, { force: true });
+}
+
+function openBackupHistory() {
+  renderBackupHistory();
+  document.getElementById('backupHistoryModal').style.display = 'flex';
+}
+
+function closeBackupHistory() {
+  document.getElementById('backupHistoryModal').style.display = 'none';
+}
+
+function renderBackupHistory() {
+  const backups = readBackupHistory();
+  const list = document.getElementById('backupHistoryList');
+  const summary = document.getElementById('backupHistorySummary');
+  if (!list || !summary) return;
+
+  summary.textContent = backups.length
+    ? `${backups.length} نسخة محفوظة`
+    : 'لا توجد نسخ تلقائية محفوظة بعد';
+
+  if (!backups.length) {
+    list.innerHTML = `<div class="backup-item-empty">لا توجد نسخ متاحة للاستعادة</div>`;
+    return;
+  }
+
+  list.innerHTML = backups.map((backup, index) => {
+    const title = formatSnapshotMeta(backup, '');
+    const reason = getBackupReasonLabel(backup.reason);
+    return `
+      <div class="backup-item">
+        <div class="backup-item-main">
+          <div class="backup-item-title">${title}</div>
+          <div class="backup-item-sub">${reason}</div>
+        </div>
+        <button class="btn ${index === 0 ? 'btn-amber' : 'btn-outline'}" onclick="restoreBackupAtIndex(${index})">استعادة</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function restoreBackupAtIndex(index) {
+  const backups = readBackupHistory();
+  const backup = backups[index];
+  if (!backup) {
+    showToast('تعذّر العثور على النسخة المطلوبة');
+    return;
+  }
+  const label = formatSnapshotMeta(backup, '');
+  if (!confirm(`استعادة هذه النسخة؟\n${label}`)) return;
+  protectCurrentState('before-restore');
+  applySnapshot(backup);
+  closeBackupHistory();
+  showToast('تمت استعادة النسخة المحددة');
+}
 
 function showAddProctorModal(tsKey, roomName) {
   currentAddProctorTs = tsKey; currentAddProctorRoom = roomName; currentAddProctorFilter = '';
@@ -689,13 +1023,26 @@ function sortTimes(a, b) {
 }
 
 // ── PERSISTENCE ──
+function flushState(reason = 'auto', { forceBackup = false, updateUI = true } = {}) {
+  const snapshot = buildSnapshot(reason);
+  savePrimaryState(snapshot);
+  createBackupSnapshot(snapshot, { force: forceBackup });
+  hasPendingPersistence = false;
+  if (forceBackup) hasChangesSinceForcedBackup = false;
+  if (updateUI) {
+    setSaveIndicator('saved');
+    updateRecoveryUI();
+  }
+}
+
 function saveState() {
+  hasPendingPersistence = true;
+  hasChangesSinceForcedBackup = true;
   setSaveIndicator('saving');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ts: new Date().toISOString(), proctorMeta, schedule, staging }));
-      setSaveIndicator('saved');
+      flushState('auto');
     } catch(e) { setSaveIndicator('error'); }
   }, 600);
 }
@@ -708,31 +1055,45 @@ function setSaveIndicator(s) {
 }
 
 window.addEventListener('load', () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    if (!saved || !saved.ts) return;
-    const d = new Date(saved.ts);
-    const fmt = d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
-      + ' — ' + d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
-    const n = Object.values(saved.schedule||{}).reduce((a,ts)=>a+Object.keys(ts.rooms||{}).length,0);
-    document.getElementById('resumeMeta').textContent = `${fmt} | ${n} قاعة`;
-    document.getElementById('resumeBanner').style.display = 'flex';
-  } catch(e){}
+  updateRecoveryUI();
 });
+
+function persistBeforeClose() {
+  if (!hasPendingPersistence && !hasChangesSinceForcedBackup) return;
+  clearTimeout(saveTimer);
+  try {
+    flushState('before-close', { forceBackup: true, updateUI: false });
+  } catch (e) {}
+}
+
+window.addEventListener('pagehide', persistBeforeClose);
+window.addEventListener('beforeunload', persistBeforeClose);
 
 function resumeSession() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    proctorMeta = saved.proctorMeta||{}; schedule = saved.schedule||{}; staging = saved.staging||[];
-    renderApp();
+    const saved = readPrimaryState();
+    if (!saved) throw new Error('missing');
+    dismissedSavedSessionPrompt = false;
+    applySnapshot(saved);
   } catch(e){ showToast('فشل في استعادة الجلسة'); }
 }
 
 function discardSession() {
-  localStorage.removeItem(STORAGE_KEY);
-  document.getElementById('resumeBanner').style.display = 'none';
+  dismissedSavedSessionPrompt = true;
+  updateRecoveryUI();
+}
+
+function restoreLatestBackup() {
+  const backup = readBackupHistory()[0];
+  if (!backup) {
+    showToast('لا توجد نسخة استعادة تلقائية');
+    return;
+  }
+  const label = formatSnapshotMeta(backup, '');
+  if (!confirm(`استعادة آخر نسخة تلقائية؟\n${label}`)) return;
+  protectCurrentState('before-restore');
+  applySnapshot(backup);
+  showToast('تمت استعادة النسخة التلقائية');
 }
 
 // ── CSV ──
@@ -742,7 +1103,13 @@ uploadCard.addEventListener('dragover', e=>{ e.preventDefault(); uploadCard.clas
 uploadCard.addEventListener('dragleave', ()=>uploadCard.classList.remove('drag-over'));
 uploadCard.addEventListener('drop', e=>{ e.preventDefault(); uploadCard.classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.name.endsWith('.csv'))loadCSV(f); });
 
-function loadCSV(file){ const r=new FileReader(); r.onload=e=>parseCSV(e.target.result); r.readAsText(file,'UTF-8'); }
+function loadCSV(file){
+  dismissedSavedSessionPrompt = false;
+  protectCurrentState('before-import');
+  const r=new FileReader();
+  r.onload=e=>parseCSV(e.target.result);
+  r.readAsText(file,'UTF-8');
+}
 
 function parseCSV(text) {
   if (text.charCodeAt(0)===0xFEFF) text=text.slice(1);
@@ -1397,7 +1764,16 @@ function cycleViolation(){
   showToast(`انتهاك ${violationIndex+1} / ${violationList.length} — قاعة ${roomName}`);
 }
 function clearStaging(){if(!staging.length)return;if(!confirm(`إزالة ${staging.length} مراقب من الانتظار؟`))return;staging=[];renderStaging();updateStats();saveState();}
-function resetAll(){if(!confirm('إعادة تحميل ملف جديد؟ ستضيع التغييرات.'))return;localStorage.removeItem(STORAGE_KEY);proctorMeta={};schedule={};staging=[];document.getElementById('appShell').style.display='none';document.getElementById('uploadScreen').style.display='flex';document.getElementById('csvInput').value='';}
+function resetAll(){
+  if(!confirm('إعادة تحميل ملف جديد؟ ستضيع التغييرات.'))return;
+  protectCurrentState('before-reset');
+  dismissedSavedSessionPrompt = false;
+  proctorMeta={};schedule={};staging=[];
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('uploadScreen').style.display='flex';
+  document.getElementById('csvInput').value='';
+  updateRecoveryUI();
+}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function exportCSV(){
   const h=['date','day','exam_time','department','year','room','subject','student_count','professor','proctor','proctor_weight','proctor_type','is_academic','room_required_n','room_required_w','room_has_academic','avail_days'];
