@@ -2573,6 +2573,43 @@ mergeCustomExercises();
 buildLanding();
 updateHeader();
 
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────
+// h → toggle history panel
+// 1–6 → open the corresponding muscle card (or go back to landing first)
+// Escape → close history panel / go back to landing
+document.addEventListener('keydown', e => {
+  // Ignore when typing in an input or textarea
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+  // Ignore modifier combos
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  const key = e.key.toLowerCase();
+  const muscleKeys = Object.keys(DATA); // same order as the grid
+
+  if (key === 'h') {
+    e.preventDefault();
+    const overlay = document.getElementById('historyOverlay');
+    overlay.classList.contains('open') ? closeHistory() : openHistory();
+    return;
+  }
+
+  if (key === 'escape') {
+    // Close history if open, else go back to landing from detail view
+    const overlay = document.getElementById('historyOverlay');
+    if (overlay.classList.contains('open')) { closeHistory(); return; }
+    if (activeKey) { buildLanding(); return; }
+    return;
+  }
+
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= muscleKeys.length) {
+    e.preventDefault();
+    closeHistory();
+    selectMuscle(muscleKeys[num - 1]);
+  }
+});
+
 // ── History panel horizontal resize ──────────────────────
 (function() {
   const handle = document.getElementById('historyResizeHandle');
