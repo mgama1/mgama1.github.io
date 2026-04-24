@@ -887,6 +887,35 @@
   }
   .add-exercise-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
 
+  /* ADD SET BUTTON */
+  .add-set-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-dim);
+    padding: 9px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.46rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.18s;
+  }
+  .add-set-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--s2);
+  }
+  .add-set-btn svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+  .set-row.extra { border-left-color: var(--accent); }
+  .set-row.extra .set-num { color: var(--accent-hi); }
+
   /* CUSTOM EXERCISE DELETE BTN */
   .ex-delete-btn {
     background: transparent;
@@ -1615,7 +1644,7 @@ function loadProgress() { try { return JSON.parse(localStorage.getItem(todayKey(
 function saveProgress(p) {
   localStorage.setItem(todayKey(), JSON.stringify(p));
   // If no sets remain completed today, remove today from history and muscle log
-  const totalDone = Object.values(p).reduce((sum, ep) => sum + Object.values(ep).filter(Boolean).length, 0);
+  const totalDone = Object.values(p).reduce((sum, ep) => sum + countDoneSets(ep), 0);
   if (totalDone === 0) {
     const today = localDateStr(new Date());
     const h = loadHistory();
@@ -1679,7 +1708,7 @@ function stampSession(muscle) {
 
 function updateHeader() {
   const p=loadProgress(); let total=0;
-  Object.values(p).forEach(e=>Object.values(e).forEach(v=>{if(v)total++;}));
+  Object.values(p).forEach(e=>{ total += countDoneSets(e); });
   document.getElementById('hdr-sets').textContent=total;
   const h=loadHistory(), today=new Date(); let streak=0;
   for(let i=0;i<365;i++){
@@ -1699,8 +1728,8 @@ function buildLanding() {
   const today = new Date();
 
   const cards = Object.entries(DATA).map(([k, g], idx) => {
-    const total = g.exercises.reduce((s,e) => s+e.sets, 0);
-    let done = 0; g.exercises.forEach(e => { if(p[e.id]) done += Object.values(p[e.id]).filter(Boolean).length; });
+    const total = g.exercises.reduce((s,e) => s + e.sets + ((p[e.id]||{})._xtra||0), 0);
+    let done = 0; g.exercises.forEach(e => { done += countDoneSets(p[e.id]); });
     const pct = total > 0 ? Math.round(done/total*100) : 0;
     const allDone = done >= total && total > 0;
     const started = done > 0 && !allDone;
@@ -1750,8 +1779,8 @@ function selectMuscle(key) {
 
 function renderMain(key) {
   const g = DATA[key], p = loadProgress(), notes = loadNotes();
-  const total = g.exercises.reduce((s,e) => s+e.sets, 0);
-  let done = 0; g.exercises.forEach(e => { if(p[e.id]) done += Object.values(p[e.id]).filter(Boolean).length; });
+  const total = g.exercises.reduce((s,e) => s + e.sets + ((p[e.id]||{})._xtra||0), 0);
+  let done = 0; g.exercises.forEach(e => { done += countDoneSets(p[e.id]); });
   const pct = total > 0 ? Math.round(done/total*100) : 0;
 
   document.getElementById('main-content').innerHTML = `
@@ -1798,8 +1827,10 @@ function renderMain(key) {
 
 function renderCard(ex, p, notes, idx) {
   const ep=p[ex.id]||{};
-  const done=Object.values(ep).filter(Boolean).length;
-  const allDone=done===ex.sets;
+  const extraSets=ep._xtra||0;
+  const totalSets=ex.sets+extraSets;
+  const done=countDoneSets(ep);
+  const allDone=done===totalSets&&totalSets>0;
   const note=notes[ex.id]||'';
 
   const streak=getExStreak(ex.id, ex.sets);
@@ -1815,14 +1846,15 @@ function renderCard(ex, p, notes, idx) {
       <div class="tc-lbl">${ex.tempoLabels[i]}</div>
     </div>`).join('');
 
-  const setsHtml=Array.from({length:ex.sets},(_,i)=>{
+  const setsHtml=Array.from({length:totalSets},(_,i)=>{
     const val=ep[`s${i}`];
     const isDone=!!val;
+    const isExtra=i>=ex.sets;
     const loggedReps=isDone?getRepsValue(val,ex.id):null;
-    return `<div class="set-row ${isDone?'done':''}" onclick="toggleSet('${ex.id}',${i})">
+    return `<div class="set-row ${isDone?'done':''} ${isExtra?'extra':''}" onclick="toggleSet('${ex.id}',${i})">
       <div class="check-box">${isDone?'&#10003;':''}</div>
       <div class="set-info">
-        <div class="set-num">Set ${i+1} of ${ex.sets}</div>
+        <div class="set-num">${isExtra?`Bonus Set ${i-ex.sets+1}`:`Set ${i+1} of ${ex.sets}`}</div>
         <div class="set-reps">${isDone?`${loggedReps} reps`:ex.reps+' reps'}</div>
         <div class="set-tempo">Tempo ${ex.tempo.join('-')}</div>
       </div>
@@ -1840,11 +1872,11 @@ function renderCard(ex, p, notes, idx) {
         <div class="muscles-line">${ex.muscles}</div>
         ${statPills}
         <div class="ex-tags">
-          <span class="tag">${ex.sets} Sets</span>
+          <span class="tag">${ex.sets} Sets${extraSets>0?` +${extraSets}`:''}</span>
           <span class="tag">${ex.reps} Reps</span>
           <span class="tag hi">Tempo ${ex.tempo.join('-')}</span>
           <span class="tag">Rest ${ex.rest}s</span>
-          <span class="tag">${done}/${ex.sets} done</span>
+          <span class="tag">${done}/${totalSets} done</span>
         </div>
         <div class="tempo-grid">${tempoHtml}</div>
         <div class="cue-block">${ex.cues}</div>
@@ -1856,6 +1888,10 @@ function renderCard(ex, p, notes, idx) {
       <div class="card-right">
         <div class="sets-header">Sets</div>
         ${setsHtml}
+        <button class="add-set-btn" onclick="addExtraSet('${ex.id}')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
+          Add Set
+        </button>
         <div class="notes-wrap">
           <div class="notes-lbl-row">
             <div class="notes-lbl">Session Notes</div>
@@ -1890,6 +1926,22 @@ function getRepsValue(val, exId) {
   if (typeof val === 'number') return val;
   if (val === true) { const ex = getExerciseByID(exId); return ex ? parseMinReps(ex.reps) : 1; }
   return 0;
+}
+
+// Count only real set completions (s0, s1, …), ignoring _xtra metadata
+function countDoneSets(ep) {
+  if (!ep) return 0;
+  return Object.entries(ep).filter(([k,v]) => /^s\d+$/.test(k) && !!v).length;
+}
+
+// ── ADD EXTRA SET ─────────────────────────────────────────
+function addExtraSet(exId) {
+  const p = loadProgress();
+  if (!p[exId]) p[exId] = {};
+  p[exId]._xtra = (p[exId]._xtra || 0) + 1;
+  saveProgress(p);
+  showToast('Extra set added.');
+  if (activeKey) renderMain(activeKey);
 }
 
 // ── REPS POPUP ───────────────────────────────────────────
@@ -1929,10 +1981,11 @@ function confirmReps() {
     if (e.id === exId) { restSec = e.rest; muscleKey = mk; exSets = e.sets; }
   }));
   saveProgress(p);
-  const doneSets = Object.values(p[exId]).filter(Boolean).length;
+  const doneSets = countDoneSets(p[exId]);
+  let totalForEx = exSets + ((p[exId]||{})._xtra||0);
   recordExSets(exId, doneSets);
   stampSession(muscleKey);
-  if (doneSets === exSets) {
+  if (doneSets === totalForEx) {
     const streak = getExStreak(exId, exSets);
     if (streak >= 3) showToast(`🔥 ${streak} sessions in a row!`);
     else showToast(`Exercise complete! Rest ${restSec}s.`);
@@ -2530,7 +2583,7 @@ function deleteCustomExercise(muscleKey, exId) {
       delete dp[exId];
 
       const totalDone = Object.values(dp)
-        .reduce((sum, ep) => sum + Object.values(ep).filter(Boolean).length, 0);
+        .reduce((sum, ep) => sum + countDoneSets(ep), 0);
 
       if (totalDone === 0) {
         // No sets left for this day at all — remove the day entirely
@@ -2542,7 +2595,7 @@ function deleteCustomExercise(muscleKey, exId) {
         localStorage.setItem(key, JSON.stringify(dp));
         const activeMuscles = new Set();
         Object.keys(dp).forEach(eid => {
-          if (Object.values(dp[eid]).some(v => v)) {
+          if (countDoneSets(dp[eid]) > 0) {
             for (const [mk, g] of Object.entries(DATA)) {
               if (g.exercises.some(e => e.id === eid)) { activeMuscles.add(mk); break; }
             }
