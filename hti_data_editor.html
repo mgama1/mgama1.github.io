@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر بيانات المراقبة — HTI</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f3f4f6;
+  --s1: #f8fafc;
+  --s2: #f1f5f9;
+  --s3: #e9eef4;
+  --border: #d8e1ea;
+  --text: #1e293b;
+  --text-2: #475569;
+  --text-3: #94a3b8;
+  --accent: #06609f;
+  --accent-light: #edf3f7;
+  --accent-mid: #d8e7f2;
+  --amber: #b56a1a;
+  --amber-dim: #fbf5ec;
+  --green: #2f7d57;
+  --green-dim: #eef7f2;
+  --red: #b64141;
+  --red-dim: #faeeee;
+  --r: 8px;
+  --r-lg: 12px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  font-family: "Cairo", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hdr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.hdr-logo {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.hdr-logo span {
+  color: var(--text-2);
+  font-weight: 400;
+  font-size: 14px;
+  margin-right: 8px;
+  padding-right: 10px;
+  border-right: 1.5px solid var(--border);
+}
+
+.hdr-spacer { flex: 1; }
+
+.hdr-stat {
+  font-size: 14px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--s3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.hdr-stat strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.save-indicator {
+  font-size: 13px;
+  color: var(--text-3);
+  font-weight: 700;
+}
+
+.save-indicator.saved { color: var(--green); }
+.save-indicator.saving { color: var(--amber); }
+
+.toolbar {
+  margin: 24px 24px 0;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.toolbar-spacer { flex: 1; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  padding: 11px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--s2);
+  color: var(--text-2);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent-mid);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: var(--r);
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(6, 96, 159, 0.25);
+}
+
+.btn-primary:hover { background: #0a4f80; }
+
+.btn-outline {
+  background: var(--s1);
+  color: var(--text-2);
+  border-color: var(--border);
+}
+
+.btn-outline:hover { background: var(--s3); color: var(--text); }
+
+.btn-amber {
+  background: var(--amber-dim);
+  color: var(--amber);
+  border-color: #f1d7a4;
+}
+
+.btn-danger {
+  background: var(--red-dim);
+  color: var(--red);
+  border-color: rgba(182, 65, 65, 0.18);
+}
+
+.main {
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.panel {
+  display: none;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.panel.active { display: block; }
+
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s2);
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.panel-sub {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  margin-right: auto;
+}
+
+.inline-filter {
+  width: 180px;
+  min-width: 180px;
+  flex: 0 0 180px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 960px;
+}
+
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+  vertical-align: top;
+}
+
+th {
+  background: var(--s2);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-align: right;
+}
+
+tr:last-child td { border-bottom: none; }
+
+.cell-input,
+.cell-select,
+.cell-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: #fff;
+  color: var(--text);
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  padding: 9px 10px;
+  outline: none;
+}
+
+.cell-input:focus,
+.cell-select:focus,
+.cell-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(6, 96, 159, 0.12);
+}
+
+.cell-textarea {
+  min-height: 42px;
+  resize: vertical;
+}
+
+.session-toggle {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.session-toggle i {
+  color: var(--text-3);
+  transition: transform .15s ease;
+}
+
+.session-toggle.collapsed i {
+  transform: rotate(-90deg);
+}
+
+.session-col-hidden {
+  display: none;
+}
+
+.days-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.day-chip {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.day-chip input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.day-chip span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--s2);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+  user-select: none;
+  letter-spacing: 0.01em;
+}
+
+.day-chip:hover span {
+  background: var(--accent-mid);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.day-chip input[type="checkbox"]:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(6, 96, 159, 0.30);
+}
+
+.muted {
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.empty-state {
+  padding: 42px 20px;
+  text-align: center;
+  color: var(--text-3);
+  font-weight: 700;
+}
+
+.toast {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  background: #12263a;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: .2s ease;
+  z-index: 50;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 980px) {
+  .hdr {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar,
+  .main {
+    margin: 0 16px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .main { padding-top: 16px; }
+
+  .toolbar {
+    padding: 14px;
+  }
+
+  .toolbar-spacer {
+    display: none;
+  }
+
+  .panel-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    margin-right: 0;
+  }
+
+  .inline-filter {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .panel-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="hdr">
+    <div class="hdr-logo">HTI <span>محرر بيانات المراقبة</span></div>
+    <div class="hdr-spacer"></div>
+    <div class="hdr-stat"><i class="fa-solid fa-door-open"></i> القاعات <strong id="roomsCount">0</strong></div>
+    <div class="hdr-stat"><i class="fa-solid fa-user-group"></i> المراقبون <strong id="instCount">0</strong></div>
+    <div class="save-indicator saved" id="saveIndicator">محفوظ محليًا</div>
+  </header>
+
+  <section class="toolbar">
+    <div class="tabs">
+      <button class="tab active" data-tab="instructors">المراقبون</button>
+      <button class="tab" data-tab="rooms">القاعات</button>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <button class="btn btn-outline" type="button" onclick="goHome()"><i class="fa-solid fa-house"></i> الرئيسية</button>
+    <button class="btn btn-outline" id="importBtn"><i class="fa-solid fa-file-import"></i> استيراد الملف</button>
+    <button class="btn btn-primary" id="exportBtn"><i class="fa-solid fa-download"></i> تنزيل الملف</button>
+    <input type="file" id="fileInput" accept=".json,application/json" hidden>
+  </section>
+
+  <main class="main">
+    <section class="panel" id="roomsPanel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">بيانات القاعات</div>
+          <div class="panel-sub">كل صف يحدد متطلبات القاعة: الوزن المطلوب وعدد المراقبين المطلوبين.</div>
+        </div>
+        <button class="btn btn-outline" id="addRoomBtn"><i class="fa-solid fa-plus"></i> إضافة قاعة</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:34%">اسم القاعة</th>
+              <th style="width:24%">الوزن المطلوب</th>
+              <th style="width:24%">عدد المراقبين</th>
+              <th style="width:18%">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="roomsBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="roomsEmpty" hidden>لا توجد قاعات بعد. أضف صفًا جديدًا للبدء.</div>
+    </section>
+
+    <section class="panel active" id="instructorsPanel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">بيانات المراقبين</div>
+        </div>
+        <div class="panel-actions">
+          <select class="cell-select inline-filter" id="academicFilter">
+            <option value="all">الكل</option>
+            <option value="yes">أكاديمي</option>
+            <option value="no">غير أكاديمي</option>
+          </select>
+          <button class="btn btn-outline" id="addInstBtn"><i class="fa-solid fa-plus"></i> إضافة مراقب</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:15%">الاسم</th>
+              <th style="width:8%">الوزن</th>
+              <th style="width:9%">الحد الأقصى للساعات</th>
+              <th style="width:9%">أكاديمي</th>
+              <th style="width:10%">
+                <button class="session-toggle collapsed" id="sessionsToggle" type="button">
+                  <span>الجلسات</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+              </th>
+              <th class="session-col session-col-hidden" style="width:10%">تفضيل الفجوات</th>
+              <th class="session-col session-col-hidden" style="width:8%">أقل جلسات</th>
+              <th class="session-col session-col-hidden" style="width:8%">أكثر جلسات</th>
+              <th style="width:20%">الأيام المتاحة</th>
+              <th style="width:10%">تعارض</th>
+              <th style="width:8%">حذف</th>
+            </tr>
+          </thead>
+          <tbody id="instBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="instEmpty" hidden>لا توجد بيانات مراقبين بعد.</div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = "hti_data_editor_state_v1";
+const FIXED_FILENAME = "hti_data.json";
+const DAY_OPTIONS = [
+  { label: "السبت", value: "saturday" },
+  { label: "الأحد", value: "sunday" },
+  { label: "الاثنين", value: "monday" },
+  { label: "الثلاثاء", value: "tuesday" },
+  { label: "الأربعاء", value: "wednesday" },
+  { label: "الخميس", value: "thursday" }
+];
+const DEFAULT_CONFLICT_OPTIONS = [
+  "ميكاترونكس4",
+  "برمجة4",
+  "شبكات4",
+  "طاقة رياح4",
+  "طاقة شمسية4",
+  "ميكاترونكس3",
+  "برمجة3",
+  "شبكات3",
+  "طاقة شمسية3",
+  "طاقة رياح3",
+  "ميكاترونكس2",
+  "برمجة2",
+  "طاقة2",
+  "شبكات2",
+  "ميكاترونكس1",
+  "طاقة1",
+  "برمجة1",
+  "شبكات1"
+];
+
+let state = loadState() || {
+  rooms: [],
+  instructors: []
+};
+
+let saveTimer = null;
+let sessionsExpanded = false;
+let conflictOptions = [...DEFAULT_CONFLICT_OPTIONS];
+let academicFilter = "all";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return normalizeState(parsed);
+  } catch (err) {
+    return null;
+  }
+}
+
+function normalizeState(payload) {
+  const next = {
+    rooms: Array.isArray(payload?.rooms) ? payload.rooms.map(normalizeRoom) : [],
+    instructors: Array.isArray(payload?.instructors) ? payload.instructors.map(normalizeInstructor) : []
+  };
+  return next;
+}
+
+function normalizeRoom(row = {}) {
+  return {
+    Room: String(row.Room || "").trim(),
+    required_weight: Number(row.required_weight || 3),
+    required_proctors_num: Number(row.required_proctors_num || 2)
+  };
+}
+
+function normalizeInstructor(row = {}) {
+  const days = parseDays(row.Available_Days);
+  return {
+    proctor: String(row.proctor || "").trim(),
+    weight: Number(row.weight || 1),
+    max_hours: Number(row.max_hours ?? 14),
+    academic: String(row.academic || "no").toLowerCase() === "yes" ? "yes" : "no",
+    gap_pref: ["none", "max", "min"].includes(String(row.gap_pref || "none").toLowerCase())
+      ? String(row.gap_pref || "none").toLowerCase()
+      : "none",
+    min_slots: Number(row.min_slots || 0),
+    max_slots: Number(row.max_slots || 10),
+    Available_Days: days.join(", "),
+    conflict: String(row.conflict || "").trim()
+  };
+}
+
+function parseDays(raw) {
+  if (!raw) return [];
+  return String(raw)
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean)
+    .filter((value, index, list) => list.indexOf(value) === index);
+}
+
+function parseCsvLine(line) {
+  const cells = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === "," && !inQuotes) {
+      cells.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  cells.push(current);
+  return cells.map((cell) => cell.trim());
+}
+
+function extractConflictOptions(csvText) {
+  const lines = csvText
+    .replace(/^\uFEFF/, "")
+    .split(/\r?\n/)
+    .filter((line) => line.trim());
+  if (lines.length < 2) return [];
+
+  const headers = parseCsvLine(lines[0]);
+  const deptIndex = headers.indexOf("department");
+  const yearIndex = headers.indexOf("year");
+  if (deptIndex === -1 || yearIndex === -1) return [];
+
+  const unique = [];
+  const seen = new Set();
+  for (const line of lines.slice(1)) {
+    const cells = parseCsvLine(line);
+    const value = `${cells[deptIndex] || ""}${cells[yearIndex] || ""}`.trim();
+    if (value && !seen.has(value)) {
+      seen.add(value);
+      unique.push(value);
+    }
+  }
+  return unique;
+}
+
+async function loadConflictOptions() {
+  try {
+    const response = await fetch("midterm_structured.csv", { cache: "no-store" });
+    if (!response.ok) return;
+    const liveOptions = extractConflictOptions(await response.text());
+    if (liveOptions.length) {
+      conflictOptions = liveOptions;
+    }
+    renderInstructors();
+    updateSessionColumns();
+  } catch (err) {
+    conflictOptions = [...DEFAULT_CONFLICT_OPTIONS];
+  }
+}
+
+function saveState() {
+  setSaveIndicator("saving");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    setSaveIndicator("saved");
+  }, 120);
+}
+
+function setSaveIndicator(mode) {
+  const el = document.getElementById("saveIndicator");
+  el.className = "save-indicator " + mode;
+  el.textContent = mode === "saving" ? "جارٍ الحفظ..." : "محفوظ محليًا";
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+function render() {
+  renderRooms();
+  renderInstructors();
+  updateSessionColumns();
+  document.getElementById("roomsCount").textContent = state.rooms.length;
+  document.getElementById("instCount").textContent = state.instructors.length;
+}
+
+function renderRooms() {
+  const body = document.getElementById("roomsBody");
+  body.innerHTML = "";
+  document.getElementById("roomsEmpty").hidden = state.rooms.length > 0;
+
+  state.rooms.forEach((row, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input class="cell-input" value="${escapeHtml(row.Room)}" placeholder="LH1" data-kind="room" data-index="${index}" data-field="Room"></td>
+      <td><input class="cell-input" type="number" min="0" value="${row.required_weight}" data-kind="room" data-index="${index}" data-field="required_weight"></td>
+      <td><input class="cell-input" type="number" min="1" value="${row.required_proctors_num}" data-kind="room" data-index="${index}" data-field="required_proctors_num"></td>
+      <td><button class="btn btn-danger" data-remove="room" data-index="${index}"><i class="fa-solid fa-trash"></i> حذف</button></td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+function renderInstructors() {
+  const body = document.getElementById("instBody");
+  body.innerHTML = "";
+  const visibleRows = state.instructors.filter((row) => {
+    if (academicFilter === "yes") return row.academic === "yes";
+    if (academicFilter === "no") return row.academic === "no";
+    return true;
+  });
+  document.getElementById("instEmpty").hidden = visibleRows.length > 0;
+
+  visibleRows.forEach((row) => {
+    const index = state.instructors.indexOf(row);
+    const selectedDays = new Set(parseDays(row.Available_Days));
+    const daysHtml = DAY_OPTIONS.map((day) => `
+      <label class="day-chip">
+        <input type="checkbox" data-days-index="${index}" value="${day.value}" ${selectedDays.has(day.value) ? "checked" : ""}>
+        <span>${day.label}</span>
+      </label>
+    `).join("");
+    const conflictChoices = [...conflictOptions];
+    if (row.conflict && !conflictChoices.includes(row.conflict)) {
+      conflictChoices.push(row.conflict);
+    }
+    const conflictHtml = [`<option value="">لا يوجد</option>`]
+      .concat(conflictChoices.map((value) =>
+        `<option value="${escapeHtml(value)}" ${row.conflict === value ? "selected" : ""}>${escapeHtml(value)}</option>`
+      ))
+      .join("");
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input class="cell-input" value="${escapeHtml(row.proctor)}" placeholder="اسم المراقب" data-kind="inst" data-index="${index}" data-field="proctor"></td>
+      <td>
+        <select class="cell-select" data-kind="inst" data-index="${index}" data-field="weight">
+          <option value="1" ${row.weight === 1 ? "selected" : ""}>1</option>
+          <option value="2" ${row.weight === 2 ? "selected" : ""}>2</option>
+          <option value="3" ${row.weight === 3 ? "selected" : ""}>3</option>
+        </select>
+      </td>
+      <td><input class="cell-input" type="number" min="0" step="0.5" value="${row.max_hours}" data-kind="inst" data-index="${index}" data-field="max_hours"></td>
+      <td>
+        <select class="cell-select" data-kind="inst" data-index="${index}" data-field="academic">
+          <option value="yes" ${row.academic === "yes" ? "selected" : ""}>yes</option>
+          <option value="no" ${row.academic === "no" ? "selected" : ""}>no</option>
+        </select>
+      </td>
+      <td></td>
+      <td class="session-col ${sessionsExpanded ? "" : "session-col-hidden"}">
+        <select class="cell-select" data-kind="inst" data-index="${index}" data-field="gap_pref">
+          <option value="none" ${row.gap_pref === "none" ? "selected" : ""}>none</option>
+          <option value="max" ${row.gap_pref === "max" ? "selected" : ""}>max</option>
+          <option value="min" ${row.gap_pref === "min" ? "selected" : ""}>min</option>
+        </select>
+      </td>
+      <td class="session-col ${sessionsExpanded ? "" : "session-col-hidden"}"><input class="cell-input" type="number" min="0" value="${row.min_slots}" data-kind="inst" data-index="${index}" data-field="min_slots"></td>
+      <td class="session-col ${sessionsExpanded ? "" : "session-col-hidden"}"><input class="cell-input" type="number" min="0" value="${row.max_slots}" data-kind="inst" data-index="${index}" data-field="max_slots"></td>
+      <td><div class="days-grid">${daysHtml}</div></td>
+      <td><select class="cell-select" data-kind="inst" data-index="${index}" data-field="conflict">${conflictHtml}</select></td>
+      <td><button class="btn btn-danger" data-remove="inst" data-index="${index}"><i class="fa-solid fa-trash"></i></button></td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;");
+}
+
+function addRoom(row) {
+  state.rooms.push(normalizeRoom(row));
+  render();
+  saveState();
+}
+
+function addInstructor(row) {
+  state.instructors.push(normalizeInstructor(row));
+  render();
+  saveState();
+}
+
+function scrollToPageBottom() {
+  requestAnimationFrame(() => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth"
+    });
+  });
+}
+
+function goHome() {
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+  window.location.href = "editor.html";
+}
+
+function updateField(kind, index, field, value) {
+  const list = kind === "room" ? state.rooms : state.instructors;
+  const row = list[index];
+  if (!row) return;
+  if (["required_weight", "required_proctors_num", "weight", "max_hours", "min_slots", "max_slots"].includes(field)) {
+    row[field] = Number(value);
+  } else {
+    row[field] = value;
+  }
+  saveState();
+}
+
+function updateInstructorDays(index) {
+  const checked = [...document.querySelectorAll(`input[data-days-index="${index}"]:checked`)].map((el) => el.value);
+  state.instructors[index].Available_Days = checked.join(", ");
+  saveState();
+}
+
+function removeRow(kind, index) {
+  if (kind === "room") state.rooms.splice(index, 1);
+  if (kind === "inst") state.instructors.splice(index, 1);
+  render();
+  saveState();
+}
+
+function updateSessionColumns() {
+  document.querySelectorAll(".session-col").forEach((el) => {
+    el.classList.toggle("session-col-hidden", !sessionsExpanded);
+  });
+  const toggle = document.getElementById("sessionsToggle");
+  if (toggle) {
+    toggle.classList.toggle("collapsed", !sessionsExpanded);
+  }
+}
+
+function exportJson() {
+  const payload = {
+    rooms: state.rooms.map(normalizeRoom).filter((row) => row.Room),
+    instructors: state.instructors.map(normalizeInstructor).filter((row) => row.proctor)
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = FIXED_FILENAME;
+  link.click();
+  URL.revokeObjectURL(url);
+  showToast("تم تنزيل hti_data.json");
+}
+
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(reader.result);
+      state = normalizeState(payload);
+      render();
+      saveState();
+      showToast("تم استيراد الملف");
+    } catch (err) {
+      showToast("الملف غير صالح");
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+document.addEventListener("click", (event) => {
+  const tab = event.target.closest(".tab");
+  if (tab) {
+    const target = tab.dataset.tab;
+    document.querySelectorAll(".tab").forEach((el) => el.classList.toggle("active", el === tab));
+    document.getElementById("roomsPanel").classList.toggle("active", target === "rooms");
+    document.getElementById("instructorsPanel").classList.toggle("active", target === "instructors");
+  }
+
+  const removeBtn = event.target.closest("[data-remove]");
+  if (removeBtn) {
+    removeRow(removeBtn.dataset.remove, Number(removeBtn.dataset.index));
+  }
+});
+
+document.addEventListener("input", (event) => {
+  const field = event.target.dataset.field;
+  const kind = event.target.dataset.kind;
+  const index = Number(event.target.dataset.index);
+  if (!field || Number.isNaN(index)) return;
+  updateField(kind, index, field, event.target.value);
+});
+
+document.addEventListener("change", (event) => {
+  if (event.target.matches("input[type='checkbox'][data-days-index]")) {
+    updateInstructorDays(Number(event.target.dataset.daysIndex));
+  }
+});
+
+document.getElementById("addRoomBtn").addEventListener("click", () => addRoom({}));
+document.getElementById("addInstBtn").addEventListener("click", () => {
+  addInstructor({});
+  scrollToPageBottom();
+});
+document.getElementById("academicFilter").addEventListener("change", (event) => {
+  academicFilter = event.target.value;
+  renderInstructors();
+  updateSessionColumns();
+});
+document.getElementById("exportBtn").addEventListener("click", exportJson);
+document.getElementById("importBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+document.getElementById("sessionsToggle").addEventListener("click", () => {
+  sessionsExpanded = !sessionsExpanded;
+  updateSessionColumns();
+});
+document.getElementById("fileInput").addEventListener("change", (event) => {
+  const [file] = event.target.files || [];
+  if (file) importJson(file);
+  event.target.value = "";
+});
+
+render();
+loadConflictOptions();
+saveState();
+</script>
+</body>
+</html>
