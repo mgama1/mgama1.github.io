@@ -153,6 +153,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .save-indicator{font-size:13px;display:flex;align-items:center;gap:6px;color:var(--text-3);transition:color .3s;font-weight:600;}
 .save-indicator.saved{color:var(--green)}
 .save-indicator.saving{color:var(--amber)}
+.hdr-actions{
+  display:flex;align-items:center;gap:10px;
+}
+.hdr-actions .btn{
+  min-height:40px;
+}
+.hdr-actions .btn-square{
+  width:40px;padding:9px;justify-content:center;
+}
 
 /* ── TABS & FILTER ── */
 .tabs{
@@ -532,9 +541,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     <div class="hdr-spacer"></div>
     <div class="save-indicator" id="saveIndicator">● محفوظ</div>
     <div class="hdr-sep"></div>
-    <button class="btn btn-outline" onclick="openBackupHistory()" title="سجل النسخ التلقائية"><i class="fa-solid fa-clock-rotate-left"></i></button>
-    <button class="btn btn-outline" onclick="resetAll()">↺ إعادة تحميل</button>
-    <button class="btn btn-amber" onclick="exportCSV()"><i class="fa-solid fa-download"></i></button>
+    <div class="hdr-actions">
+      <button class="btn btn-outline" onclick="window.location.href='hti_data_editor.html'" title="الانتقال إلى محرر بيانات HTI">
+        <i class="fa-solid fa-table"></i>
+        تعديل المراقبين
+      </button>
+      <button class="btn btn-outline btn-square" onclick="openBackupHistory()" title="سجل النسخ التلقائية"><i class="fa-solid fa-clock-rotate-left"></i></button>
+      <button class="btn btn-outline" onclick="resetAll()">↺ إعادة تحميل</button>
+      <button class="btn btn-amber btn-square" onclick="exportCSV()" title="تنزيل CSV"><i class="fa-solid fa-download"></i></button>
+    </div>
   </div>
 
   <div class="tabs">
