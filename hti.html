@@ -1026,15 +1026,30 @@ function actuallyAddProctor(name, tsKey, room, fromStaging) {
   showToast(`تمت إضافة "${name}" للقاعة ${room}`);
 }
 
+function examClockToMinutes(clockText) {
+  const [rawHour, rawMinute] = String(clockText).trim().split(':');
+  const hour = Number(rawHour), minute = Number(rawMinute);
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
+
+  if (hour >= 1 && hour <= 5) return (hour + 12) * 60 + minute;
+  if (hour >= 8 && hour <= 11) return hour * 60 + minute;
+  if (hour === 12) return 12 * 60 + minute;
+  return null;
+}
+
+function examTimeStartMinutes(timeRange) {
+  const normalized = String(timeRange || '').replace(/[–—]/g, '-').trim();
+  const [start] = normalized.split('-').map(part => part.trim()).filter(Boolean);
+  return start ? examClockToMinutes(start) : null;
+}
+
 function sortTimes(a, b) {
-  const getV = (t) => {
-    if (t.includes('10:00')) return 1;
-    if (t.includes('11:30')) return 2;
-    if (t.includes('01:00') || t.includes('1:00')) return 3;
-    if (t.includes('02:30') || t.includes('2:30')) return 4;
-    return 99;
-  };
-  return getV(a) - getV(b);
+  const startA = examTimeStartMinutes(a);
+  const startB = examTimeStartMinutes(b);
+  if (startA === null && startB === null) return String(a).localeCompare(String(b), 'ar');
+  if (startA === null) return 1;
+  if (startB === null) return -1;
+  return startA - startB || String(a).localeCompare(String(b), 'ar');
 }
 
 // ── PERSISTENCE ──
@@ -1135,7 +1150,7 @@ function parseCSV(text) {
     const vals=parseCSVLine(line), row={};
     headers.forEach((h,idx)=>row[h.trim()]=(vals[idx]||'').trim());
     const {date,day,exam_time,room,subject,department,year,student_count,
-      proctor,proctor_weight,proctor_type,is_academic,
+      proctor,proctor_weight,proctor_type,is_academic,courses,
       room_required_n,room_required_w,room_has_academic,avail_days}=row;
     const professor = row['professor'] || row['أستاذ المادة'] || '';
     const tsKey=`${date}|${exam_time}`;
@@ -1149,8 +1164,26 @@ function parseCSV(text) {
       staging.push({name: proctor, fromTsKey: tsKey, fromRoom: '__staging__'});
       continue;
     }
-    if(room&&!schedule[tsKey].rooms[room]) schedule[tsKey].rooms[room]={subject,department,year,student_count,professor,required_n:parseInt(room_required_n)||0,required_w:parseInt(room_required_w)||0,room_has_academic:(room_has_academic||'').toLowerCase()==='yes',proctors:[]};
-    if(proctor&&room){const rm=schedule[tsKey].rooms[room];if(!rm.proctors.includes(proctor))rm.proctors.push(proctor);}
+    if(room){
+      if(!schedule[tsKey].rooms[room]) schedule[tsKey].rooms[room]={subject:'',department:'',year:'',student_count:'',professor:'',required_n:0,required_w:0,room_has_academic:false,proctors:[],entries:[]};
+      const rm = schedule[tsKey].rooms[room];
+      const courseEntries = parseCoursesField(courses);
+      if (courseEntries.length) {
+        courseEntries.forEach(entry => mergeRoomMetadata(rm, {
+          subject: entry.subject || subject,
+          department: entry.department || department,
+          year: entry.year || year,
+          student_count: entry.student_count || student_count,
+          professor: entry.professor || professor,
+          room_required_n,
+          room_required_w,
+          room_has_academic
+        }));
+      } else {
+        mergeRoomMetadata(rm, { subject, department, year, student_count, professor, room_required_n, room_required_w, room_has_academic });
+      }
+      if(proctor&&!rm.proctors.includes(proctor))rm.proctors.push(proctor);
+    }
   }
   renderApp(); saveState();
 }
@@ -1159,6 +1192,67 @@ function parseCSVLine(line){
   const res=[]; let cur='',inQ=false;
   for(let i=0;i<line.length;i++){const c=line[i];if(c==='"')inQ=!inQ;else if(c===','&&!inQ){res.push(cur);cur='';}else cur+=c;}
   res.push(cur); return res;
+}
+
+function parseCoursesField(rawValue) {
+  const text = String(rawValue || '').trim();
+  if (!text) return [];
+  try {
+    const normalized = text
+      .replace(/\bNone\b/g, 'null')
+      .replace(/\bTrue\b/g, 'true')
+      .replace(/\bFalse\b/g, 'false')
+      .replace(/'/g, '"');
+    const parsed = JSON.parse(normalized);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function mergeUniqueValues(currentValue, nextValue) {
+  const values = new Set();
+  const add = value => { const normalized = String(value || '').trim(); if (normalized) values.add(normalized); };
+  add(currentValue);
+  add(nextValue);
+  return Array.from(values).join(' / ');
+}
+
+function roomEntryKey(entry) {
+  return [
+    entry.subject || '',
+    entry.department || '',
+    entry.year || '',
+    entry.student_count || '',
+    entry.professor || ''
+  ].join('||');
+}
+
+function mergeRoomMetadata(roomRecord, row) {
+  const entry = {
+    subject: (row.subject || '').trim(),
+    department: (row.department || '').trim(),
+    year: String(row.year || '').trim(),
+    student_count: String(row.student_count || '').trim(),
+    professor: (row.professor || '').trim()
+  };
+  const key = roomEntryKey(entry);
+  roomRecord.entries = Array.isArray(roomRecord.entries) ? roomRecord.entries : [];
+
+  if (!roomRecord.entries.some(existing => roomEntryKey(existing) === key)) {
+    roomRecord.entries.push(entry);
+  }
+
+  roomRecord.subject = roomRecord.entries.reduce((merged, item) => mergeUniqueValues(merged, item.subject), '');
+  roomRecord.department = roomRecord.entries.reduce((merged, item) => mergeUniqueValues(merged, item.department), '');
+  roomRecord.year = roomRecord.entries.reduce((merged, item) => mergeUniqueValues(merged, item.year), '');
+  roomRecord.professor = roomRecord.entries.reduce((merged, item) => mergeUniqueValues(merged, item.professor), '');
+
+  const totalStudents = roomRecord.entries.reduce((sum, item) => sum + (parseInt(item.student_count, 10) || 0), 0);
+  roomRecord.student_count = totalStudents ? String(totalStudents) : '';
+  roomRecord.required_n = Math.max(parseInt(roomRecord.required_n, 10) || 0, parseInt(row.room_required_n, 10) || 0);
+  roomRecord.required_w = Math.max(parseInt(roomRecord.required_w, 10) || 0, parseInt(row.room_required_w, 10) || 0);
+  roomRecord.room_has_academic = roomRecord.room_has_academic || String(row.room_has_academic || '').toLowerCase() === 'yes';
 }
 
 // ── RENDER ──
@@ -1521,6 +1615,14 @@ function exportToExcel(){
   showToast('تم تصدير ملف Excel ✓');
 }
 
+function formatExportProctors(proctors = []){
+  return [...proctors]
+    .map((name, idx) => ({ name, idx, isAcademic: !!proctorMeta[name]?.is_academic }))
+    .sort((a, b) => Number(b.isAcademic) - Number(a.isAcademic) || a.idx - b.idx)
+    .map(p => p.name)
+    .join(' + ');
+}
+
 function buildFinalScheduleWorkbook(){
   const byYearTime = {};
   for(const ts of Object.values(schedule)){
@@ -1593,7 +1695,7 @@ function buildFinalScheduleWorkbook(){
               r.room || '—',
               r.student_count || '—',
               r.department || '—',
-              (r.proctors || []).join('\n')
+              formatExportProctors(r.proctors)
             ]);
             currentRow++;
           });
