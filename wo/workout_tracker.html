@@ -1545,27 +1545,49 @@ const DATA = {
   },
   back: {
     label: "Back",
-    exercises: [{
-      id: "pull_ups", name: "Pull Ups",
-      sets: 4, reps: "6-8",
-      tempo: ["3","1","2","1"],
-      tempoLabels: ["Eccentric","Dead Hang","Concentric","Top Hold"],
-      muscles: "Latissimus Dorsi / Biceps / Rear Deltoid",
-      cues: "Lower to a full dead hang over 3 seconds. Pause 1 second. Pull in 2 seconds. Hold chin over bar for 1 second. Every rep from a full hang — no kipping.",
-      rest: 120
-    }]
+    exercises: [
+      {
+        id: "pull_ups", name: "Pull Ups",
+        sets: 4, reps: "6-8",
+        tempo: ["3","1","2","1"],
+        tempoLabels: ["Eccentric","Dead Hang","Concentric","Top Hold"],
+        muscles: "Latissimus Dorsi / Biceps / Rear Deltoid",
+        cues: "Lower to a full dead hang over 3 seconds. Pause 1 second. Pull in 2 seconds. Hold chin over bar for 1 second. Every rep from a full hang — no kipping.",
+        rest: 120
+      },
+      {
+        id: "scapular_pull", name: "Scapular Pull Ups",
+        sets: 3, reps: "10-12",
+        tempo: ["2","2","2","2"],
+        tempoLabels: ["Lower","Bottom","Depress","Hold"],
+        muscles: "Lower Trapezius / Serratus Anterior / Rhomboids",
+        cues: "Dead hang. No elbow bend at any point. Depress the scapulae downward over 2 seconds. Hold for 2 seconds. Return over 2 seconds. Pause 2 seconds. Pure scapular movement only.",
+        rest: 60
+      }
+    ]
   },
-  trapezius: {
-    label: "Trapezius",
-    exercises: [{
-      id: "scapular_pull", name: "Scapular Pull Ups",
-      sets: 3, reps: "10-12",
-      tempo: ["2","2","2","2"],
-      tempoLabels: ["Lower","Bottom","Depress","Hold"],
-      muscles: "Lower Trapezius / Serratus Anterior / Rhomboids",
-      cues: "Dead hang. No elbow bend at any point. Depress the scapulae downward over 2 seconds. Hold for 2 seconds. Return over 2 seconds. Pause 2 seconds. Pure scapular movement only.",
-      rest: 60
-    }]
+  core: {
+    label: "Core",
+    exercises: [
+      {
+        id: "hollow_body_hold", name: "Hollow Body Hold",
+        sets: 3, reps: "30-45s",
+        tempo: ["0","0","0","0"],
+        tempoLabels: ["Inhale","Hold","Exhale","Reset"],
+        muscles: "Transverse Abdominis / Rectus Abdominis / Hip Flexors",
+        cues: "Lie on your back, press your lower back flat into the floor. Arms extended overhead, legs straight and raised. Chin to chest. Hold the position with every muscle braced — no gap between lower back and floor at any point.",
+        rest: 60
+      },
+      {
+        id: "dead_bug", name: "Dead Bug",
+        sets: 3, reps: "8-10 per side",
+        tempo: ["4","1","2","1"],
+        tempoLabels: ["Lower","Bottom","Return","Top"],
+        muscles: "Transverse Abdominis / Erector Spinae / Hip Flexors",
+        cues: "Lower back pressed flat throughout — this is non-negotiable. Slowly lower the opposite arm and leg over 4 seconds. Pause 1 second at the bottom. Return over 2 seconds. Breathe out on the way down to maintain intra-abdominal pressure.",
+        rest: 60
+      }
+    ]
   },
   deltoid: {
     label: "Deltoid",
@@ -1628,12 +1650,12 @@ const DATA = {
 };
 
 const MUSCLE_ICONS = {
-  chest:     'chest.png',
-  back:      'back.png',
-  trapezius: 'traps.png',
-  deltoid:   'deltoid.png',
-  biceps:    'biceps.png',
-  legs:      'legs.png'
+  chest:   'chest.png',
+  back:    'back.png',
+  core:    'core.png',
+  deltoid: 'deltoid.png',
+  biceps:  'biceps.png',
+  legs:    'legs.png'
 };
 
 function localDateStr(d) {
