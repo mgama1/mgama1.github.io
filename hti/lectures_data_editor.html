@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر بيانات المحاضرات — HTI</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f4f6;--s1:#f8fafc;--s2:#f1f5f9;--s3:#e9eef4;--border:#d8e1ea;--border-sub:#e9eef4;
+  --text:#1e293b;--text-2:#475569;--text-3:#94a3b8;--accent:#06609f;--accent-light:#edf3f7;--accent-mid:#d8e7f2;
+  --green:#2f7d57;--green-dim:#eef7f2;--amber:#b56a1a;--amber-dim:#fbf5ec;--red:#b64141;--red-dim:#faeeee;
+  --r:8px;--r-lg:12px;--shadow-sm:0 1px 2px 0 rgba(0,0,0,.05);--shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:"Cairo",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;overflow:hidden}
+
+#appShell{display:flex;flex-direction:column;height:100vh}
+.hdr{display:flex;align-items:center;gap:16px;background:var(--s1);border-bottom:1px solid var(--border);padding:12px 24px;box-shadow:var(--shadow-sm);flex-shrink:0}
+.hdr-logo{font-size:18px;font-weight:900;color:var(--accent)}
+.hdr-logo span{color:var(--text-2);font-weight:400;font-size:14px;margin-right:8px;padding-right:10px;border-right:1.5px solid var(--border)}
+.hdr-spacer{flex:1}
+.hdr-stat{font-size:14px;color:var(--text-2);display:flex;align-items:center;gap:6px;background:var(--s3);padding:6px 14px;border-radius:20px;border:1px solid var(--border)}
+.hdr-stat strong{color:var(--text);font-size:15px;font-weight:800}
+.save-indicator{font-size:13px;color:var(--text-3);font-weight:700}
+.save-indicator.saving{color:var(--amber)}
+.save-indicator.saved{color:var(--green)}
+.hdr-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:var(--r);font-family:"Cairo",sans-serif;font-size:14px;font-weight:700;border:1px solid transparent;cursor:pointer;transition:.15s ease}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(6,96,159,.25)}
+.btn-primary:hover{background:#0a4f80}
+.btn-outline{background:var(--s1);color:var(--text-2);border-color:var(--border)}
+.btn-outline:hover{background:var(--s3);color:var(--text)}
+.btn-danger{background:var(--red-dim);color:var(--red);border-color:rgba(182,65,65,.18)}
+.btn-danger:hover{background:#fde8e8}
+.btn-square{width:40px;height:40px;justify-content:center;padding:0}
+
+.tabs{display:flex;gap:8px;background:var(--s1);border-bottom:1px solid var(--border);padding:0 24px;overflow:auto;flex-shrink:0}
+.tab{padding:14px 20px;border:none;background:none;color:var(--text-2);font-family:"Cairo",sans-serif;font-size:15px;font-weight:800;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;margin-right:8px;padding:2px 8px;border-radius:999px;background:var(--s3);color:var(--text-2);font-size:12px;font-weight:800}
+.tab.active .count{background:var(--accent-light);color:var(--accent)}
+.tab-relation .count{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.tab-relation.active .count{background:#dcfce7;color:#15803d}
+.tab-relation{color:var(--green)}
+.tab-relation.active{color:var(--green);border-bottom-color:var(--green)}
+.relation-badge{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:800;margin-right:6px}
+
+.filter-bar{padding:12px 24px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-shrink:0}
+.search-wrap{position:relative;flex:1}
+.search-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:"Cairo",sans-serif;font-size:15px;padding:10px 42px 10px 16px;outline:none;transition:.15s ease}
+.search-input::placeholder{color:var(--text-3)}
+.search-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(6,96,159,.15)}
+.search-clear{position:absolute;left:12px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:var(--text-3);font-size:16px;padding:4px;border-radius:50%;display:none}
+.search-clear:hover{color:var(--text)}
+.filter-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.mini-stat{background:var(--s2);border:1px solid var(--border);border-radius:999px;padding:6px 12px;color:var(--text-2);font-size:13px;font-weight:700}
+.mini-stat strong{color:var(--text)}
+
+.app-body{flex:1;overflow:auto;padding:20px 24px 24px;background:var(--bg)}
+.sheet-panel{background:var(--s1);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-sm);overflow:hidden}
+.panel-head{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);background:var(--s2)}
+.panel-title{font-size:18px;font-weight:900}
+.panel-sub{font-size:13px;color:var(--text-2);margin-top:4px}
+.panel-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.panel-badge{display:inline-flex;align-items:center;gap:6px;background:var(--s3);border:1px solid var(--border);border-radius:999px;padding:6px 12px;color:var(--text-2);font-size:13px;font-weight:700}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{border-bottom:1px solid var(--border);padding:12px;vertical-align:top}
+th{background:var(--s2);color:var(--text-2);font-size:13px;font-weight:800;text-align:right;white-space:nowrap}
+tbody tr:nth-child(even){background:#fbfcfd}
+td{background:#fff}
+.cell-input,.cell-select{width:100%;min-width:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;font-family:"Cairo",sans-serif;font-size:14px;color:var(--text);outline:none;transition:.15s ease}
+.cell-input:focus,.cell-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,96,159,.12);background:#fff}
+.cell-input[type="number"]{text-align:left;direction:ltr}
+.cell-input::placeholder{color:var(--text-3)}
+.cell-select{padding-inline-start:8px}
+.cell-actions{display:flex;justify-content:flex-start}
+.cell-actions .btn{padding:8px 12px}
+.multi-cell{display:flex;flex-direction:column;gap:10px}
+.multi-chip-group{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--border);background:var(--s2);color:var(--text-2);border-radius:999px;padding:6px 11px;font-family:"Cairo",sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:.15s ease}
+.chip:hover{background:var(--s3);color:var(--text)}
+.chip.active{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent)}
+.multi-value{font-size:12px;color:var(--text-2);font-weight:700}
+.multi-value.empty{color:var(--text-3)}
+.level-manager{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 20px;background:var(--s1);border-bottom:1px solid var(--border)}
+.level-manager-label{font-size:13px;font-weight:800;color:var(--text-2);white-space:nowrap}
+.level-manager-chips{display:flex;flex-wrap:wrap;gap:8px}
+.level-chip{display:inline-flex;align-items:center;gap:8px;background:var(--accent-light);border:1px solid var(--accent-mid);color:var(--accent);border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:800}
+.level-chip-name{white-space:nowrap}
+.level-chip-count{background:#fff;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;color:var(--text-2)}
+.level-chip-remove{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:none;background:transparent;color:var(--accent);cursor:pointer;font-size:12px;transition:.15s ease}
+.level-chip-remove:hover{background:var(--red-dim);color:var(--red)}
+.empty-state{padding:32px 20px;text-align:center;color:var(--text-3);font-weight:700}
+.hint-row{padding:12px 20px;background:var(--s1);border-top:1px solid var(--border);color:var(--text-2);font-size:13px}
+.toast{position:fixed;left:24px;bottom:24px;background:#111827;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow-md);opacity:0;transform:translateY(8px);transition:.2s ease;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateY(0)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--s1);border-radius:var(--r-lg);box-shadow:var(--shadow-md);width:min(440px,100%);padding:22px;display:flex;flex-direction:column;gap:14px}
+.modal-title{font-size:17px;font-weight:900}
+.modal-field{display:flex;flex-direction:column;gap:6px}
+.modal-field label{font-size:13px;font-weight:800;color:var(--text-2)}
+.modal-type-checks{display:flex;flex-direction:column;gap:4px}
+.modal-check-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--s2);font-size:14px;font-weight:700;cursor:pointer;transition:.15s ease}
+.modal-check-row:hover{background:var(--s3)}
+.modal-check-row input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+
+@media (max-width: 980px){
+  body{overflow:auto}
+  #appShell{height:auto;min-height:100vh}
+  .hdr,.tabs,.filter-bar,.app-body{padding-left:16px;padding-right:16px}
+  .hdr{align-items:flex-start;flex-wrap:wrap}
+  .app-body{padding-top:16px}
+}
+</style>
+</head>
+<body>
+<div id="appShell">
+  <header class="hdr">
+    <div class="hdr-logo">محرر بيانات المحاضرات <span>HTI</span></div>
+    <div class="hdr-spacer"></div>
+    <div class="hdr-stat">الصفوف <strong id="rowsStat">0</strong></div>
+    <div class="save-indicator saved" id="saveIndicator">محفوظ محليًا</div>
+    <div class="hdr-actions">
+      <button class="btn btn-outline" id="resetBtn" type="button"><i class="fa-solid fa-trash-can"></i> مسح كل البيانات</button>
+      <button class="btn btn-outline" id="importBtn" type="button"><i class="fa-solid fa-file-import"></i> استيراد JSON</button>
+      <button class="btn btn-primary" id="exportBtn" type="button"><i class="fa-solid fa-file-arrow-down"></i> تنزيل JSON</button>
+      <input id="fileInput" type="file" accept=".json" hidden>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <input id="searchInput" class="search-input" type="search" placeholder="ابحث في الجدول الحالي...">
+      <button id="searchClear" class="search-clear" type="button" title="مسح البحث"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="filter-meta">
+      <div class="mini-stat">الجدول: <strong id="activeSheetLabel">-</strong></div>
+      <div class="mini-stat">المعروض: <strong id="visibleCount">0</strong>/<span id="totalCount">0</span></div>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div id="panels"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="courseModalOverlay">
+  <div class="modal-box">
+    <div class="modal-title">إضافة مقرر جديد</div>
+    <div class="modal-field">
+      <label for="courseModalName">اسم المقرر</label>
+      <input id="courseModalName" class="cell-input" type="text" placeholder="مثال: تفاضل وتكامل">
+    </div>
+    <div class="modal-field">
+      <label for="courseModalLevel">المستوى (اختياري)</label>
+      <select id="courseModalLevel" class="cell-select"></select>
+    </div>
+    <div class="modal-field">
+      <label>الأنواع المطلوبة لهذا المقرر</label>
+      <div class="modal-type-checks" id="courseModalTypes"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="courseModalCancel" type="button">إلغاء</button>
+      <button class="btn btn-primary" id="courseModalSubmit" type="button">إضافة</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "hti_lectures_data_editor_state_v1";
+const FIXED_FILENAME = "hti_data.json";
+const DAY_OPTIONS = [
+  { value: "Saturday", label: "السبت" },
+  { value: "Sunday", label: "الأحد" },
+  { value: "Monday", label: "الاثنين" },
+  { value: "Tuesday", label: "الثلاثاء" },
+  { value: "Wednesday", label: "الأربعاء" },
+  { value: "Thursday", label: "الخميس" },
+  { value: "Friday", label: "الجمعة" }
+];
+const TIME_OPTIONS = [
+  { value: "Morning", label: "صباح" },
+  { value: "Afternoon", label: "بعد الظهر" },
+  { value: "Evening", label: "مساء" }
+];
+const TYPE_OPTIONS = [
+  { value: "Lecture", label: "محاضرة" },
+  { value: "Recitation", label: "سكشن" },
+  { value: "Lab", label: "معمل" }
+];
+const TYPE_LABELS = Object.fromEntries(TYPE_OPTIONS.map((option) => [option.value, option.label]));
+const TEMPLATE_KEY_SEPARATOR = "::";
+const UNSPECIFIED_COURSE = "غير محدد";
+const ADD_NEW_LEVEL_VALUE = "__add_new_level__";
+const SHEETS = [
+  {
+    key: "LevelsGroups",
+    label: "المستويات والمجموعات",
+    subtitle: "كل صف يمثل مجموعة داخل مستوى دراسي.",
+    headers: ["Level", "Group", "Size"],
+    columns: [
+      { key: "Level", label: "Level", type: "select", optionSource: "Levels", allowAddNew: true },
+      { key: "Group", label: "Group", type: "number", placeholder: "1" },
+      { key: "Size", label: "Size", type: "number", placeholder: "30" }
+    ]
+  },
+  {
+    key: "Rooms",
+    label: "القاعات",
+    subtitle: "الغرف المتاحة مع السعة والخصائص. استخدم زر «إضافة خاصية» لإضافة خصائص جديدة تظهر هنا وفي تبويب المقررات.",
+    headers: ["Room", "Capacity", "Features"],
+    columns: [
+      { key: "Room", label: "Room", type: "text", placeholder: "H106" },
+      { key: "Capacity", label: "Capacity", type: "number", placeholder: "120" },
+      { key: "Features", label: "Features", type: "multi", optionSource: "RoomFeatures" }
+    ]
+  },
+  {
+    key: "Courses",
+    label: "المقررات",
+    subtitle: "كل صف يمثل قالباً واحداً مستقلاً (مقرر بنوع محدد)، لأن لكل نوع بياناته الخاصة (القاعة، عدد المجموعات، المدة...). استخدم زر «إضافة مقرر» لإنشاء كل أنواع المقرر دفعة واحدة دون تكرار كتابة الاسم.",
+    headers: ["Course", "Level", "Type", "Features", "MinGroups", "MaxGroups", "Duration"],
+    columns: [
+      { key: "Course", label: "المقرر", type: "text", placeholder: "رياضيات 1" },
+      { key: "Level", label: "Level", type: "select", optionSource: "Levels" },
+      { key: "Type", label: "النوع", type: "select", options: TYPE_OPTIONS },
+      { key: "Features", label: "الخصائص المطلوبة", type: "multi", optionSource: "RoomFeatures" },
+      { key: "MinGroups", label: "أقل مجموعات", type: "number", placeholder: "1" },
+      { key: "MaxGroups", label: "أكثر مجموعات", type: "number", placeholder: "10" },
+      { key: "Duration", label: "المدة", type: "number", placeholder: "1" }
+    ]
+  },
+  {
+    key: "TimeSlots",
+    label: "الجداول الزمنية",
+    subtitle: "أوقات المحاضرات لكل يوم.",
+    headers: ["SlotID", "Day", "Period", "StartTime", "TimeOfDay"],
+    columns: [
+      { key: "SlotID", label: "SlotID", type: "number", placeholder: "1" },
+      { key: "Day", label: "Day", type: "select", options: DAY_OPTIONS },
+      { key: "Period", label: "Period", type: "number", placeholder: "1" },
+      { key: "StartTime", label: "StartTime", type: "text", placeholder: "09:00" },
+      { key: "TimeOfDay", label: "TimeOfDay", type: "select", options: TIME_OPTIONS }
+    ]
+  },
+  {
+    key: "Instructors",
+    label: "المدرسون",
+    subtitle: "بيانات كل مدرس وأيام توفره وأوقاته المفضلة.",
+    headers: ["Instructor", "Available_Days", "Preferred_Times"],
+    columns: [
+      { key: "Instructor", label: "Instructor", type: "text", placeholder: "Dr. Name" },
+      { key: "Available_Days", label: "أيام التوفر", type: "multi", options: DAY_OPTIONS },
+      { key: "Preferred_Times", label: "الوقت المفضل", type: "multi", options: TIME_OPTIONS }
+    ]
+  },
+  {
+    key: "InstructorTemplates",
+    label: "المدرسون ← القوالب",
+    subtitle: "ربط كل مدرس بقالب محدد (مقرر + نوع) — اختر من القوائم لتجنب الأخطاء.",
+    headers: ["Instructor", "Template"],
+    columns: [
+      { key: "Instructor", label: "المدرس", type: "select", optionSource: "Instructors", optionValueKey: "Instructor" },
+      { key: "Template", label: "القالب (المقرر - النوع)", type: "select", optionSource: "Templates" }
+    ]
+  }
+];
+
+// No seed data — the editor starts empty so data can be populated from
+// scratch via the UI or by importing a JSON file.
+const BLANK_STATE = normalizeState({});
+
+let state = loadState() || cloneState(BLANK_STATE);
+let activeSheet = SHEETS[0].key;
+let searchTerm = "";
+let saveTimer = null;
+
+function cloneState(source) {
+  return JSON.parse(JSON.stringify(source));
+}
+
+// Resolves the raw rows for a sheet from an imported/seed payload. Each
+// sheet's data lives under its own key; Courses additionally gets expanded
+// so every (course, type) combination becomes its own independent row.
+function getIncomingRows(payload, sheet) {
+  if (!payload) return [];
+  if (sheet.key === "Courses") {
+    return Array.isArray(payload.Courses) ? expandCourseRows(payload.Courses) : [];
+  }
+  return Array.isArray(payload[sheet.key]) ? payload[sheet.key] : [];
+}
+
+// Accepts course rows as either compact tuples
+// [Course, Level, Type, Features, Min, Max, Duration] or flat objects with a
+// single Type field, and normalizes both into one row per (course, type).
+function expandCourseRows(rows) {
+  const expanded = [];
+  for (const row of rows || []) {
+    const source = Array.isArray(row)
+      ? {
+          Course: row[0] ?? "",
+          Level: row[1] ?? "",
+          Type: row[2] ?? "",
+          Features: row[3] ?? "",
+          MinGroups: row[4] ?? "",
+          MaxGroups: row[5] ?? "",
+          Duration: row[6] ?? ""
+        }
+      : row;
+    const course = normalizeTextValue(source.Course);
+    if (!course) continue;
+    expanded.push({
+      Course: course,
+      Level: normalizeTextValue(source.Level),
+      Type: normalizeTextValue(source.Type),
+      Features: normalizeTextValue(source.Features),
+      MinGroups: normalizeTextValue(source.MinGroups),
+      MaxGroups: normalizeTextValue(source.MaxGroups),
+      Duration: normalizeTextValue(source.Duration)
+    });
+  }
+  return expanded;
+}
+
+function normalizeState(payload) {
+  const next = {};
+  for (const sheet of SHEETS) {
+    const rows = getIncomingRows(payload, sheet);
+    if (sheet.key === "Courses") {
+      const levelNames = getLevelNamesFromRows(next.LevelsGroups || []);
+      next[sheet.key] = rows.map((row) => normalizeCourseRow(row, levelNames)).filter(hasData);
+    } else if (sheet.key === "InstructorTemplates") {
+      const instructorNames = getInstructorNamesFromRows(next.Instructors || []);
+      const templateKeys = getTemplateKeysFromRows(next.Courses || []);
+      next[sheet.key] = rows.map((row) => normalizeInstructorTemplateRow(row, instructorNames, templateKeys)).filter(hasData);
+    } else {
+      next[sheet.key] = rows.map((row) => normalizeRow(sheet, row)).filter(hasData);
+    }
+  }
+  next.RoomFeatures = buildRoomFeatureList(payload, next);
+  return next;
+}
+
+function normalizeRow(sheet, row = {}) {
+  const source = Array.isArray(row)
+    ? Object.fromEntries(sheet.columns.map((column, index) => [column.key, row[index] ?? ""]))
+    : row;
+  const next = {};
+  for (const column of sheet.columns) {
+    const raw = source[column.key] ?? source[column.label] ?? "";
+    if (column.type === "multi") {
+      next[column.key] = normalizeMultiValue(raw);
+    } else {
+      next[column.key] = normalizeTextValue(raw);
+    }
+  }
+  return next;
+}
+
+function getLevelNamesFromRows(rows) {
+  return [...new Set(rows.map((row) => normalizeTextValue(row.Level)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function getFeatureTokensFromRows(rows) {
+  return (rows || []).flatMap((row) => normalizeMultiValue(row.Features));
+}
+
+function buildRoomFeatureList(payload, next) {
+  const explicit = Array.isArray(payload?.RoomFeatures) ? payload.RoomFeatures.map(normalizeTextValue).filter(Boolean) : [];
+  const derived = [
+    ...getFeatureTokensFromRows(next.Rooms),
+    ...getFeatureTokensFromRows(next.Courses)
+  ];
+  return dedupeValues([...explicit, ...derived]).sort((a, b) => a.localeCompare(b));
+}
+
+function buildTemplateKey(course, level, type) {
+  return `${course}${TEMPLATE_KEY_SEPARATOR}${level}${TEMPLATE_KEY_SEPARATOR}${type}`;
+}
+
+function buildTemplateLabel(course, level, type) {
+  const courseLabel = level ? `${course} (${level})` : course;
+  return `${courseLabel} — ${TYPE_LABELS[type] || type}`;
+}
+
+function getTemplateOptionsFromCourses(rows) {
+  const options = [];
+  for (const row of rows || []) {
+    const course = normalizeTextValue(row.Course);
+    const level = normalizeTextValue(row.Level);
+    const type = normalizeTextValue(row.Type);
+    if (!course || !TYPE_OPTIONS.some((option) => option.value === type)) continue;
+    options.push({ value: buildTemplateKey(course, level, type), label: buildTemplateLabel(course, level, type) });
+  }
+  return options.sort((a, b) => a.label.localeCompare(b.label, "ar"));
+}
+
+function getTemplateKeysFromRows(rows) {
+  return getTemplateOptionsFromCourses(rows).map((option) => option.value);
+}
+
+function normalizeCourseRow(row = {}, levelNames = []) {
+  const normalized = normalizeRow(getSheetConfig("Courses"), row);
+  const level = normalizeTextValue(normalized.Level);
+  normalized.Level = levelNames.includes(level) ? level : "";
+  normalized.Type = TYPE_OPTIONS.some((option) => option.value === normalized.Type) ? normalized.Type : "";
+  return normalized;
+}
+
+function getInstructorNamesFromRows(rows) {
+  return [...new Set(rows.map((row) => normalizeTextValue(row.Instructor)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function normalizeInstructorTemplateRow(row = {}, instructorNames = [], templateKeys = []) {
+  const base = normalizeRow(getSheetConfig("InstructorTemplates"), row);
+  return {
+    Instructor: instructorNames.includes(base.Instructor) ? base.Instructor : "",
+    Template: templateKeys.includes(base.Template) ? base.Template : UNSPECIFIED_COURSE
+  };
+}
+
+function normalizeTextValue(value) {
+  return value === null || value === undefined ? "" : String(value).trim();
+}
+
+function normalizeMultiValue(value) {
+  if (Array.isArray(value)) {
+    return dedupeValues(value.map(normalizeTextValue).filter(Boolean));
+  }
+  if (value === null || value === undefined || value === "") return [];
+  return dedupeValues(String(value).split(/[,،]/).map((part) => normalizeTextValue(part)).filter(Boolean));
+}
+
+function dedupeValues(values) {
+  return [...new Set(values)];
+}
+
+function hasData(row) {
+  return Object.values(row).some((value) => Array.isArray(value) ? value.length > 0 : normalizeTextValue(value) !== "");
+}
+
+function loadState() {
+  try {
+    const raw = readStoredState();
+    if (!raw) return null;
+    return normalizeState(JSON.parse(raw));
+  } catch (err) {
+    return null;
+  }
+}
+
+function readStoredState() {
+  return localStorage.getItem(STORAGE_KEY);
+}
+
+function persistState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  setSaveIndicator("saved");
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  setSaveIndicator("saving");
+  saveTimer = setTimeout(() => {
+    persistState();
+  }, 120);
+}
+
+function flushSave() {
+  if (!saveTimer) return;
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  persistState();
+}
+
+function setSaveIndicator(mode) {
+  const el = document.getElementById("saveIndicator");
+  el.className = "save-indicator " + mode;
+  el.textContent = mode === "saving" ? "جارٍ الحفظ..." : "محفوظ محليًا";
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;");
+}
+
+function getSheetConfig(key) {
+  return SHEETS.find((sheet) => sheet.key === key);
+}
+
+function getCourseOptions() {
+  const options = (state.Courses || [])
+    .map((row) => normalizeTextValue(row.Course))
+    .filter(Boolean);
+  return [...new Set(options)].sort((a, b) => a.localeCompare(b));
+}
+
+function getSelectOptions(sheet, column, row) {
+  const baseOptions = [{ value: "", label: "—" }];
+  if (column.optionSource === "Instructors") {
+    const instructorOptions = getInstructorNamesFromRows(state.Instructors || []).map((value) => ({ value, label: value }));
+    return baseOptions.concat(instructorOptions);
+  }
+  if (column.optionSource === "Courses") {
+    return [{ value: UNSPECIFIED_COURSE, label: UNSPECIFIED_COURSE }].concat(
+      getCourseOptions().map((value) => ({ value, label: value }))
+    );
+  }
+  if (column.optionSource === "Templates") {
+    return [{ value: UNSPECIFIED_COURSE, label: UNSPECIFIED_COURSE }].concat(
+      getTemplateOptionsFromCourses(state.Courses || [])
+    );
+  }
+  if (column.optionSource === "Levels") {
+    const levelOptions = getLevelNamesFromRows(state.LevelsGroups || []).map((value) => ({ value, label: value }));
+    if (column.allowAddNew) {
+      levelOptions.push({ value: ADD_NEW_LEVEL_VALUE, label: "إضافة مستوى جديد..." });
+    }
+    return baseOptions.concat(levelOptions);
+  }
+  const options = column.options || [];
+  const currentValue = normalizeTextValue(row[column.key]);
+  const optionValues = options.map((option) => option.value);
+  const nextOptions = currentValue && !optionValues.includes(currentValue)
+    ? [...options, { value: currentValue, label: currentValue }]
+    : options;
+  return baseOptions.concat(nextOptions);
+}
+
+function getMultiOptions(column) {
+  if (column.optionSource === "RoomFeatures") {
+    return (state.RoomFeatures || []).map((value) => ({ value, label: value }));
+  }
+  return column.options || [];
+}
+
+function getMultiSummaryLabel(column) {
+  if (column.key === "Available_Days") return "أيام محددة";
+  if (column.key === "Preferred_Times") return "أوقات محددة";
+  if (column.key === "Features") return "خصائص محددة";
+  return "أنواع محددة";
+}
+
+function cellToSearchText(value) {
+  return Array.isArray(value) ? value.join(", ") : normalizeTextValue(value);
+}
+
+function getFilteredRows(sheet) {
+  const rows = state[sheet.key] || [];
+  if (!searchTerm) return rows.map((row, index) => ({ row, index }));
+  const q = searchTerm.toLowerCase();
+  return rows
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => sheet.headers.some((key) => cellToSearchText(row[key]).toLowerCase().includes(q)));
+}
+
+function renderTabs() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = SHEETS.map((sheet) => {
+    const count = (state[sheet.key] || []).length;
+    const isRelation = sheet.key === "InstructorTemplates";
+    const extraClass = isRelation ? " tab-relation" : "";
+    const icon = isRelation ? '<i class="fa-solid fa-link" style="font-size:11px;margin-left:5px;opacity:.7"></i>' : "";
+    return `
+      <button class="tab${sheet.key === activeSheet ? " active" : ""}${extraClass}" type="button" data-sheet-tab="${sheet.key}">
+        <span class="count">${count}</span>${escapeHtml(sheet.label)}${icon}
+      </button>
+    `;
+  }).join("");
+}
+
+function renderActivePanel() {
+  const sheet = getSheetConfig(activeSheet);
+  const rows = getFilteredRows(sheet);
+  const totalRows = (state[sheet.key] || []).length;
+  document.getElementById("activeSheetLabel").textContent = sheet.label;
+  document.getElementById("rowsStat").textContent = String(totalRows);
+  document.getElementById("visibleCount").textContent = String(rows.length);
+  document.getElementById("totalCount").textContent = String(totalRows);
+  document.getElementById("searchClear").style.display = searchTerm ? "inline-flex" : "none";
+
+  const panelHtml = `
+    <section class="sheet-panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">${escapeHtml(sheet.label)}</div>
+          <div class="panel-sub">${escapeHtml(sheet.subtitle)}</div>
+        </div>
+        <div class="panel-actions">
+          <div class="panel-badge"><i class="fa-solid fa-table-list"></i> ${rows.length} / ${totalRows}</div>
+          ${sheet.key === "Courses" ? `<button class="btn btn-primary" type="button" id="addCourseBtn"><i class="fa-solid fa-layer-group"></i> إضافة مقرر</button>` : ""}
+          ${sheet.key === "Rooms" ? `<button class="btn btn-primary" type="button" id="addRoomFeatureBtn"><i class="fa-solid fa-tag"></i> إضافة خاصية</button>` : ""}
+          <button class="btn ${sheet.key === "Courses" ? "btn-outline" : "btn-primary"}" type="button" data-add-row="${sheet.key}"><i class="fa-solid fa-plus"></i> ${sheet.key === "Courses" ? "إضافة صف فارغ" : "إضافة صف"}</button>
+        </div>
+      </div>
+      ${sheet.key === "LevelsGroups" ? renderLevelManagerBar() : ""}
+      ${sheet.key === "Rooms" ? renderFeatureManagerBar() : ""}
+      ${sheet.key === "InstructorTemplates" ? renderInstructorTemplatesInfo() : ""}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              ${sheet.columns.map((column) => `<th>${escapeHtml(column.label)}</th>`).join("")}
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.length ? rows.map(({ row, index }) => renderRow(sheet, row, index)).join("") : ""}
+          </tbody>
+        </table>
+      </div>
+      ${rows.length ? "" : `<div class="empty-state">${searchTerm ? "لا توجد نتائج مطابقة." : "لا توجد بيانات في هذا الجدول بعد."}</div>`}
+      <div class="hint-row">${sheet.key === "InstructorTemplates"
+        ? "كل صف يربط مدرساً بقالب واحد (مقرر + نوع محدد) — أضف صفاً لكل قالب يدرّسه المدرس. مثلاً نفس المقرر بنوع \"محاضرة\" وبنوع \"سكشن\" يُعتبران قالبين مختلفين. يتم اختيار الأسماء من القوائم لتفادي الأخطاء الإملائية."
+        : sheet.key === "Courses"
+        ? "اضغط «إضافة مقرر» واكتب الاسم مرة واحدة فقط، ثم اختر كل الأنواع المطلوبة — سيتم إنشاء صف مستقل لكل نوع تلقائياً لتعبئة بياناته الخاصة (الخصائص، عدد المجموعات، المدة) بشكل منفصل."
+        : sheet.key === "Rooms"
+        ? "اضغط «إضافة خاصية» لإنشاء خاصية جديدة (مثل projector أو physics_lab)، ثم اختر الخصائص المناسبة لكل قاعة من القائمة. نفس الخصائص تظهر أيضاً في تبويب المقررات لتحديد ما يحتاجه كل قالب."
+        : "يمكنك استيراد ملف JSON، وتنزيل نسخة جديدة بنفس اسم الملف بعد التعديل."
+      }</div>
+    </section>
+  `;
+
+  document.getElementById("panels").innerHTML = panelHtml;
+}
+
+function renderInstructorTemplatesInfo() {
+  const instructorCount = (state.Instructors || []).length;
+  const templateCount = getTemplateOptionsFromCourses(state.Courses || []).length;
+  if (!instructorCount && !templateCount) {
+    return `<div class="hint-row" style="background:var(--amber-dim);border-top:1px solid rgba(181,106,26,.2);color:var(--amber)">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      أضف مدرسين في تبويب <strong>المدرسون</strong> وقوالب في تبويب <strong>المقررات</strong> أولاً حتى تظهر خيارات القوائم هنا.
+    </div>`;
+  }
+  return `<div class="hint-row" style="background:var(--green-dim);border-top:1px solid rgba(47,125,87,.15);color:var(--green)">
+    <i class="fa-solid fa-circle-info"></i>
+    اختر المدرس والقالب (مقرر + نوع) من القوائم — كل قالب يمثل مقرراً بنوع محدد، مثل "تفاضل وتكامل - محاضرة".
+    يوجد حالياً <strong>${instructorCount}</strong> مدرس و<strong>${templateCount}</strong> قالب متاح.
+  </div>`;
+}
+
+function renderLevelManagerBar() {
+  const levels = getLevelNamesFromRows(state.LevelsGroups || []);
+  if (!levels.length) return "";
+  const chips = levels.map((level) => {
+    const groupCount = (state.LevelsGroups || []).filter((row) => normalizeTextValue(row.Level) === level).length;
+    return `
+      <span class="level-chip">
+        <span class="level-chip-name">${escapeHtml(level)}</span>
+        <span class="level-chip-count">${groupCount}</span>
+        <button class="level-chip-remove" type="button" data-remove-level="${escapeHtml(level)}" title="حذف المستوى بالكامل">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </span>
+    `;
+  }).join("");
+  return `
+    <div class="level-manager">
+      <div class="level-manager-label">المستويات الحالية:</div>
+      <div class="level-manager-chips">${chips}</div>
+    </div>
+  `;
+}
+
+function renderFeatureManagerBar() {
+  const features = state.RoomFeatures || [];
+  if (!features.length) {
+    return `<div class="hint-row" style="background:var(--amber-dim);border-top:1px solid rgba(181,106,26,.2);color:var(--amber)">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      لا توجد خصائص بعد — اضغط «إضافة خاصية» لإنشاء أول خاصية (مثل projector أو physics_lab).
+    </div>`;
+  }
+  const chips = features.map((feature) => {
+    const roomCount = (state.Rooms || []).filter((row) => normalizeMultiValue(row.Features).includes(feature)).length;
+    const courseCount = (state.Courses || []).filter((row) => normalizeMultiValue(row.Features).includes(feature)).length;
+    return `
+      <span class="level-chip">
+        <span class="level-chip-name">${escapeHtml(feature)}</span>
+        <span class="level-chip-count">${roomCount + courseCount}</span>
+        <button class="level-chip-remove" type="button" data-remove-feature="${escapeHtml(feature)}" title="حذف الخاصية نهائياً">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </span>
+    `;
+  }).join("");
+  return `
+    <div class="level-manager">
+      <div class="level-manager-label">الخصائص الحالية:</div>
+      <div class="level-manager-chips">${chips}</div>
+    </div>
+  `;
+}
+
+function renderRow(sheet, row, index) {
+  const cells = sheet.columns.map((column) => {
+    if (column.type === "multi") {
+      const options = getMultiOptions(column);
+      const selected = new Set(normalizeMultiValue(row[column.key]));
+      if (!options.length) {
+        const emptyMessage = column.optionSource === "RoomFeatures"
+          ? "أضف خصائص أولاً من زر «إضافة خاصية» في تبويب القاعات"
+          : "لا توجد خيارات متاحة";
+        return `<td><div class="multi-value empty">${emptyMessage}</div></td>`;
+      }
+      const chips = options.map((option) => `
+        <button
+          class="chip${selected.has(option.value) ? " active" : ""}"
+          type="button"
+          data-multi-toggle="${sheet.key}"
+          data-index="${index}"
+          data-field="${column.key}"
+          data-value="${escapeHtml(option.value)}"
+          aria-pressed="${selected.has(option.value)}"
+        >${escapeHtml(option.label)}</button>
+      `).join("");
+      return `
+        <td>
+          <div class="multi-cell">
+            <div class="multi-chip-group">${chips}</div>
+            <div class="multi-value${selected.size ? "" : " empty"}">${selected.size ? `${selected.size} ${getMultiSummaryLabel(column)}` : "اختر خياراً أو أكثر"}</div>
+          </div>
+        </td>
+      `;
+    }
+
+    const value = normalizeTextValue(row[column.key]);
+    if (column.type === "select") {
+      const options = getSelectOptions(sheet, column, row);
+      return `
+        <td>
+          <select class="cell-select" data-sheet="${sheet.key}" data-index="${index}" data-field="${column.key}">
+            ${options.map((option) => `
+              <option value="${escapeHtml(option.value)}"${option.value === value ? " selected" : ""}>${escapeHtml(option.label)}</option>
+            `).join("")}
+          </select>
+        </td>
+      `;
+    }
+    return `
+      <td>
+        <input
+          class="cell-input"
+          type="${column.type === "number" ? "number" : "text"}"
+          ${column.type === "number" ? 'min="0" step="1"' : ""}
+          placeholder="${escapeHtml(column.placeholder || "")}" 
+          value="${escapeHtml(value)}"
+          data-sheet="${sheet.key}"
+          data-index="${index}"
+          data-field="${column.key}"
+        >
+      </td>
+    `;
+  }).join("");
+
+  return `
+    <tr>
+      ${cells}
+      <td>
+        <div class="cell-actions">
+          <button class="btn btn-danger btn-square" type="button" data-remove-row="${sheet.key}" data-index="${index}" title="حذف الصف">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+function updateField(sheetKey, index, field, value) {
+  const rows = state[sheetKey];
+  if (!rows || !rows[index]) return;
+  rows[index][field] = normalizeTextValue(value);
+  scheduleSave();
+}
+
+function handleSelectChange(target) {
+  const sheetKey = target.dataset.sheet;
+  const index = Number(target.dataset.index);
+  const field = target.dataset.field;
+  const sheet = getSheetConfig(sheetKey);
+  const column = sheet?.columns.find((item) => item.key === field);
+  if (!sheet || Number.isNaN(index) || !column) return;
+
+  if (sheetKey === "LevelsGroups" && field === "Level" && target.value === ADD_NEW_LEVEL_VALUE) {
+    const existing = normalizeTextValue(state[sheetKey]?.[index]?.[field]);
+    const nextValue = normalizeTextValue(window.prompt("أدخل اسم المستوى الجديد", ""));
+    if (!nextValue) {
+      target.value = existing;
+      return;
+    }
+    target.value = nextValue;
+    updateField(sheetKey, index, field, nextValue);
+    renderTabs();
+    renderActivePanel();
+    showToast(`تمت إضافة المستوى ${nextValue}`);
+    return;
+  }
+
+  updateField(sheetKey, index, field, target.value);
+  renderTabs();
+  renderActivePanel();
+}
+
+function toggleMultiValue(sheetKey, index, field, value) {
+  const rows = state[sheetKey];
+  if (!rows || !rows[index]) return;
+  const current = normalizeMultiValue(rows[index][field]);
+  const next = current.includes(value)
+    ? current.filter((item) => item !== value)
+    : [...current, value];
+  rows[index][field] = next;
+  scheduleSave();
+  renderTabs();
+  renderActivePanel();
+}
+
+function createEmptyRow(sheet) {
+  const row = {};
+  sheet.columns.forEach((column) => {
+    row[column.key] = column.type === "multi" ? [] : "";
+  });
+  return row;
+}
+
+function scrollPanelToBottom() {
+  requestAnimationFrame(() => {
+    const appBody = document.querySelector(".app-body");
+    if (appBody) appBody.scrollTo({ top: appBody.scrollHeight, behavior: "smooth" });
+  });
+}
+
+function addRow(sheetKey) {
+  const sheet = getSheetConfig(sheetKey);
+  state[sheetKey].push(createEmptyRow(sheet));
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+  scrollPanelToBottom();
+}
+
+function removeRow(sheetKey, index) {
+  state[sheetKey].splice(index, 1);
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+}
+
+function openCourseModal() {
+  const nameInput = document.getElementById("courseModalName");
+  const levelSelect = document.getElementById("courseModalLevel");
+  const typesWrap = document.getElementById("courseModalTypes");
+
+  nameInput.value = "";
+  const levels = getLevelNamesFromRows(state.LevelsGroups || []);
+  levelSelect.innerHTML = `<option value="">بدون مستوى محدد</option>` +
+    levels.map((level) => `<option value="${escapeHtml(level)}">${escapeHtml(level)}</option>`).join("");
+
+  typesWrap.innerHTML = TYPE_OPTIONS.map((option) => `
+    <label class="modal-check-row">
+      <input type="checkbox" class="modal-type-checkbox" value="${escapeHtml(option.value)}">
+      ${escapeHtml(option.label)}
+    </label>
+  `).join("");
+
+  document.getElementById("courseModalOverlay").classList.add("show");
+  nameInput.focus();
+}
+
+function closeCourseModal() {
+  document.getElementById("courseModalOverlay").classList.remove("show");
+}
+
+function submitCourseModal() {
+  const name = normalizeTextValue(document.getElementById("courseModalName").value);
+  const level = normalizeTextValue(document.getElementById("courseModalLevel").value);
+  const selectedTypes = [...document.querySelectorAll(".modal-type-checkbox:checked")].map((el) => el.value);
+
+  if (!name) {
+    showToast("أدخل اسم المقرر أولاً");
+    return;
+  }
+  if (!selectedTypes.length) {
+    showToast("اختر نوعاً واحداً على الأقل");
+    return;
+  }
+
+  const existingTypes = new Set(
+    (state.Courses || [])
+      .filter((row) => normalizeTextValue(row.Course) === name && normalizeTextValue(row.Level) === level)
+      .map((row) => normalizeTextValue(row.Type))
+  );
+
+  let added = 0;
+  let skipped = 0;
+  for (const type of selectedTypes) {
+    if (existingTypes.has(type)) {
+      skipped += 1;
+      continue;
+    }
+    state.Courses.push({ Course: name, Level: level, Type: type, Features: "", MinGroups: "", MaxGroups: "", Duration: "" });
+    added += 1;
+  }
+
+  closeCourseModal();
+  activeSheet = "Courses";
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+  if (added) scrollPanelToBottom();
+
+  if (added && skipped) {
+    showToast(`تمت إضافة ${added} قالب جديد، وتم تجاهل ${skipped} موجود مسبقاً`);
+  } else if (added) {
+    showToast(`تمت إضافة "${name}" بعدد ${added} ${added === 1 ? "نوع" : "أنواع"}`);
+  } else {
+    showToast("كل الأنواع المختارة موجودة مسبقاً لهذا المقرر");
+  }
+}
+
+function removeLevel(level) {
+  const groupRows = (state.LevelsGroups || []).filter((row) => normalizeTextValue(row.Level) === level);
+  if (!groupRows.length) return;
+
+  const affectedCourses = (state.Courses || []).filter((row) => normalizeTextValue(row.Level) === level);
+  let confirmMessage = `سيتم حذف المستوى "${level}" وكل مجموعاته (${groupRows.length} صف من جدول المستويات والمجموعات).`;
+  if (affectedCourses.length) {
+    confirmMessage += `\n\nتنبيه: يوجد ${affectedCourses.length} مقرر مرتبط بهذا المستوى، وسيتم إفراغ حقل Level لديها بعد الحذف.`;
+  }
+  confirmMessage += "\n\nهل تريد المتابعة؟";
+
+  if (!window.confirm(confirmMessage)) return;
+
+  state.LevelsGroups = (state.LevelsGroups || []).filter((row) => normalizeTextValue(row.Level) !== level);
+  for (const course of state.Courses || []) {
+    if (normalizeTextValue(course.Level) === level) {
+      course.Level = "";
+    }
+  }
+
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+  showToast(`تم حذف المستوى ${level}`);
+}
+
+function addRoomFeature() {
+  const raw = window.prompt("أدخل اسم الخاصية الجديدة (مثال: projector أو physics_lab)", "");
+  if (raw === null) return;
+  const name = normalizeTextValue(raw);
+  if (!name) return;
+
+  if (!state.RoomFeatures) state.RoomFeatures = [];
+  if (state.RoomFeatures.includes(name)) {
+    showToast(`الخاصية "${name}" موجودة بالفعل`);
+    return;
+  }
+
+  state.RoomFeatures.push(name);
+  state.RoomFeatures.sort((a, b) => a.localeCompare(b));
+
+  activeSheet = "Rooms";
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+  showToast(`تمت إضافة الخاصية "${name}" — يمكن اختيارها الآن في تبويبَي القاعات والمقررات`);
+}
+
+function removeFeature(feature) {
+  if (!state.RoomFeatures || !state.RoomFeatures.includes(feature)) return;
+
+  const roomRows = (state.Rooms || []).filter((row) => normalizeMultiValue(row.Features).includes(feature));
+  const courseRows = (state.Courses || []).filter((row) => normalizeMultiValue(row.Features).includes(feature));
+  let confirmMessage = `سيتم حذف الخاصية "${feature}" نهائياً.`;
+  if (roomRows.length || courseRows.length) {
+    confirmMessage += `\n\nتنبيه: سيتم إزالتها من ${roomRows.length} قاعة و${courseRows.length} قالب مرتبطين بها.`;
+  }
+  confirmMessage += "\n\nهل تريد المتابعة؟";
+
+  if (!window.confirm(confirmMessage)) return;
+
+  state.RoomFeatures = state.RoomFeatures.filter((item) => item !== feature);
+  for (const row of state.Rooms || []) {
+    row.Features = normalizeMultiValue(row.Features).filter((item) => item !== feature);
+  }
+  for (const row of state.Courses || []) {
+    row.Features = normalizeMultiValue(row.Features).filter((item) => item !== feature);
+  }
+
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+  showToast(`تم حذف الخاصية ${feature}`);
+}
+
+function resetState() {
+  const isEmpty = SHEETS.every((sheet) => (state[sheet.key] || []).length === 0) && !(state.RoomFeatures || []).length;
+  if (!isEmpty && !window.confirm("سيتم حذف كل البيانات الحالية في جميع الجداول نهائياً. هل تريد المتابعة؟")) {
+    return;
+  }
+  state = cloneState(BLANK_STATE);
+  searchTerm = "";
+  document.getElementById("searchInput").value = "";
+  renderTabs();
+  renderActivePanel();
+  scheduleSave();
+  showToast("تم مسح كل البيانات");
+}
+
+function exportJson() {
+  const payload = normalizeState(state);
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = FIXED_FILENAME;
+  link.click();
+  URL.revokeObjectURL(url);
+  showToast("تم تنزيل hti_data.json");
+}
+
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(String(reader.result || "{}"));
+      state = normalizeState(payload);
+      searchTerm = "";
+      document.getElementById("searchInput").value = "";
+      renderTabs();
+      renderActivePanel();
+      scheduleSave();
+      showToast("تم استيراد ملف JSON");
+    } catch (err) {
+      showToast("تعذر قراءة الملف");
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+document.addEventListener("click", (event) => {
+  const addCourseBtn = event.target.closest("#addCourseBtn");
+  if (addCourseBtn) {
+    openCourseModal();
+    return;
+  }
+
+  const addRoomFeatureBtn = event.target.closest("#addRoomFeatureBtn");
+  if (addRoomFeatureBtn) {
+    addRoomFeature();
+    return;
+  }
+
+  const tab = event.target.closest("[data-sheet-tab]");
+  if (tab) {
+    activeSheet = tab.dataset.sheetTab;
+    renderTabs();
+    renderActivePanel();
+    return;
+  }
+
+  const multiToggle = event.target.closest("[data-multi-toggle]");
+  if (multiToggle) {
+    toggleMultiValue(
+      multiToggle.dataset.multiToggle,
+      Number(multiToggle.dataset.index),
+      multiToggle.dataset.field,
+      multiToggle.dataset.value
+    );
+    return;
+  }
+
+  const addBtn = event.target.closest("[data-add-row]");
+  if (addBtn) {
+    addRow(addBtn.dataset.addRow);
+    return;
+  }
+
+  const removeBtn = event.target.closest("[data-remove-row]");
+  if (removeBtn) {
+    removeRow(removeBtn.dataset.removeRow, Number(removeBtn.dataset.index));
+    return;
+  }
+
+  const removeLevelBtn = event.target.closest("[data-remove-level]");
+  if (removeLevelBtn) {
+    removeLevel(removeLevelBtn.dataset.removeLevel);
+    return;
+  }
+
+  const removeFeatureBtn = event.target.closest("[data-remove-feature]");
+  if (removeFeatureBtn) {
+    removeFeature(removeFeatureBtn.dataset.removeFeature);
+    return;
+  }
+
+  if (event.target.id === "searchClear") {
+    searchTerm = "";
+    document.getElementById("searchInput").value = "";
+    renderActivePanel();
+  }
+});
+
+document.addEventListener("input", (event) => {
+  const target = event.target;
+  if (target.matches("#searchInput")) {
+    searchTerm = target.value.trim();
+    renderActivePanel();
+    return;
+  }
+
+  const sheetKey = target.dataset.sheet;
+  const index = Number(target.dataset.index);
+  const field = target.dataset.field;
+  if (!sheetKey || Number.isNaN(index) || !field) return;
+  const sheet = getSheetConfig(sheetKey);
+  const column = sheet?.columns.find((item) => item.key === field);
+  if (!column || column.type === "multi" || column.type === "select") return;
+  updateField(sheetKey, index, field, target.value);
+});
+
+document.addEventListener("change", (event) => {
+  const target = event.target;
+  const sheetKey = target.dataset.sheet;
+  const index = Number(target.dataset.index);
+  const field = target.dataset.field;
+  if (!sheetKey || Number.isNaN(index) || !field) return;
+  const sheet = getSheetConfig(sheetKey);
+  const column = sheet?.columns.find((item) => item.key === field);
+  if (!column || column.type !== "select") return;
+  handleSelectChange(target);
+});
+
+document.getElementById("resetBtn").addEventListener("click", resetState);
+document.getElementById("importBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+document.getElementById("exportBtn").addEventListener("click", exportJson);
+document.getElementById("fileInput").addEventListener("change", (event) => {
+  const [file] = event.target.files || [];
+  if (file) importJson(file);
+  event.target.value = "";
+});
+
+document.getElementById("courseModalCancel").addEventListener("click", closeCourseModal);
+document.getElementById("courseModalSubmit").addEventListener("click", submitCourseModal);
+document.getElementById("courseModalOverlay").addEventListener("click", (event) => {
+  if (event.target.id === "courseModalOverlay") closeCourseModal();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.getElementById("courseModalOverlay").classList.contains("show")) {
+    closeCourseModal();
+  }
+  if (event.key === "Enter" && document.getElementById("courseModalOverlay").classList.contains("show") && event.target.id === "courseModalName") {
+    submitCourseModal();
+  }
+});
+
+window.addEventListener("pagehide", flushSave);
+window.addEventListener("beforeunload", flushSave);
+
+renderTabs();
+renderActivePanel();
+scheduleSave();
+</script>
+</body>
+</html>

@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر الجدول الأكاديمي - HTI</title>
+<style>
+:root{
+  --bg:#eef2f7;
+  --panel:#ffffff;
+  --panel-2:#f8fafc;
+  --line:#d8e0ea;
+  --line-2:#e7edf4;
+  --text:#1f2937;
+  --muted:#64748b;
+  --soft:#94a3b8;
+  --brand:#123d66;
+  --brand-2:#1d6fa8;
+  --brand-soft:#e7f0f8;
+  --accent:#c7922b;
+  --accent-soft:#fbf4e5;
+  --good:#1f7a5c;
+  --good-soft:#e7f6ef;
+  --bad:#b42318;
+  --bad-soft:#fbeaea;
+  --warn:#b7791f;
+  --warn-soft:#fff7e6;
+  --lecture:#2563eb;
+  --recitation:#0f766e;
+  --lab:#d97706;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.06);
+  --shadow-md:0 10px 30px rgba(15,23,42,.08);
+  --shadow-lg:0 20px 45px rgba(15,23,42,.14);
+  --r:12px;
+  --r-lg:18px;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI","Cairo","Noto Sans Arabic",sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(18,61,102,.07), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(199,146,43,.07), transparent 30%),
+    var(--bg);
+  color:var(--text);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+  display:flex;gap:16px;align-items:flex-start;justify-content:space-between;
+  padding:18px 24px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.88);
+  backdrop-filter:blur(12px);position:sticky;top:0;z-index:20;box-shadow:var(--shadow-sm)
+}
+.brand{display:flex;flex-direction:column;gap:6px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;width:max-content;
+  padding:4px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand);
+  font-size:12px;font-weight:800;letter-spacing:.4px
+}
+.brand h1{margin:0;font-size:22px;line-height:1.2}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.topbar-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
+.btn{
+  border:1px solid transparent;border-radius:10px;padding:10px 14px;
+  display:inline-flex;align-items:center;gap:8px;font-weight:800
+}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 10px 20px rgba(18,61,102,.16)}
+.btn-primary:hover{background:#0f3152}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--line)}
+.btn-outline:hover{background:var(--panel-2)}
+.btn-danger{background:var(--bad-soft);color:var(--bad);border-color:rgba(180,35,24,.15)}
+.btn-danger:hover{background:#fde4e2}
+.btn-ghost{background:transparent;color:var(--muted);border-color:transparent}
+.btn-ghost:hover{background:rgba(100,116,139,.08);color:var(--text)}
+.btn-square{width:40px;height:40px;justify-content:center;padding:0}
+.status-row{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;
+  padding:16px 24px 0
+}
+.stat{
+  background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:16px;
+  padding:12px 14px;box-shadow:var(--shadow-sm)
+}
+.stat-label{font-size:12px;color:var(--muted);font-weight:700}
+.stat-value{margin-top:6px;font-size:20px;font-weight:900;line-height:1.1}
+.stat-sub{margin-top:4px;font-size:12px;color:var(--soft)}
+.stat.good .stat-value{color:var(--good)}
+.stat.warn .stat-value{color:var(--warn)}
+.stat.bad .stat-value{color:var(--bad)}
+.stat.brand .stat-value{color:var(--brand)}
+.layout{
+  display:grid;grid-template-columns:minmax(0,1fr);gap:16px;
+  padding:16px 24px 24px;min-height:0;flex:1
+}
+.panel{
+  background:rgba(255,255,255,.92);border:1px solid var(--line);
+  border-radius:var(--r-lg);box-shadow:var(--shadow-md);overflow:hidden;min-width:0
+}
+.board-head,.side-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding:18px 18px 16px;border-bottom:1px solid var(--line-2);background:linear-gradient(180deg,#fff, #f9fbfd)
+}
+.board-title,.side-title{margin:0;font-size:18px;font-weight:900}
+.board-sub,.side-sub{margin-top:4px;font-size:13px;color:var(--muted);line-height:1.6}
+.tabs{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start
+}
+.tab{
+  border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;
+  font-weight:800;color:var(--muted)
+}
+.tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.board-toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--line-2);background:var(--panel-2)
+}
+.board-toolbar .left,.board-toolbar .right{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:800
+}
+.chip strong{color:var(--text)}
+.chip.good{background:var(--good-soft);border-color:rgba(31,122,92,.16);color:var(--good)}
+.chip.warn{background:var(--warn-soft);border-color:rgba(183,121,31,.18);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);border-color:rgba(180,35,24,.16);color:var(--bad)}
+.board-wrap{overflow:auto}
+.schedule-table{
+  width:100%;border-collapse:separate;border-spacing:0;min-width:1120px;background:#fff
+}
+.schedule-table th,.schedule-table td{
+  border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+  vertical-align:top
+}
+.schedule-table thead th{
+  position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#14395a,#1a527c);
+  color:#fff;padding:12px 10px;text-align:center;font-size:13px;font-weight:900
+}
+.schedule-table thead th:first-child{border-top-right-radius:0}
+.schedule-table thead th:last-child{border-top-left-radius:0}
+.corner-head{min-width:130px}
+.section-head{min-width:110px}
+.period-head{min-width:170px}
+.day-cell,.section-cell,.empty-cell,.assignment-cell{background:#fff}
+.day-cell{
+  background:linear-gradient(180deg,#f7fafc,#eef5fb);padding:14px 12px;font-weight:900;
+  color:var(--brand);min-width:130px
+}
+.day-cell .day-name{font-size:15px}
+.day-cell .day-meta{margin-top:6px;font-size:12px;color:var(--muted);font-weight:700;line-height:1.4}
+.section-cell{
+  background:linear-gradient(180deg,#fbfdff,#f5f8fb);padding:12px 10px;min-width:110px
+}
+.section-pill{
+  display:flex;flex-direction:column;gap:5px
+}
+.section-pill .label{font-size:13px;font-weight:900;color:var(--text)}
+.section-pill .meta{font-size:12px;color:var(--muted);line-height:1.35}
+.period-cell{
+  background:#fff;padding:0;min-width:170px;max-width:190px;position:relative
+}
+.empty-cell{
+  padding:8px;min-height:120px
+}
+.empty-btn{
+  width:100%;min-height:120px;border:1px dashed #c9d4e2;background:
+    linear-gradient(180deg,#fff,#f8fbfe);
+  border-radius:10px;color:var(--soft);display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:900
+}
+.empty-btn:hover{border-color:var(--brand-2);color:var(--brand-2);background:#fff}
+.assignment-cell{padding:6px}
+.assignment-card{
+  width:100%;height:100%;min-height:120px;border:none;border-radius:10px;padding:10px 10px 9px;
+  display:flex;flex-direction:column;gap:7px;align-items:stretch;text-align:right;
+  color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), var(--shadow-sm)
+}
+.assignment-card:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22), var(--shadow-md)}
+.assignment-card.lecture{background:linear-gradient(180deg,#2f6fed,#2157c5)}
+.assignment-card.recitation{background:linear-gradient(180deg,#14918a,#0f6c66)}
+.assignment-card.lab{background:linear-gradient(180deg,#e48a18,#c56f05)}
+.assignment-card.default{background:linear-gradient(180deg,#475569,#334155)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.course-name{font-size:14px;font-weight:900;line-height:1.35}
+.type-badge{
+  flex:0 0 auto;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.18);
+  font-size:11px;font-weight:900
+}
+.card-meta{font-size:12px;line-height:1.45;color:rgba(255,255,255,.92)}
+.card-meta strong{font-weight:900}
+.card-footer{
+  margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;
+  font-size:11px;color:rgba(255,255,255,.92)
+}
+.mini-badge{
+  display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 8px;
+  background:rgba(255,255,255,.16);font-weight:800
+}
+.mini-badge.warn{background:rgba(248,219,154,.28);color:#fff}
+.mini-badge.bad{background:rgba(255,201,201,.22);color:#fff}
+.grid-empty{
+  padding:22px;border:1px dashed var(--line);border-radius:14px;background:#fff;color:var(--muted)
+}
+.view-tabs{margin-top:10px;display:inline-flex;gap:6px;flex-wrap:wrap}
+.view-tabs .tab{padding:6px 10px;font-size:12px;white-space:nowrap}
+.empty-cell.readonly{padding:8px;min-height:120px}
+.no-class-mark{
+  width:100%;min-height:120px;border:1px dashed #e3e9f1;background:#fafcfe;
+  border-radius:10px;color:#c3cddb;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700
+}
+.teacher-empty-state{
+  padding:26px 18px;text-align:center;color:var(--muted);line-height:1.8
+}
+.instructor-picker{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.instructor-filter{width:150px;padding:8px 10px;font-size:13px}
+.instructor-select{min-width:190px;max-width:260px;padding:8px 10px;font-size:13px;font-weight:800}
+.instructor-step-btn{width:34px;height:34px;border-radius:8px;padding:0;font-size:16px}
+.side-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px}
+.search-wrap{display:flex;flex-direction:column;gap:8px}
+.search-input,.field-input,.field-select,.field-textarea{
+  width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);
+  padding:10px 12px;outline:none
+}
+.search-input:focus,.field-input:focus,.field-select:focus,.field-textarea:focus{
+  border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(29,111,168,.12)
+}
+.search-input::placeholder,.field-input::placeholder,.field-textarea::placeholder{color:var(--soft)}
+.summary-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.summary-card{
+  padding:12px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fbfe)
+}
+.summary-card .k{font-size:12px;color:var(--muted);font-weight:800}
+.summary-card .v{margin-top:6px;font-size:20px;font-weight:900}
+.summary-card .s{margin-top:4px;font-size:12px;color:var(--muted)}
+.issue-list,.assignment-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow:auto;padding-inline-end:2px}
+.issue{
+  border-radius:14px;border:1px solid var(--line);background:#fff;padding:12px
+}
+.issue.hard{border-color:rgba(180,35,24,.2);background:var(--bad-soft)}
+.issue.warn{border-color:rgba(183,121,31,.2);background:var(--warn-soft)}
+.issue .t{font-weight:900;font-size:13px;line-height:1.45}
+.issue .d{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
+.issue .x{margin-top:8px;font-size:12px;color:inherit;font-weight:800}
+.assignment-item{
+  border-radius:14px;border:1px solid var(--line);background:#fff;padding:12px;text-align:right
+}
+.assignment-item:hover{border-color:rgba(29,111,168,.28);box-shadow:var(--shadow-sm)}
+.assignment-item .t{font-weight:900;font-size:13px;line-height:1.45}
+.assignment-item .d{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
+.assignment-item .row{
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center;margin-top:8px
+}
+.assignment-item .actions{display:flex;gap:6px;flex-wrap:wrap}
+.foot-note{
+  padding:12px 18px;border-top:1px solid var(--line-2);background:#fbfcfe;color:var(--muted);
+  font-size:12px;line-height:1.7
+}
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;align-items:center;justify-content:center;
+  padding:18px;z-index:50
+}
+.modal-overlay.show{display:flex}
+.modal{
+  width:min(1000px,100%);max-height:min(92vh,980px);overflow:auto;border-radius:24px;
+  background:linear-gradient(180deg,#fff,#f7fafc);box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.3)
+}
+.modal-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px;
+  border-bottom:1px solid var(--line-2);background:linear-gradient(180deg,#fff,#f9fbfd)
+}
+.modal-title{margin:0;font-size:20px;font-weight:900}
+.modal-sub{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.6}
+.modal-body{padding:18px 20px 20px;display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+.modal-form,.modal-preview{border:1px solid var(--line);border-radius:18px;background:#fff;padding:16px}
+.form-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px
+}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:900;color:var(--muted)}
+.field-help{font-size:12px;color:var(--soft);line-height:1.45}
+.field-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.field-input[disabled],.field-select[disabled],.field-textarea[disabled]{background:#f8fafc;color:var(--soft)}
+.field-textarea{min-height:92px;resize:vertical}
+.modal-context{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px
+}
+.context-chip{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;
+  background:var(--brand-soft);color:var(--brand);font-size:12px;font-weight:800
+}
+.group-checklist{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;
+  border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel-2);
+  max-height:180px;overflow:auto
+}
+.group-check-item{
+  display:flex;align-items:center;gap:8px;border-radius:10px;padding:8px 10px;
+  background:#fff;border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--text);cursor:pointer
+}
+.group-check-item:hover{border-color:var(--brand-2)}
+.group-check-item input{width:16px;height:16px;flex:0 0 auto;cursor:pointer}
+.group-check-item em{font-style:normal;color:var(--muted);font-weight:600}
+.preview-card{
+  border-radius:16px;padding:14px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fbfe)
+}
+.preview-card + .preview-card{margin-top:12px}
+.preview-title{font-size:13px;font-weight:900;color:var(--muted);margin-bottom:8px}
+.preview-main{font-size:15px;font-weight:900;line-height:1.5}
+.preview-sub{margin-top:6px;font-size:12px;color:var(--muted);line-height:1.6}
+.issue-preview{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.issue-line{
+  padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);
+  font-size:12px;line-height:1.55
+}
+.issue-line.error{border-color:rgba(180,35,24,.18);background:var(--bad-soft);color:var(--bad);font-weight:800}
+.issue-line.warn{border-color:rgba(183,121,31,.18);background:var(--warn-soft);color:var(--warn);font-weight:800}
+.modal-actions{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:14px;margin-top:16px;
+  border-top:1px solid var(--line-2)
+}
+.modal-actions .left,.modal-actions .right{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.empty-state{
+  padding:26px 18px;text-align:center;color:var(--muted);line-height:1.8
+}
+.empty-state h2{margin:0 0 8px;font-size:20px;color:var(--text)}
+.empty-state p{margin:0 auto;max-width:740px}
+.hidden{display:none !important}
+.autosave-pill{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 13px;
+  border-radius:999px;border:1px solid var(--line);background:var(--panel-2);
+  font-size:12px;font-weight:800;color:var(--muted);transition:background .25s,color .25s,border-color .25s
+}
+.autosave-pill.saving{background:var(--warn-soft);border-color:rgba(183,121,31,.22);color:var(--warn)}
+.autosave-pill.saved{background:var(--good-soft);border-color:rgba(31,122,92,.18);color:var(--good)}
+.autosave-pill.error{background:var(--bad-soft);border-color:rgba(180,35,24,.18);color:var(--bad)}
+.autosave-dot{
+  width:8px;height:8px;border-radius:50%;background:currentColor;flex:0 0 auto;transition:background .25s
+}
+.autosave-pill.saving .autosave-dot{animation:savepulse .9s ease-in-out infinite}
+@keyframes savepulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+@media (max-width: 1180px){
+  .layout{grid-template-columns:1fr}
+}
+@media (max-width: 860px){
+  .topbar,.board-head,.side-head,.modal-head,.modal-body,.modal-actions{flex-direction:column;align-items:stretch}
+  .board-toolbar{flex-direction:column;align-items:stretch}
+  .board-toolbar .left,.board-toolbar .right{justify-content:stretch}
+  .form-grid{grid-template-columns:1fr}
+  .topbar{padding:16px}
+  .layout{padding:12px 16px 16px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="eyebrow">HTI MANUAL SCHEDULE EDITOR</div>
+      <h1>محرر الجدول الأكاديمي</h1>
+      <p>محرر يدوي مستقل: يمنع تعارضات القاعات والمدرسين، ويترك تنبيه السعة فقط كتحذير.</p>
+    </div>
+    <div class="topbar-actions">
+      <div class="autosave-pill" id="autosavePill">
+        <span class="autosave-dot"></span>
+        <span id="autosaveText">لم يُحفظ بعد</span>
+      </div>
+      <button class="btn btn-outline" id="loadDataBtn" type="button">استيراد البيانات</button>
+      <button class="btn btn-outline" id="importScheduleBtn" type="button">استيراد جدول</button>
+      <button class="btn btn-primary" id="exportScheduleBtn" type="button">تنزيل الجدول</button>
+      <button class="btn btn-primary" id="addAssignmentBtn" type="button">إضافة حصة</button>
+      <button class="btn btn-danger" id="resetScheduleBtn" type="button">مسح الجدول</button>
+      <input id="dataFileInput" type="file" accept=".json,application/json" hidden>
+      <input id="scheduleFileInput" type="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel" id="boardPanel">
+      <div class="board-head">
+        <div>
+          <h2 class="board-title" id="boardTitle">لا توجد بيانات بعد</h2>
+          <div class="board-sub" id="boardSubtitle">استورد hti_data.json أو ارفع ملف البيانات اليدوي لبدء بناء الجدول.</div>
+          <div class="tabs view-tabs" id="viewTabs">
+            <button type="button" class="tab active" data-view-tab="level">الجدول حسب المستوى</button>
+            <button type="button" class="tab" data-view-tab="teacher">الجدول الشخصي لكل مدرس</button>
+          </div>
+        </div>
+        <div class="tabs" id="levelTabs"></div>
+      </div>
+      <div class="board-toolbar">
+        <div class="left">
+          <span class="chip" id="levelChip">المستوى: <strong>-</strong></span>
+          <span class="chip" id="groupsChip">الفرق: <strong>0</strong></span>
+          <span class="chip" id="periodsChip">الفترات: <strong>0</strong></span>
+        </div>
+        <div class="right">
+          <span class="chip good" id="validityChip">الجدول صالح</span>
+          <span class="chip warn" id="warningChip">لا توجد تنبيهات سعة</span>
+        </div>
+      </div>
+      <div class="board-wrap" id="boardWrap">
+        <div class="empty-state" id="boardEmpty">
+          <h2>ابدأ من البيانات</h2>
+          <p>هذا الملف لا يعتمد على solver. حمّل <strong>hti_data.json</strong> ثم أضف الحصص يدوياً في شبكة اليوم/الفرقة/الوقت. أي تعارض في القاعة أو المدرس أو الفرقة سيتم منعه قبل الحفظ.</p>
+        </div>
+      </div>
+      <div class="foot-note" id="boardFootNote">
+        اضغط على أي خلية فارغة لإضافة حصة مباشرة في اليوم والفرقة والوقت المحددين. اضغط على بطاقة الحصة لتعديلها. إذا تجاوز عدد الطلاب سعة القاعة تظهر ملاحظة فقط، لكن الحفظ يظل مسموحاً.
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" id="assignmentModalOverlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="assignmentModalTitle">
+    <div class="modal-head">
+      <div>
+        <h3 class="modal-title" id="assignmentModalTitle">إضافة حصة جديدة</h3>
+        <div class="modal-sub" id="assignmentModalSubtitle">أنشئ حصة يدوية واحفظها فقط إذا كانت خالية من التعارضات الصلبة.</div>
+      </div>
+      <button class="btn btn-ghost btn-square" id="closeAssignmentModalBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="assignmentForm">
+        <div class="modal-context" id="modalContextBar">
+          <span class="context-chip" id="modalContextLevel">المستوى: -</span>
+          <span class="context-chip" id="modalContextDay">اليوم: -</span>
+          <span class="context-chip" id="modalContextPeriod">الفترة: -</span>
+        </div>
+        <div class="form-grid">
+          <div class="field full">
+            <label>الفرق (يمكن اختيار أكثر من فرقة)</label>
+            <div class="group-checklist" id="assignmentGroupChecklist"></div>
+            <div class="field-help" id="groupsHint">اختر فرقة واحدة أو أكثر لهذه الحصة.</div>
+          </div>
+          <div class="field">
+            <label for="assignmentDuration">المدة (فترات)</label>
+            <input class="field-input" id="assignmentDuration" type="number" min="1" step="1" required>
+          </div>
+          <div class="field">
+            <label for="assignmentType">النوع</label>
+            <select class="field-select" id="assignmentType" required></select>
+          </div>
+          <div class="field full">
+            <label for="assignmentCourse">المقرر</label>
+            <input class="field-input" id="assignmentCourse" type="text" list="courseOptions" placeholder="اكتب أو اختر المقرر" required>
+            <datalist id="courseOptions"></datalist>
+            <div class="field-help" id="courseHint">تتغير الاقتراحات حسب المستوى المختار.</div>
+          </div>
+          <div class="field">
+            <label for="assignmentInstructor">المدرس</label>
+            <input class="field-input" id="assignmentInstructor" type="text" list="instructorOptions" placeholder="اكتب أو اختر المدرس" required>
+            <datalist id="instructorOptions"></datalist>
+          </div>
+          <div class="field">
+            <label for="assignmentRoom">القاعة</label>
+            <input class="field-input" id="assignmentRoom" type="text" list="roomOptions" placeholder="اكتب أو اختر القاعة" required>
+            <datalist id="roomOptions"></datalist>
+          </div>
+          <div class="field">
+            <label for="assignmentStudents">عدد الطلاب</label>
+            <input class="field-input" id="assignmentStudents" type="text" disabled value="-">
+            <div class="field-help" id="studentsHint">مجموع طلاب الفرق المختارة تلقائياً.</div>
+          </div>
+          <div class="field">
+            <label for="assignmentRoomInfo">سعة القاعة</label>
+            <input class="field-input" id="assignmentRoomInfo" type="text" disabled value="-">
+          </div>
+          <div class="field full">
+            <label for="assignmentNotes">ملاحظات</label>
+            <textarea class="field-textarea" id="assignmentNotes" placeholder="اختياري"></textarea>
+          </div>
+        </div>
+        <input type="hidden" id="assignmentLevel">
+        <input type="hidden" id="assignmentDay">
+        <input type="hidden" id="assignmentPeriod">
+        <input type="hidden" id="assignmentId">
+        <div class="modal-actions">
+          <div class="left">
+            <button class="btn btn-danger" id="deleteAssignmentBtn" type="button">حذف الحصة</button>
+          </div>
+          <div class="right">
+            <button class="btn btn-outline" id="cancelAssignmentBtn" type="button">إلغاء</button>
+            <button class="btn btn-primary" id="saveAssignmentBtn" type="submit">حفظ الحصة</button>
+          </div>
+        </div>
+      </form>
+      <div class="modal-preview">
+        <div class="preview-card">
+          <div class="preview-title">معاينة الحصة</div>
+          <div class="preview-main" id="assignmentPreviewMain">-</div>
+          <div class="preview-sub" id="assignmentPreviewSub">-</div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-title">التحقق المباشر</div>
+          <div class="issue-preview" id="assignmentValidation"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input id="catalogFileInput" type="file" accept=".json,application/json" hidden>
+
+<script>
+const SOURCE_FILE = "hti_data.json";
+const STORAGE_KEY = "hti_manual_schedule_editor_v1";
+const CATALOG_KEY = "hti_catalog_payload_v1";
+const DAY_ORDER = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const DAY_LABELS = {
+  Saturday: "السبت",
+  Sunday: "الأحد",
+  Monday: "الاثنين",
+  Tuesday: "الثلاثاء",
+  Wednesday: "الأربعاء",
+  Thursday: "الخميس",
+  Friday: "الجمعة"
+};
+const TYPE_META = {
+  Lecture: { label: "محاضرة", className: "lecture" },
+  Recitation: { label: "سكشن", className: "recitation" },
+  Lab: { label: "معمل", className: "lab" }
+};
+const COURSE_HINT_BASE = "تتغير الاقتراحات حسب المستوى المختار.";
+
+const state = {
+  catalog: null,
+  catalogName: "",
+  assignments: [],
+  activeLevel: "",
+  view: "level",
+  activeInstructor: "",
+  search: "",
+  modal: { open: false, editId: "", source: null },
+  lastSavedAt: null
+};
+
+let uidSeed = 0;
+
+function uid() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+  uidSeed += 1;
+  return `assignment_${Date.now()}_${uidSeed}`;
+}
+
+function toText(value) {
+  return value === null || value === undefined ? "" : String(value).trim();
+}
+
+function toNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+// ── Autosave indicator ──────────────────────────────────────────────────────
+let autosaveRelTimer = null;
+
+function setAutosaveState(mode, label) {
+  const pill = document.getElementById("autosavePill");
+  const text = document.getElementById("autosaveText");
+  if (!pill || !text) return;
+  pill.className = `autosave-pill ${mode}`;
+  text.textContent = label;
+}
+
+function formatRelTime(ts) {
+  if (!ts) return "لم يُحفظ بعد";
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 5) return "تم الحفظ الآن";
+  if (diff < 60) return `آخر حفظ: منذ ${diff} ثانية`;
+  const mins = Math.floor(diff / 60);
+  if (mins < 60) return `آخر حفظ: منذ ${mins} دقيقة`;
+  const hrs = Math.floor(mins / 60);
+  return `آخر حفظ: منذ ${hrs} ساعة`;
+}
+
+function startRelTimer() {
+  clearInterval(autosaveRelTimer);
+  autosaveRelTimer = setInterval(() => {
+    if (state.lastSavedAt) {
+      setAutosaveState("saved", formatRelTime(state.lastSavedAt));
+    }
+  }, 15000);
+}
+
+// ── Catalog persistence ──────────────────────────────────────────────────────
+function saveCatalogToStorage(rawPayload, sourceName) {
+  try {
+    localStorage.setItem(CATALOG_KEY, JSON.stringify({ payload: rawPayload, sourceName, savedAt: Date.now() }));
+  } catch {
+    // quota exceeded — catalog too large, skip silently
+  }
+}
+
+function loadStoredCatalog() {
+  try {
+    const raw = localStorage.getItem(CATALOG_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.payload) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+// ── Schedule persistence ─────────────────────────────────────────────────────
+function loadStoredState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return {
+      assignments: Array.isArray(parsed.assignments) ? parsed.assignments : [],
+      activeLevel: toText(parsed.activeLevel),
+      view: parsed.view === "teacher" ? "teacher" : "level",
+      activeInstructor: toText(parsed.activeInstructor),
+      lastSavedAt: parsed.lastSavedAt || null
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistState() {
+  try {
+    state.lastSavedAt = Date.now();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      assignments: state.assignments,
+      activeLevel: state.activeLevel,
+      view: state.view,
+      activeInstructor: state.activeInstructor,
+      lastSavedAt: state.lastSavedAt
+    }));
+    setAutosaveState("saved", formatRelTime(state.lastSavedAt));
+    startRelTimer();
+  } catch {
+    setAutosaveState("error", "فشل الحفظ — التخزين ممتلئ");
+  }
+}
+
+let saveTimer = null;
+
+function schedulePersist() {
+  setAutosaveState("saving", "جارٍ الحفظ…");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    persistState();
+    saveTimer = null;
+  }, 800);
+}
+
+function flushPersist() {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+  persistState();
+}
+
+function showToast(message) {
+  let toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.style.position = "fixed";
+    toast.style.left = "18px";
+    toast.style.bottom = "18px";
+    toast.style.padding = "10px 14px";
+    toast.style.borderRadius = "12px";
+    toast.style.background = "#111827";
+    toast.style.color = "#fff";
+    toast.style.boxShadow = "var(--shadow-md)";
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(8px)";
+    toast.style.transition = ".2s ease";
+    toast.style.pointerEvents = "none";
+    toast.style.zIndex = "80";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.opacity = "1";
+  toast.style.transform = "translateY(0)";
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(8px)";
+  }, 2400);
+}
+
+function normalizeCatalog(payload) {
+  const levelsOrder = [];
+  const groupsByLevel = new Map();
+  const sectionSizeMap = new Map();
+  const roomsByName = new Map();
+  const roomOrder = [];
+  const instructors = [];
+  const instructorMap = new Map();
+  const templates = [];
+  const templateMap = new Map();
+  const daySet = new Set();
+  const periodInfo = new Map();
+  const coursesRaw = [];
+  const courseMap = new Map();
+
+  for (const row of payload.LevelsGroups || []) {
+    const level = toText(row.Level);
+    const group = toText(row.Group);
+    const size = toText(row.Size);
+    if (!level || !group) continue;
+    if (!levelsOrder.includes(level)) levelsOrder.push(level);
+    if (!groupsByLevel.has(level)) groupsByLevel.set(level, []);
+    groupsByLevel.get(level).push({ group, size });
+    sectionSizeMap.set(`${level}::${group}`, size);
+  }
+
+  for (const level of groupsByLevel.keys()) {
+    const rows = groupsByLevel.get(level);
+    rows.sort((a, b) => {
+      const an = Number(a.group);
+      const bn = Number(b.group);
+      if (Number.isFinite(an) && Number.isFinite(bn) && an !== bn) return an - bn;
+      return a.group.localeCompare(b.group, "ar");
+    });
+  }
+
+  for (const row of payload.Rooms || []) {
+    const room = toText(row.Room);
+    if (!room) continue;
+    if (!roomOrder.includes(room)) roomOrder.push(room);
+    roomsByName.set(room, {
+      room,
+      capacity: toText(row.Capacity),
+      features: Array.isArray(row.Features) ? row.Features.map(toText).filter(Boolean) : []
+    });
+  }
+
+  for (const row of payload.Instructors || []) {
+    const instructor = toText(row.Instructor);
+    if (!instructor) continue;
+    instructors.push({
+      instructor,
+      availableDays: Array.isArray(row.Available_Days) ? row.Available_Days.map(toText).filter(Boolean) : [],
+      preferredTimes: Array.isArray(row.Preferred_Times) ? row.Preferred_Times.map(toText).filter(Boolean) : []
+    });
+    instructorMap.set(instructor, instructors[instructors.length - 1]);
+  }
+
+  for (const row of payload.InstructorTemplates || []) {
+    const instructor = toText(row.Instructor);
+    const template = toText(row.Template);
+    if (!instructor || !template) continue;
+    templates.push({ instructor, template });
+    if (!templateMap.has(template)) templateMap.set(template, []);
+    templateMap.get(template).push(instructor);
+  }
+
+  for (const row of payload.TimeSlots || []) {
+    const day = toText(row.Day);
+    const period = toText(row.Period);
+    const startTime = toText(row.StartTime);
+    if (!day || !period) continue;
+    daySet.add(day);
+    if (!periodInfo.has(period)) {
+      periodInfo.set(period, { period, startTime });
+    }
+  }
+
+  for (const row of payload.Courses || []) {
+    const course = toText(row.Course);
+    const level = toText(row.Level);
+    const type = toText(row.Type);
+    const features = Array.isArray(row.Features) ? row.Features.map(toText).filter(Boolean) : [];
+    if (!course || !level || !type) continue;
+    coursesRaw.push({ course, level, type, features });
+    if (!courseMap.has(level)) courseMap.set(level, new Map());
+    if (!courseMap.get(level).has(course)) courseMap.get(level).set(course, new Set());
+    courseMap.get(level).get(course).add(type);
+  }
+
+  const days = unique([...daySet]).sort((a, b) => {
+    const ai = DAY_ORDER.indexOf(a);
+    const bi = DAY_ORDER.indexOf(b);
+    if (ai !== -1 || bi !== -1) return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+    return a.localeCompare(b, "ar");
+  });
+
+  const periods = unique([...periodInfo.keys()]).sort((a, b) => toNumber(a) - toNumber(b));
+
+  return {
+    levelsOrder,
+    groupsByLevel,
+    sectionSizeMap,
+    roomsByName,
+    roomOrder,
+    instructors,
+    instructorMap,
+    templates,
+    templateMap,
+    daySet,
+    days,
+    periods,
+    periodInfo,
+    coursesRaw,
+    courseMap
+  };
+}
+
+function setCatalog(rawPayload, sourceName = SOURCE_FILE) {
+  state.catalog = normalizeCatalog(rawPayload);
+  state.catalogName = sourceName;
+  saveCatalogToStorage(rawPayload, sourceName);
+  syncDatalists();
+  sanitizeAssignments();
+  if (!state.activeLevel || !state.catalog.levelsOrder.includes(state.activeLevel)) {
+    state.activeLevel = state.catalog.levelsOrder[0] || "";
+  }
+  renderAll();
+  schedulePersist();
+}
+
+function getLevelOptions() {
+  return state.catalog ? state.catalog.levelsOrder : [];
+}
+
+function getGroupsForLevel(level) {
+  return state.catalog ? (state.catalog.groupsByLevel.get(level) || []) : [];
+}
+
+function getCoursesForLevel(level) {
+  if (!state.catalog) return [];
+  const levelMap = state.catalog.courseMap.get(level);
+  if (!levelMap) return [];
+  return [...levelMap.keys()].sort((a, b) => a.localeCompare(b, "ar"));
+}
+
+function getTypesForCourse(level, course) {
+  if (!state.catalog) return [];
+  const levelMap = state.catalog.courseMap.get(level);
+  if (!levelMap) return [];
+  const types = levelMap.get(course);
+  if (!types) return [];
+  return [...types].sort((a, b) => a.localeCompare(b, "ar"));
+}
+
+function buildTemplateKey(course, level, type) {
+  return `${course}::${level}::${type}`;
+}
+
+function getRecommendedInstructors(level, course, type) {
+  if (!state.catalog) return [];
+  const key = buildTemplateKey(course, level, type);
+  return state.catalog.templateMap.get(key) || [];
+}
+
+function getRoomCapacity(roomName) {
+  if (!state.catalog) return "";
+  const room = state.catalog.roomsByName.get(roomName);
+  return room ? toText(room.capacity) : "";
+}
+
+function getRoomFeatures(roomName) {
+  if (!state.catalog) return [];
+  const room = state.catalog.roomsByName.get(roomName);
+  return room ? room.features : [];
+}
+
+function getGroupSize(level, section) {
+  if (!state.catalog) return "";
+  return state.catalog.sectionSizeMap.get(`${level}::${section}`) || "";
+}
+
+function getPeriodStart(period) {
+  if (!state.catalog) return "";
+  const info = state.catalog.periodInfo.get(toText(period));
+  return info ? info.startTime : "";
+}
+
+function getPeriodLabel(period) {
+  const start = getPeriodStart(period);
+  return start ? `الفترة ${period} · ${start}` : `الفترة ${period}`;
+}
+
+function getAssignmentRangeText(assignment) {
+  const start = toNumber(assignment.period, 1);
+  const duration = Math.max(1, toNumber(assignment.duration, 1));
+  const endPeriod = start + duration;
+  const startTime = getPeriodStart(String(start));
+  const endInfo = state.catalog ? state.catalog.periodInfo.get(String(endPeriod)) : null;
+  const endTime = endInfo ? endInfo.startTime : "نهاية اليوم";
+  return `${startTime || `الفترة ${start}`} - ${endTime}`;
+}
+
+function normalizeAssignment(raw) {
+  let groups = [];
+  if (Array.isArray(raw.groups)) {
+    groups = raw.groups.map(toText).filter(Boolean);
+  } else if (raw.section) {
+    groups = [toText(raw.section)];
+  }
+  groups = unique(groups);
+  const next = {
+    id: toText(raw.id) || uid(),
+    level: toText(raw.level),
+    groups,
+    day: toText(raw.day),
+    period: toNumber(raw.period, 1),
+    duration: Math.max(1, toNumber(raw.duration, 1)),
+    course: toText(raw.course),
+    type: toText(raw.type),
+    instructor: toText(raw.instructor),
+    room: toText(raw.room),
+    students: toText(raw.students),
+    notes: toText(raw.notes)
+  };
+  return next;
+}
+
+function rangeOfAssignment(assignment) {
+  const start = toNumber(assignment.period, 1);
+  const duration = Math.max(1, toNumber(assignment.duration, 1));
+  return { start, end: start + duration - 1 };
+}
+
+function overlaps(a, b) {
+  if (a.day !== b.day) return false;
+  const ra = rangeOfAssignment(a);
+  const rb = rangeOfAssignment(b);
+  return ra.start <= rb.end && rb.start <= ra.end;
+}
+
+function validateAssignment(candidate, ignoreId = "") {
+  const errors = [];
+  const warnings = [];
+  const current = normalizeAssignment(candidate);
+
+  if (!current.level) errors.push("اختر المستوى.");
+  if (!current.groups.length) errors.push("اختر فرقة واحدة على الأقل.");
+  if (!current.day) errors.push("اختر اليوم.");
+  if (!current.course) errors.push("اكتب اسم المقرر.");
+  if (!current.type) errors.push("اختر نوع الحصة.");
+  if (!current.room) errors.push("اكتب اسم القاعة.");
+  if (!current.instructor) errors.push("اكتب اسم المدرس.");
+  if (!current.period || current.period < 1) errors.push("اختر فترة بداية صحيحة.");
+  if (!current.duration || current.duration < 1) errors.push("المدة يجب أن تكون 1 أو أكثر.");
+
+  const periodCount = state.catalog ? state.catalog.periods.length : 0;
+  if (periodCount && current.period + current.duration - 1 > periodCount) {
+    errors.push("المدة تتجاوز نهاية اليوم.");
+  }
+
+  if (errors.length) return { errors, warnings };
+
+  for (const existing of state.assignments) {
+    if (existing.id === ignoreId) continue;
+    if (!overlaps(current, existing)) continue;
+    if (existing.room && current.room && existing.room === current.room) {
+      errors.push(`تعارض قاعة: القاعة ${current.room} مستخدمة في ${describeAssignment(existing)}.`);
+    }
+    if (existing.instructor && current.instructor && existing.instructor === current.instructor) {
+      errors.push(`تعارض مدرس: ${current.instructor} لديه حصة أخرى في ${describeAssignment(existing)}.`);
+    }
+    if (existing.level === current.level && existing.groups.some((group) => current.groups.includes(group))) {
+      errors.push(`تعارض فرقة: فرقة مشتركة لديها حصة أخرى في ${describeAssignment(existing)}.`);
+    }
+    if (errors.length) break;
+  }
+
+  const roomCapacity = toNumber(getRoomCapacity(current.room), NaN);
+  const students = toNumber(current.students, NaN);
+  if (Number.isFinite(roomCapacity) && Number.isFinite(students) && students > roomCapacity) {
+    warnings.push(`عدد الطلاب (${students}) أكبر من سعة القاعة (${roomCapacity}).`);
+  }
+
+  return { errors, warnings };
+}
+
+function describeAssignment(assignment) {
+  const start = getPeriodLabel(assignment.period);
+  const duration = Math.max(1, toNumber(assignment.duration, 1));
+  const groupsText = (assignment.groups || []).join("، ") || "-";
+  return `${assignment.day} / فرق ${groupsText} / ${start} لمدة ${duration} فترات`;
+}
+
+function sanitizeAssignments() {
+  const next = [];
+  for (const raw of state.assignments) {
+    const assignment = normalizeAssignment(raw);
+    const check = validateAssignment(assignment, assignment.id);
+    if (check.errors.length) continue;
+    if (next.some((item) => item.id === assignment.id)) {
+      assignment.id = uid();
+    }
+    next.push(assignment);
+  }
+  state.assignments = next;
+}
+
+function syncDatalists() {
+  if (!state.catalog) return;
+  const level = state.activeLevel || state.catalog.levelsOrder[0] || "";
+  const courseList = document.getElementById("courseOptions");
+  const roomList = document.getElementById("roomOptions");
+  const instructorList = document.getElementById("instructorOptions");
+  if (!courseList || !roomList || !instructorList) return;
+
+  courseList.innerHTML = getCoursesForLevel(level).map((name) => `<option value="${escapeHtml(name)}"></option>`).join("");
+  roomList.innerHTML = state.catalog.roomOrder.map((room) => `<option value="${escapeHtml(room)}"></option>`).join("");
+  instructorList.innerHTML = state.catalog.instructors.map((row) => `<option value="${escapeHtml(row.instructor)}"></option>`).join("");
+}
+
+function getInstructorList() {
+  const names = new Set();
+  if (state.catalog) {
+    for (const row of state.catalog.instructors) {
+      if (row.instructor) names.add(row.instructor);
+    }
+  }
+  for (const assignment of state.assignments) {
+    if (assignment.instructor) names.add(assignment.instructor);
+  }
+  return [...names].sort((a, b) => a.localeCompare(b, "ar"));
+}
+
+function renderViewTabs() {
+  const tabs = document.getElementById("viewTabs");
+  if (!tabs) return;
+  tabs.querySelectorAll("[data-view-tab]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.viewTab === state.view);
+  });
+}
+
+let instructorFilterText = "";
+
+function buildInstructorOptionsHtml(list) {
+  return list.map((name) => {
+    const count = state.assignments.filter((item) => item.instructor === name).length;
+    return `<option value="${escapeHtml(name)}" ${name === state.activeInstructor ? "selected" : ""}>${escapeHtml(name)} (${count})</option>`;
+  }).join("");
+}
+
+function getFilteredInstructorList(all) {
+  if (!instructorFilterText) return all;
+  const needle = instructorFilterText.toLowerCase();
+  const filtered = all.filter((name) => name.toLowerCase().includes(needle));
+  return filtered.length ? filtered : all;
+}
+
+function updateInstructorSelectOptions() {
+  const select = document.getElementById("instructorSelect");
+  if (!select) return;
+  const all = getInstructorList();
+  select.innerHTML = buildInstructorOptionsHtml(getFilteredInstructorList(all));
+}
+
+function renderRightTabs() {
+  const tabs = document.getElementById("levelTabs");
+  if (!tabs) return;
+
+  if (state.view === "teacher") {
+    const instructors = getInstructorList();
+    if (!instructors.length) {
+      tabs.innerHTML = "";
+      return;
+    }
+    if (!state.activeInstructor || !instructors.includes(state.activeInstructor)) {
+      state.activeInstructor = instructors[0];
+    }
+    tabs.innerHTML = `
+      <div class="instructor-picker">
+        <input type="text" class="search-input instructor-filter" id="instructorFilterInput" placeholder="ابحث عن مدرس…" value="${escapeHtml(instructorFilterText)}">
+        <button type="button" class="btn btn-outline instructor-step-btn" id="prevInstructorBtn" title="المدرس السابق">‹</button>
+        <select class="field-select instructor-select" id="instructorSelect">
+          ${buildInstructorOptionsHtml(getFilteredInstructorList(instructors))}
+        </select>
+        <button type="button" class="btn btn-outline instructor-step-btn" id="nextInstructorBtn" title="المدرس التالي">›</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (!state.catalog || !state.catalog.levelsOrder.length) {
+    tabs.innerHTML = "";
+    return;
+  }
+  tabs.innerHTML = state.catalog.levelsOrder.map((level) => {
+    const count = state.assignments.filter((item) => item.level === level).length;
+    return `<button type="button" class="tab${level === state.activeLevel ? " active" : ""}" data-level-tab="${escapeHtml(level)}">${escapeHtml(level)} (${count})</button>`;
+  }).join("");
+}
+
+function computeAllWarnings(assignments = state.assignments) {
+  const warnings = [];
+  for (const assignment of assignments) {
+    const result = validateAssignment(assignment, assignment.id);
+    for (const warning of result.warnings) {
+      warnings.push({ assignment, text: warning });
+    }
+  }
+  return warnings;
+}
+
+function computeHardIssues(assignments = state.assignments) {
+  const issues = [];
+  for (const assignment of assignments) {
+    const result = validateAssignment(assignment, assignment.id);
+    for (const error of result.errors) {
+      issues.push({ assignment, text: error });
+    }
+  }
+  return issues;
+}
+
+function renderBoard() {
+  if (state.view === "teacher") {
+    renderTeacherBoard();
+    return;
+  }
+  renderLevelBoard();
+}
+
+function renderLevelBoard() {
+  const boardEmpty = document.getElementById("boardEmpty");
+  const boardWrap = document.getElementById("boardWrap");
+  if (!state.catalog) {
+    boardEmpty.classList.remove("hidden");
+    boardWrap.innerHTML = "";
+    boardWrap.appendChild(boardEmpty);
+    document.getElementById("boardTitle").textContent = "لا توجد بيانات بعد";
+    document.getElementById("boardSubtitle").textContent = "استورد hti_data.json أو ارفع ملف البيانات اليدوي لبدء بناء الجدول.";
+    return;
+  }
+
+  const level = state.activeLevel || state.catalog.levelsOrder[0] || "";
+  const groups = getGroupsForLevel(level);
+  const periods = state.catalog.periods;
+  const days = state.catalog.days;
+  const assignments = state.assignments.filter((item) => item.level === level);
+
+  document.getElementById("boardTitle").textContent = `الجدول - ${level}`;
+  document.getElementById("boardSubtitle").textContent = `شبكة يوم/فرقة/وقت للمستوى ${level}. ${groups.length} فرقة، ${periods.length} فترات يومياً.`;
+  document.getElementById("levelChip").innerHTML = `المستوى: <strong>${escapeHtml(level || "-")}</strong>`;
+  document.getElementById("groupsChip").innerHTML = `الفرق: <strong>${groups.length}</strong>`;
+  document.getElementById("periodsChip").innerHTML = `الفترات: <strong>${periods.length}</strong>`;
+
+  const warnings = computeAllWarnings(assignments);
+  const hardIssues = computeHardIssues(assignments);
+
+  document.getElementById("validityChip").textContent = hardIssues.length ? "هناك تعارضات" : "الجدول صالح";
+  document.getElementById("validityChip").className = `chip ${hardIssues.length ? "bad" : "good"}`;
+  document.getElementById("warningChip").textContent = warnings.length ? `${warnings.length} تنبيه سعة` : "لا توجد تنبيهات سعة";
+  document.getElementById("warningChip").className = `chip ${warnings.length ? "warn" : "good"}`;
+
+  if (!groups.length || !periods.length || !days.length) {
+    boardWrap.innerHTML = `
+      <div class="empty-state">
+        <h2>البيانات غير مكتملة</h2>
+        <p>لا يمكن بناء الشبكة لأن الملف الحالي لا يحتوي على مستويات/فرق/فترات كافية. استورد ملف hti_data.json الصحيح أو أعد رفعه.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let table = `
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th class="corner-head">اليوم</th>
+          <th class="section-head">الفرقة</th>
+          ${periods.map((period) => {
+            const start = getPeriodStart(period);
+            return `<th class="period-head">${escapeHtml(getPeriodLabel(period))}${start ? `<div style="font-size:11px;opacity:.85;margin-top:4px">${escapeHtml(start)}</div>` : ""}</th>`;
+          }).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${days.map((day) => renderDayBlock(level, day, groups, periods)).join("")}
+      </tbody>
+    </table>
+  `;
+
+  boardWrap.innerHTML = table;
+}
+
+function renderDayBlock(level, day, groups, periods) {
+  const rows = [];
+  for (let g = 0; g < groups.length; g += 1) {
+    const group = groups[g];
+    let html = "<tr>";
+    if (g === 0) {
+      html += `
+        <td class="day-cell" rowspan="${groups.length}">
+          <div class="day-name">${escapeHtml(DAY_LABELS[day] || day)}</div>
+          <div class="day-meta">${escapeHtml(day)}</div>
+        </td>
+      `;
+    }
+    html += `
+      <td class="section-cell">
+        <div class="section-pill">
+          <div class="label">sec ${escapeHtml(group.group)}</div>
+          <div class="meta">عدد الطلاب: ${escapeHtml(group.size || "-")}</div>
+        </div>
+      </td>
+    `;
+
+    let index = 0;
+    while (index < periods.length) {
+      const period = periods[index];
+      const assignment = state.assignments.find((item) =>
+        item.level === level &&
+        item.day === day &&
+        (item.groups || []).includes(group.group) &&
+        toNumber(item.period) === toNumber(period)
+      );
+
+      if (assignment) {
+        const span = Math.min(Math.max(1, toNumber(assignment.duration, 1)), periods.length - index);
+        const typeMeta = TYPE_META[assignment.type] || { label: assignment.type || "حصة", className: "default" };
+        const roomCapacity = toNumber(getRoomCapacity(assignment.room), NaN);
+        const students = toNumber(assignment.students, NaN);
+        const warning = Number.isFinite(roomCapacity) && Number.isFinite(students) && students > roomCapacity;
+        html += `
+          <td class="assignment-cell" colspan="${span}">
+            <button type="button" class="assignment-card ${typeMeta.className}" data-edit-id="${escapeHtml(assignment.id)}" title="اضغط للتعديل">
+              <div class="card-top">
+                <div class="course-name">${escapeHtml(assignment.course || "مقرر غير محدد")}</div>
+                <div class="type-badge">${escapeHtml(typeMeta.label)}</div>
+              </div>
+              <div class="card-meta"><strong>المدرس:</strong> ${escapeHtml(assignment.instructor || "-")}</div>
+              <div class="card-meta"><strong>القاعة:</strong> ${escapeHtml(assignment.room || "-")} • <strong>الطلاب:</strong> ${escapeHtml(assignment.students || group.size || "-")}</div>
+              <div class="card-meta"><strong>الفرق:</strong> ${escapeHtml((assignment.groups || []).join("، ") || "-")}</div>
+              <div class="card-footer">
+                <span class="mini-badge">${escapeHtml(getAssignmentRangeText(assignment))}</span>
+                ${warning ? `<span class="mini-badge warn">تجاوز السعة</span>` : ""}
+              </div>
+            </button>
+          </td>
+        `;
+        index += span;
+      } else {
+        html += `
+          <td class="empty-cell">
+            <button
+              type="button"
+              class="empty-btn"
+              data-open-assignment="1"
+              data-level="${escapeHtml(level)}"
+              data-section="${escapeHtml(group.group)}"
+              data-day="${escapeHtml(day)}"
+              data-period="${escapeHtml(period)}"
+              title="إضافة حصة هنا"
+            >+</button>
+          </td>
+        `;
+        index += 1;
+      }
+    }
+
+    html += "</tr>";
+    rows.push(html);
+  }
+  return rows.join("");
+}
+
+function renderTeacherBoard() {
+  const boardEmpty = document.getElementById("boardEmpty");
+  const boardWrap = document.getElementById("boardWrap");
+
+  if (!state.catalog) {
+    boardEmpty.classList.remove("hidden");
+    boardWrap.innerHTML = "";
+    boardWrap.appendChild(boardEmpty);
+    document.getElementById("boardTitle").textContent = "لا توجد بيانات بعد";
+    document.getElementById("boardSubtitle").textContent = "استورد hti_data.json أو ارفع ملف البيانات اليدوي لبدء بناء الجدول.";
+    return;
+  }
+
+  const instructors = getInstructorList();
+  if (!instructors.length) {
+    document.getElementById("boardTitle").textContent = "لا يوجد مدرسون بعد";
+    document.getElementById("boardSubtitle").textContent = "أضف مدرسين في بيانات Instructors أو أنشئ حصصاً ليظهروا هنا.";
+    document.getElementById("levelChip").innerHTML = `المدرس: <strong>-</strong>`;
+    document.getElementById("groupsChip").innerHTML = `عدد الحصص: <strong>0</strong>`;
+    document.getElementById("periodsChip").innerHTML = `إجمالي الفترات: <strong>0</strong>`;
+    document.getElementById("validityChip").textContent = "لا توجد بيانات";
+    document.getElementById("validityChip").className = "chip warn";
+    document.getElementById("warningChip").textContent = "لا توجد تنبيهات سعة";
+    document.getElementById("warningChip").className = "chip warn";
+    boardWrap.innerHTML = `
+      <div class="teacher-empty-state">
+        <h2>لا يوجد مدرسون</h2>
+        <p>لم يتم العثور على أي مدرس في بيانات الكتالوج أو في الحصص المضافة حالياً.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (!state.activeInstructor || !instructors.includes(state.activeInstructor)) {
+    state.activeInstructor = instructors[0];
+  }
+  const instructor = state.activeInstructor;
+  const periods = state.catalog.periods;
+  const days = state.catalog.days;
+  const assignments = state.assignments.filter((item) => item.instructor === instructor);
+
+  const totalPeriods = assignments.reduce((sum, item) => sum + Math.max(1, toNumber(item.duration, 1)), 0);
+  const activeDays = unique(assignments.map((item) => item.day)).length;
+  const levelsCovered = unique(assignments.map((item) => item.level));
+
+  document.getElementById("boardTitle").textContent = `الجدول الشخصي - ${instructor}`;
+  document.getElementById("boardSubtitle").textContent = `${assignments.length} حصة موزعة على ${activeDays} يوم${levelsCovered.length ? ` عبر مستويات: ${levelsCovered.join("، ")}` : ""}.`;
+  document.getElementById("levelChip").innerHTML = `المدرس: <strong>${escapeHtml(instructor)}</strong>`;
+  document.getElementById("groupsChip").innerHTML = `عدد الحصص: <strong>${assignments.length}</strong>`;
+  document.getElementById("periodsChip").innerHTML = `إجمالي الفترات: <strong>${totalPeriods}</strong>`;
+
+  const warnings = computeAllWarnings(assignments);
+  const hardIssues = computeHardIssues(assignments);
+  document.getElementById("validityChip").textContent = hardIssues.length ? "هناك تعارضات" : "الجدول صالح";
+  document.getElementById("validityChip").className = `chip ${hardIssues.length ? "bad" : "good"}`;
+  document.getElementById("warningChip").textContent = warnings.length ? `${warnings.length} تنبيه سعة` : "لا توجد تنبيهات سعة";
+  document.getElementById("warningChip").className = `chip ${warnings.length ? "warn" : "good"}`;
+
+  if (!periods.length || !days.length) {
+    boardWrap.innerHTML = `
+      <div class="empty-state">
+        <h2>البيانات غير مكتملة</h2>
+        <p>لا يمكن بناء الشبكة لأن الملف الحالي لا يحتوي على أيام/فترات كافية. استورد ملف hti_data.json الصحيح أو أعد رفعه.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const table = `
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th class="corner-head">اليوم</th>
+          ${periods.map((period) => {
+            const start = getPeriodStart(period);
+            return `<th class="period-head">${escapeHtml(getPeriodLabel(period))}${start ? `<div style="font-size:11px;opacity:.85;margin-top:4px">${escapeHtml(start)}</div>` : ""}</th>`;
+          }).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${days.map((day) => renderTeacherDayRow(instructor, day, periods)).join("")}
+      </tbody>
+    </table>
+  `;
+
+  boardWrap.innerHTML = table;
+}
+
+function renderTeacherDayRow(instructor, day, periods) {
+  let html = "<tr>";
+  html += `
+    <td class="day-cell">
+      <div class="day-name">${escapeHtml(DAY_LABELS[day] || day)}</div>
+      <div class="day-meta">${escapeHtml(day)}</div>
+    </td>
+  `;
+
+  let index = 0;
+  while (index < periods.length) {
+    const period = periods[index];
+    const assignment = state.assignments.find((item) =>
+      item.instructor === instructor &&
+      item.day === day &&
+      toNumber(item.period) === toNumber(period)
+    );
+
+    if (assignment) {
+      const span = Math.min(Math.max(1, toNumber(assignment.duration, 1)), periods.length - index);
+      const typeMeta = TYPE_META[assignment.type] || { label: assignment.type || "حصة", className: "default" };
+      const roomCapacity = toNumber(getRoomCapacity(assignment.room), NaN);
+      const students = toNumber(assignment.students, NaN);
+      const warning = Number.isFinite(roomCapacity) && Number.isFinite(students) && students > roomCapacity;
+      html += `
+        <td class="assignment-cell" colspan="${span}">
+          <button type="button" class="assignment-card ${typeMeta.className}" data-edit-id="${escapeHtml(assignment.id)}" title="اضغط للتعديل">
+            <div class="card-top">
+              <div class="course-name">${escapeHtml(assignment.course || "مقرر غير محدد")}</div>
+              <div class="type-badge">${escapeHtml(typeMeta.label)}</div>
+            </div>
+            <div class="card-meta"><strong>المستوى:</strong> ${escapeHtml(assignment.level || "-")}</div>
+            <div class="card-meta"><strong>الفرق:</strong> ${escapeHtml((assignment.groups || []).join("، ") || "-")}</div>
+            <div class="card-meta"><strong>القاعة:</strong> ${escapeHtml(assignment.room || "-")} • <strong>الطلاب:</strong> ${escapeHtml(assignment.students || "-")}</div>
+            <div class="card-footer">
+              <span class="mini-badge">${escapeHtml(getAssignmentRangeText(assignment))}</span>
+              ${warning ? `<span class="mini-badge warn">تجاوز السعة</span>` : ""}
+            </div>
+          </button>
+        </td>
+      `;
+      index += span;
+    } else {
+      html += `
+        <td class="empty-cell readonly">
+          <div class="no-class-mark">-</div>
+        </td>
+      `;
+      index += 1;
+    }
+  }
+
+  html += "</tr>";
+  return html;
+}
+
+function renderAll() {
+  renderViewTabs();
+  renderRightTabs();
+  renderBoard();
+  syncDatalists();
+  updateModalDynamicFields();
+  updateModalValidation();
+  const footNote = document.getElementById("boardFootNote");
+  if (footNote) {
+    footNote.textContent = state.view === "teacher"
+      ? "هذا عرض شخصي لجدول المدرس المختار في كل أيام الأسبوع. اضغط على بطاقة الحصة لتعديلها أو حذفها. استخدم تبويبات المدرسين أعلى الجدول للتبديل بين المدرسين."
+      : "اضغط على أي خلية فارغة لإضافة حصة مباشرة في اليوم والفرقة والوقت المحددين. اضغط على بطاقة الحصة لتعديلها. إذا تجاوز عدد الطلاب سعة القاعة تظهر ملاحظة فقط، لكن الحفظ يظل مسموحاً.";
+  }
+}
+
+function resetFormToCurrentLevel() {
+  if (!state.catalog) return;
+  const level = state.activeLevel || state.catalog.levelsOrder[0] || "";
+  const defaultType = "Lecture";
+
+  document.getElementById("assignmentId").value = "";
+  document.getElementById("assignmentLevel").value = level;
+  document.getElementById("assignmentDay").value = state.catalog.days[0] || "";
+  document.getElementById("assignmentPeriod").value = state.catalog.periods[0] || "1";
+  document.getElementById("assignmentDuration").value = "1";
+  populateGroupChecklist(level, []);
+  populateCourseOptions(level);
+  document.getElementById("assignmentCourse").value = "";
+  populateTypeOptions(level, "", defaultType);
+  document.getElementById("assignmentInstructor").value = "";
+  document.getElementById("assignmentRoom").value = "";
+  document.getElementById("assignmentStudents").value = "-";
+  document.getElementById("assignmentNotes").value = "";
+  document.getElementById("assignmentRoomInfo").value = "-";
+}
+
+function openModal(prefill = {}, editId = "") {
+  if (!state.catalog) {
+    showToast("حمّل البيانات أولاً");
+    return;
+  }
+  state.modal.open = true;
+  state.modal.editId = editId;
+  const modal = document.getElementById("assignmentModalOverlay");
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  document.getElementById("assignmentModalTitle").textContent = editId ? "تعديل الحصة" : "إضافة حصة جديدة";
+  document.getElementById("assignmentModalSubtitle").textContent = editId
+    ? "عدّل الحقول ثم احفظ. أي تعارض صلب سيمنع الحفظ."
+    : "اختر الفرق وأضف تفاصيل الحصة. اليوم والفترة محددان من الشبكة. التعارضات الصلبة ممنوعة.";
+
+  if (editId) {
+    const existing = state.assignments.find((item) => item.id === editId);
+    if (!existing) return;
+    document.getElementById("assignmentId").value = existing.id;
+    document.getElementById("assignmentLevel").value = existing.level;
+    document.getElementById("assignmentDay").value = existing.day;
+    document.getElementById("assignmentPeriod").value = String(existing.period);
+    document.getElementById("assignmentDuration").value = String(existing.duration);
+    populateGroupChecklist(existing.level, existing.groups || []);
+    populateCourseOptions(existing.level);
+    document.getElementById("assignmentCourse").value = existing.course;
+    populateTypeOptions(existing.level, existing.course);
+    document.getElementById("assignmentType").value = existing.type;
+    document.getElementById("assignmentInstructor").value = existing.instructor;
+    document.getElementById("assignmentRoom").value = existing.room;
+    document.getElementById("assignmentNotes").value = existing.notes;
+    document.getElementById("assignmentRoomInfo").value = getRoomCapacity(existing.room) || "-";
+    updateStudentsFromGroups();
+  } else {
+    resetFormToCurrentLevel();
+    if (prefill.level) document.getElementById("assignmentLevel").value = prefill.level;
+    if (prefill.day) document.getElementById("assignmentDay").value = prefill.day;
+    if (prefill.period) document.getElementById("assignmentPeriod").value = String(prefill.period);
+    if (prefill.duration) document.getElementById("assignmentDuration").value = String(prefill.duration);
+    const level = document.getElementById("assignmentLevel").value;
+    const initGroups = prefill.section ? [prefill.section] : [];
+    populateGroupChecklist(level, initGroups);
+    if (prefill.course) document.getElementById("assignmentCourse").value = prefill.course;
+    if (prefill.type) document.getElementById("assignmentType").value = prefill.type;
+    if (prefill.instructor) document.getElementById("assignmentInstructor").value = prefill.instructor;
+    if (prefill.room) document.getElementById("assignmentRoom").value = prefill.room;
+    if (prefill.notes) document.getElementById("assignmentNotes").value = prefill.notes;
+    updateStudentsFromGroups();
+  }
+
+  updateModalDynamicFields();
+  updateModalValidation();
+  updateModalContextBar();
+  setTimeout(() => document.getElementById("assignmentCourse").focus(), 0);
+}
+
+function closeModal() {
+  state.modal.open = false;
+  state.modal.editId = "";
+  const modal = document.getElementById("assignmentModalOverlay");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function populateGroupChecklist(level, selectedGroups = []) {
+  const container = document.getElementById("assignmentGroupChecklist");
+  const groups = getGroupsForLevel(level);
+  if (!groups.length) {
+    container.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);font-size:13px;">لا توجد فرق لهذا المستوى.</div>`;
+    return;
+  }
+  container.innerHTML = groups.map((row) => {
+    const checked = selectedGroups.includes(row.group) ? "checked" : "";
+    return `
+      <label class="group-check-item">
+        <input type="checkbox" value="${escapeHtml(row.group)}" ${checked} onchange="handleGroupCheckChange()">
+        <span>sec ${escapeHtml(row.group)} <em>${escapeHtml(row.size || "-")} طالب</em></span>
+      </label>
+    `;
+  }).join("");
+}
+
+function populateCourseOptions(level, selectedCourse = "") {
+  const list = document.getElementById("courseOptions");
+  list.innerHTML = getCoursesForLevel(level).map((name) => `<option value="${escapeHtml(name)}"></option>`).join("");
+  const hint = document.getElementById("courseHint");
+  hint.textContent = `${COURSE_HINT_BASE} • الاقتراحات الحالية تخص المستوى ${level || "-"}.`;
+  hint.dataset.base = COURSE_HINT_BASE;
+  if (selectedCourse) {
+    document.getElementById("assignmentCourse").value = selectedCourse;
+  }
+}
+
+function populateTypeOptions(level, course, selectedType = "") {
+  const select = document.getElementById("assignmentType");
+  const types = getTypesForCourse(level, course);
+  const options = types.length ? types : Object.keys(TYPE_META);
+  select.innerHTML = options.map((type) => `<option value="${escapeHtml(type)}">${escapeHtml(TYPE_META[type]?.label || type)}</option>`).join("");
+  if (selectedType && options.includes(selectedType)) {
+    select.value = selectedType;
+  } else if (options[0]) {
+    select.value = options[0];
+  }
+}
+
+function getSelectedGroups() {
+  const container = document.getElementById("assignmentGroupChecklist");
+  if (!container) return [];
+  return [...container.querySelectorAll("input[type=checkbox]:checked")].map((cb) => cb.value);
+}
+
+function handleGroupCheckChange() {
+  updateStudentsFromGroups();
+  updateModalValidation();
+}
+
+function updateStudentsFromGroups() {
+  const level = document.getElementById("assignmentLevel").value;
+  const selectedGroups = getSelectedGroups();
+  const studentsEl = document.getElementById("assignmentStudents");
+  if (!selectedGroups.length) {
+    studentsEl.value = "-";
+    document.getElementById("studentsHint").textContent = "اختر فرقة أو أكثر لحساب عدد الطلاب.";
+    return;
+  }
+  const total = selectedGroups.reduce((sum, group) => {
+    const size = toNumber(getGroupSize(level, group), 0);
+    return sum + size;
+  }, 0);
+  studentsEl.value = total > 0 ? String(total) : "-";
+  const parts = selectedGroups.map((g) => {
+    const s = getGroupSize(level, g);
+    return `sec ${g}: ${s || "-"}`;
+  });
+  document.getElementById("studentsHint").textContent = `مجموع الطلاب: ${parts.join(" + ")} = ${total > 0 ? total : "-"}`;
+}
+
+function updateRoomInfo() {
+  const room = document.getElementById("assignmentRoom").value;
+  const capacity = getRoomCapacity(room);
+  const info = capacity ? `سعة القاعة: ${capacity} طالب` : "سعة القاعة غير معروفة";
+  document.getElementById("assignmentRoomInfo").value = capacity || "-";
+  document.getElementById("assignmentRoomInfo").title = info;
+}
+
+function updateTypeAndInstructorSuggestions(forceInstructor = false) {
+  const level = document.getElementById("assignmentLevel").value;
+  const course = document.getElementById("assignmentCourse").value;
+  const typeSelect = document.getElementById("assignmentType");
+  const currentType = typeSelect.value || "";
+  populateTypeOptions(level, course, currentType);
+  const type = typeSelect.value || getTypesForCourse(level, course)[0] || Object.keys(TYPE_META)[0];
+  if (!typeSelect.value && type) typeSelect.value = type;
+
+  const recommended = getRecommendedInstructors(level, course, type);
+  const instructor = document.getElementById("assignmentInstructor");
+  if (forceInstructor || !toText(instructor.value) || recommended.length === 1) {
+    instructor.value = recommended[0] || instructor.value;
+  }
+  const recommendation = recommended.length ? `المدرس المقترح: ${recommended.join(" / ")}` : "لا توجد خريطة مدرس مرتبطة بهذا القالب.";
+  const baseHint = document.getElementById("courseHint").dataset.base || COURSE_HINT_BASE;
+  document.getElementById("courseHint").textContent = `${baseHint} • الاقتراحات الحالية تخص المستوى ${level || "-"} • ${recommendation}`;
+}
+
+function updateModalDynamicFields() {
+  if (!state.catalog) return;
+  const level = document.getElementById("assignmentLevel").value || state.catalog.levelsOrder[0] || "";
+  const currentGroups = getSelectedGroups();
+  const currentCourse = document.getElementById("assignmentCourse").value;
+  const currentType = document.getElementById("assignmentType").value;
+  populateGroupChecklist(level, currentGroups);
+  populateCourseOptions(level, currentCourse);
+  updateStudentsFromGroups();
+  updateRoomInfo();
+  populateTypeOptions(level, currentCourse, currentType);
+  updateTypeAndInstructorSuggestions(false);
+  updateModalContextBar();
+}
+
+function readModalAssignment() {
+  return normalizeAssignment({
+    id: document.getElementById("assignmentId").value,
+    level: document.getElementById("assignmentLevel").value,
+    groups: getSelectedGroups(),
+    day: document.getElementById("assignmentDay").value,
+    period: document.getElementById("assignmentPeriod").value,
+    duration: document.getElementById("assignmentDuration").value,
+    course: document.getElementById("assignmentCourse").value,
+    type: document.getElementById("assignmentType").value,
+    instructor: document.getElementById("assignmentInstructor").value,
+    room: document.getElementById("assignmentRoom").value,
+    students: document.getElementById("assignmentStudents").value,
+    notes: document.getElementById("assignmentNotes").value
+  });
+}
+
+function updateModalContextBar() {
+  const level = document.getElementById("assignmentLevel").value;
+  const day = document.getElementById("assignmentDay").value;
+  const period = document.getElementById("assignmentPeriod").value;
+  document.getElementById("modalContextLevel").textContent = `المستوى: ${level || "-"}`;
+  document.getElementById("modalContextDay").textContent = `اليوم: ${DAY_LABELS[day] || day || "-"}`;
+  document.getElementById("modalContextPeriod").textContent = `الفترة: ${period ? getPeriodLabel(period) : "-"}`;
+}
+
+function updateModalPreview(candidate = readModalAssignment()) {
+  const previewMain = document.getElementById("assignmentPreviewMain");
+  const previewSub = document.getElementById("assignmentPreviewSub");
+  const typeMeta = TYPE_META[candidate.type] || { label: candidate.type || "حصة" };
+  const groupsText = (candidate.groups || []).join("، ") || "-";
+  previewMain.textContent = `${candidate.course || "مقرر غير محدد"} · ${typeMeta.label}`;
+  previewSub.textContent = `${candidate.level || "-"} / فرق ${groupsText} / ${DAY_LABELS[candidate.day] || candidate.day || "-"} / ${getPeriodLabel(candidate.period)} / ${candidate.room || "-"} / ${candidate.instructor || "-"}`;
+}
+
+function updateModalValidation() {
+  const validation = document.getElementById("assignmentValidation");
+  const preview = readModalAssignment();
+  updateModalPreview(preview);
+  if (!state.catalog) {
+    validation.innerHTML = `<div class="issue-line warn">حمّل البيانات أولاً قبل إضافة أي حصة.</div>`;
+    document.getElementById("saveAssignmentBtn").disabled = true;
+    return;
+  }
+  const result = validateAssignment(preview, state.modal.editId || preview.id);
+  const lines = [];
+  for (const error of result.errors) {
+    lines.push(`<div class="issue-line error">⛔ ${escapeHtml(error)}</div>`);
+  }
+  for (const warning of result.warnings) {
+    lines.push(`<div class="issue-line warn">⚠ ${escapeHtml(warning)}</div>`);
+  }
+  if (!lines.length) {
+    lines.push(`<div class="issue-line">لا توجد تعارضات صلبة. الحفظ مسموح.</div>`);
+  }
+  validation.innerHTML = lines.join("");
+  document.getElementById("saveAssignmentBtn").disabled = result.errors.length > 0;
+}
+
+function upsertAssignment(candidate) {
+  const normalized = normalizeAssignment(candidate);
+  const result = validateAssignment(normalized, state.modal.editId || normalized.id);
+  if (result.errors.length) {
+    showToast(result.errors[0]);
+    return false;
+  }
+
+  if (state.modal.editId) {
+    const index = state.assignments.findIndex((item) => item.id === state.modal.editId);
+    if (index !== -1) {
+      state.assignments[index] = normalized;
+    }
+  } else {
+    state.assignments.push(normalized);
+  }
+  sanitizeAssignments();
+  schedulePersist();
+  renderAll();
+  showToast("تم حفظ الحصة");
+  return true;
+}
+
+function deleteCurrentAssignment() {
+  const id = document.getElementById("assignmentId").value || state.modal.editId;
+  if (!id) return;
+  const assignment = state.assignments.find((item) => item.id === id);
+  if (!assignment) return;
+  if (!confirm(`حذف الحصة التالية؟\n\n${describeAssignment(assignment)}\n\n${assignment.course}`)) return;
+  state.assignments = state.assignments.filter((item) => item.id !== id);
+  closeModal();
+  schedulePersist();
+  renderAll();
+  showToast("تم حذف الحصة");
+}
+
+function importCatalogFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(String(reader.result || "{}"));
+      if (!payload || typeof payload !== "object") throw new Error("invalid");
+      setCatalog(payload, file.name || SOURCE_FILE);
+      showToast("تم استيراد البيانات");
+    } catch {
+      showToast("تعذر قراءة ملف البيانات");
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function importScheduleFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(String(reader.result || "{}"));
+      const rows = Array.isArray(payload) ? payload : Array.isArray(payload.assignments) ? payload.assignments : [];
+      const next = [];
+      for (const row of rows) {
+        const assignment = normalizeAssignment(row);
+        const check = validateAssignment(assignment, assignment.id);
+        if (check.errors.length) continue;
+        if (next.some((item) => item.id === assignment.id)) assignment.id = uid();
+        next.push(assignment);
+      }
+      state.assignments = next;
+      schedulePersist();
+      renderAll();
+      showToast(`تم استيراد ${next.length} حصة`);
+    } catch {
+      showToast("تعذر قراءة ملف الجدول");
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function exportSchedule() {
+  const payload = {
+    meta: {
+      source: state.catalogName || SOURCE_FILE,
+      exportedAt: new Date().toISOString(),
+      version: 1
+    },
+    assignments: state.assignments
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "hti_schedule.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+  showToast("تم تنزيل hti_schedule.json");
+}
+
+function resetSchedule() {
+  if (!state.assignments.length) return;
+  if (!confirm("سيتم مسح جميع الحصص المحفوظة نهائياً. هل تريد المتابعة؟")) return;
+  state.assignments = [];
+  schedulePersist();
+  renderAll();
+  showToast("تم مسح الجدول");
+}
+
+function populateModalStaticFields() {
+  const typeSelect = document.getElementById("assignmentType");
+  typeSelect.innerHTML = Object.entries(TYPE_META).map(([value, meta]) => `<option value="${escapeHtml(value)}">${escapeHtml(meta.label)}</option>`).join("");
+}
+
+function loadSeedCatalog() {
+  // 1. Try restoring from localStorage (instant, no network needed)
+  const stored = loadStoredCatalog();
+  if (stored) {
+    try {
+      state.catalog = normalizeCatalog(stored.payload);
+      state.catalogName = stored.sourceName || SOURCE_FILE;
+      syncDatalists();
+      sanitizeAssignments();
+      if (!state.activeLevel || !state.catalog.levelsOrder.includes(state.activeLevel)) {
+        state.activeLevel = state.catalog.levelsOrder[0] || "";
+      }
+      renderAll();
+      return; // done — no network fetch needed
+    } catch {
+      // corrupt stored catalog — fall through to fetch
+    }
+  }
+
+  // 2. Try fetching hti_data.json from same origin
+  fetch(SOURCE_FILE, { cache: "no-store" })
+    .then((response) => {
+      if (!response.ok) throw new Error("fetch failed");
+      return response.json();
+    })
+    .then((payload) => setCatalog(payload, SOURCE_FILE))
+    .catch(() => {
+      renderAll();
+      showToast("لم يتم تحميل hti_data.json تلقائياً. استخدم الاستيراد.");
+    });
+}
+
+function openFirstAvailableLevel() {
+  if (!state.catalog) return;
+  if (!state.activeLevel || !state.catalog.levelsOrder.includes(state.activeLevel)) {
+    state.activeLevel = state.catalog.levelsOrder[0] || "";
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const viewTab = event.target.closest("[data-view-tab]");
+  if (viewTab) {
+    state.view = viewTab.dataset.viewTab;
+    instructorFilterText = "";
+    schedulePersist();
+    renderAll();
+    return;
+  }
+
+  const stepBtn = event.target.closest("#prevInstructorBtn, #nextInstructorBtn");
+  if (stepBtn) {
+    const instructors = getInstructorList();
+    if (instructors.length) {
+      const currentIndex = Math.max(0, instructors.indexOf(state.activeInstructor));
+      const delta = stepBtn.id === "prevInstructorBtn" ? -1 : 1;
+      const nextIndex = (currentIndex + delta + instructors.length) % instructors.length;
+      state.activeInstructor = instructors[nextIndex];
+      instructorFilterText = "";
+      schedulePersist();
+      renderAll();
+    }
+    return;
+  }
+
+  const levelTab = event.target.closest("[data-level-tab]");
+  if (levelTab) {
+    state.activeLevel = levelTab.dataset.levelTab;
+    schedulePersist();
+    renderAll();
+    return;
+  }
+
+  const openCell = event.target.closest("[data-open-assignment]");
+  if (openCell) {
+    openModal({
+      level: openCell.dataset.level,
+      section: openCell.dataset.section,
+      day: openCell.dataset.day,
+      period: openCell.dataset.period,
+      duration: 1
+    });
+    return;
+  }
+
+  const editButton = event.target.closest("[data-edit-id]");
+  if (editButton) {
+    openModal({}, editButton.dataset.editId);
+    return;
+  }
+
+  const deleteButton = event.target.closest("[data-delete-id]");
+  if (deleteButton) {
+    const assignment = state.assignments.find((item) => item.id === deleteButton.dataset.deleteId);
+    if (!assignment) return;
+    if (!confirm(`حذف الحصة:\n${assignment.course}\n${describeAssignment(assignment)}`)) return;
+    state.assignments = state.assignments.filter((item) => item.id !== assignment.id);
+    schedulePersist();
+    renderAll();
+    showToast("تم حذف الحصة");
+    return;
+  }
+});
+
+document.addEventListener("input", (event) => {
+  const target = event.target;
+
+  if (target.id === "instructorFilterInput") {
+    instructorFilterText = target.value;
+    updateInstructorSelectOptions();
+    return;
+  }
+
+  if (!state.modal.open) return;
+
+  if (target.id === "assignmentCourse" || target.id === "assignmentType") {
+    updateTypeAndInstructorSuggestions(false);
+  }
+
+  if (target.id === "assignmentRoom") {
+    updateRoomInfo();
+  }
+
+  updateModalValidation();
+});
+
+document.addEventListener("change", (event) => {
+  const target = event.target;
+
+  if (target.id === "instructorSelect") {
+    state.activeInstructor = target.value;
+    instructorFilterText = "";
+    schedulePersist();
+    renderAll();
+    return;
+  }
+
+  if (!state.modal.open) return;
+
+  if (target.id === "assignmentDuration") {
+    updateModalValidation();
+  }
+});
+
+document.getElementById("loadDataBtn").addEventListener("click", () => document.getElementById("catalogFileInput").click());
+document.getElementById("importScheduleBtn").addEventListener("click", () => document.getElementById("scheduleFileInput").click());
+document.getElementById("exportScheduleBtn").addEventListener("click", exportSchedule);
+document.getElementById("addAssignmentBtn").addEventListener("click", () => openModal());
+document.getElementById("resetScheduleBtn").addEventListener("click", resetSchedule);
+document.getElementById("catalogFileInput").addEventListener("change", (event) => {
+  const [file] = event.target.files || [];
+  if (file) importCatalogFile(file);
+  event.target.value = "";
+});
+document.getElementById("scheduleFileInput").addEventListener("change", (event) => {
+  const [file] = event.target.files || [];
+  if (file) importScheduleFile(file);
+  event.target.value = "";
+});
+
+document.getElementById("closeAssignmentModalBtn").addEventListener("click", closeModal);
+document.getElementById("cancelAssignmentBtn").addEventListener("click", closeModal);
+document.getElementById("deleteAssignmentBtn").addEventListener("click", deleteCurrentAssignment);
+document.getElementById("assignmentModalOverlay").addEventListener("click", (event) => {
+  if (event.target.id === "assignmentModalOverlay") closeModal();
+});
+document.getElementById("assignmentForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const candidate = readModalAssignment();
+  if (upsertAssignment(candidate)) closeModal();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && state.modal.open) closeModal();
+});
+
+window.addEventListener("beforeunload", flushPersist);
+window.addEventListener("pagehide", flushPersist);
+
+const stored = loadStoredState();
+if (stored) {
+  state.assignments = stored.assignments.map(normalizeAssignment);
+  state.activeLevel = stored.activeLevel;
+  state.view = stored.view || "level";
+  state.activeInstructor = stored.activeInstructor || "";
+  state.lastSavedAt = stored.lastSavedAt || null;
+}
+populateModalStaticFields();
+openFirstAvailableLevel();
+renderAll();
+loadSeedCatalog();
+
+// Prime autosave indicator
+if (state.lastSavedAt) {
+  setAutosaveState("saved", formatRelTime(state.lastSavedAt));
+  startRelTimer();
+} else {
+  setAutosaveState("", "لم يُحفظ بعد");
+}
+</script>
+</body>
+</html>
