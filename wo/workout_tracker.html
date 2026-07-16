@@ -318,6 +318,61 @@
   /* MAIN */
   .main { padding: 36px 40px; }
 
+  .log-date-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 10px 14px;
+    background: var(--s1);
+    border: 1px solid var(--border);
+  }
+
+  .log-date-row.backdated {
+    background: var(--amber);
+    border-color: var(--amber-bdr);
+  }
+
+  .log-date-lbl {
+    font-size: 0.48rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .log-date-row.backdated .log-date-lbl { color: var(--amber-text); }
+
+  .log-date-input {
+    background: var(--s2);
+    border: 1px solid var(--border2);
+    color: var(--text-hi);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 5px 8px;
+    letter-spacing: 0.03em;
+    color-scheme: dark;
+  }
+
+  .log-date-row.backdated .log-date-input {
+    border-color: var(--amber-bdr);
+  }
+
+  .log-date-today-btn {
+    background: transparent;
+    border: 1px solid var(--amber-bdr);
+    color: var(--amber-text);
+    padding: 6px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.15s;
+  }
+
+  .log-date-today-btn:hover { background: var(--amber-bdr); color: var(--text-hi); }
+
   .session-meta {
     display: flex;
     align-items: center;
@@ -1661,19 +1716,47 @@ const MUSCLE_ICONS = {
 function localDateStr(d) {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
-function todayKey() { return 'wd_' + localDateStr(new Date()); }
-function loadProgress() { try { return JSON.parse(localStorage.getItem(todayKey())||'{}'); } catch { return {}; } }
+function formatLogDateLong(d) {
+  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+// ── LOGGING DATE (which day new sets/notes are recorded against) ──
+// Defaults to real "today"; can be changed via the date picker in the
+// detail view so a missed session can be backdated instead of
+// accidentally landing on the wrong day.
+let activeLogDate = new Date();
+function getLogDateStr() { return localDateStr(activeLogDate); }
+function isLogToday() { return getLogDateStr() === localDateStr(new Date()); }
+function setLogDate(dateStr) {
+  if (!dateStr) return;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  if (!y || !m || !d) return;
+  const picked = new Date(y, m - 1, d);
+  // Never allow logging into the future
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (picked > today) { showToast("Can't log a future date."); return; }
+  activeLogDate = picked;
+  if (activeKey) renderMain(activeKey);
+}
+function resetLogDateToToday() {
+  activeLogDate = new Date();
+  if (activeKey) renderMain(activeKey);
+}
+
+function logKey() { return 'wd_' + getLogDateStr(); }
+function loadProgressFor(dateStr) { try { return JSON.parse(localStorage.getItem('wd_' + dateStr)||'{}'); } catch { return {}; } }
+function loadProgress() { return loadProgressFor(getLogDateStr()); }
 function saveProgress(p) {
-  localStorage.setItem(todayKey(), JSON.stringify(p));
-  // If no sets remain completed today, remove today from history and muscle log
+  const d = getLogDateStr();
+  localStorage.setItem(logKey(), JSON.stringify(p));
+  // If no sets remain completed on the logged date, remove it from history and muscle log
   const totalDone = Object.values(p).reduce((sum, ep) => sum + countDoneSets(ep), 0);
   if (totalDone === 0) {
-    const today = localDateStr(new Date());
     const h = loadHistory();
-    delete h[today];
+    delete h[d];
     localStorage.setItem('wd_hist', JSON.stringify(h));
     const mg = JSON.parse(localStorage.getItem('wd_muscles') || '{}');
-    delete mg[today];
+    delete mg[d];
     localStorage.setItem('wd_muscles', JSON.stringify(mg));
   }
   updateHeader();
@@ -1682,7 +1765,7 @@ function saveProgress(p) {
 function loadNotes(dateStr) {
   try {
     const raw = JSON.parse(localStorage.getItem('wd_notes') || '{}');
-    const d = dateStr || localDateStr(new Date());
+    const d = dateStr || getLogDateStr();
     // Migrate old flat format (values are strings) to date-keyed format
     const firstVal = Object.values(raw)[0];
     if (firstVal !== undefined && typeof firstVal === 'string') {
@@ -1696,7 +1779,7 @@ function loadNotes(dateStr) {
 function saveNote(id, txt) {
   try {
     const raw = JSON.parse(localStorage.getItem('wd_notes') || '{}');
-    const d = localDateStr(new Date());
+    const d = getLogDateStr();
     const firstVal = Object.values(raw)[0];
     const all = (firstVal !== undefined && typeof firstVal === 'string') ? { [d]: raw } : raw;
     if (!all[d]) all[d] = {};
@@ -1717,7 +1800,7 @@ function saveExerciseNote(id) {
 }
 function loadHistory() { try { return JSON.parse(localStorage.getItem('wd_hist')||'{}'); } catch { return {}; } }
 function stampSession(muscle) {
-  const h=loadHistory(), d=localDateStr(new Date());
+  const h=loadHistory(), d=getLogDateStr();
   h[d]=(h[d]||0)+1;
   localStorage.setItem('wd_hist',JSON.stringify(h));
   // record muscle groups per day
@@ -1729,7 +1812,7 @@ function stampSession(muscle) {
 }
 
 function updateHeader() {
-  const p=loadProgress(); let total=0;
+  const p=loadProgressFor(localDateStr(new Date())); let total=0;
   Object.values(p).forEach(e=>{ total += countDoneSets(e); });
   document.getElementById('hdr-sets').textContent=total;
   const h=loadHistory(), today=new Date(); let streak=0;
@@ -1745,6 +1828,7 @@ let activeKey=null;
 
 function buildLanding() {
   activeKey = null;
+  activeLogDate = new Date();
   const p = loadProgress();
   const muscles = JSON.parse(localStorage.getItem('wd_muscles')||'{}');
   const today = new Date();
@@ -1796,6 +1880,7 @@ function buildLanding() {
 
 function selectMuscle(key) {
   activeKey = key;
+  activeLogDate = new Date();
   renderMain(key);
 }
 
@@ -1831,6 +1916,11 @@ function renderMain(key) {
             <div class="rest-info-msg" id="rmsg-global">Breathe. Next set coming.</div>
           </div>
         </div>
+      </div>
+      <div class="log-date-row ${isLogToday() ? '' : 'backdated'}">
+        <span class="log-date-lbl">${isLogToday() ? 'Logging for Today' : 'Logging for &mdash; ' + formatLogDateLong(activeLogDate)}</span>
+        <input type="date" class="log-date-input" value="${getLogDateStr()}" max="${localDateStr(new Date())}" onchange="setLogDate(this.value)">
+        ${!isLogToday() ? `<button class="log-date-today-btn" onclick="resetLogDateToToday()">Back to Today</button>` : ''}
       </div>
       <div class="session-meta">
         <span class="session-meta-label">Session Progress</span>
@@ -2140,7 +2230,7 @@ function fmt(s){return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
 
 function confirmReset(){
   if(confirm("Reset today's progress?")){
-    localStorage.removeItem(todayKey());
+    localStorage.removeItem('wd_' + localDateStr(new Date()));
     showToast("Today's progress cleared.");
     activeKey ? renderMain(activeKey) : buildLanding();
     updateHeader();
@@ -2488,16 +2578,18 @@ function saveExHistory(h) { localStorage.setItem('wd_ex_hist', JSON.stringify(h)
 function recordExSets(exId, count) {
   const h = loadExHistory();
   if (!h[exId]) h[exId] = {};
-  h[exId][localDateStr(new Date())] = count;
+  h[exId][getLogDateStr()] = count;
   saveExHistory(h);
 }
 function getExStreak(exId, totalSets) {
+  // Computed relative to the date currently being logged, so backdating
+  // a missed day shows the streak as it stood on that day.
   const exH = (loadExHistory()[exId]) || {};
-  const today = new Date(), todayStr = localDateStr(today);
-  const startI = (exH[todayStr]||0) >= totalSets ? 0 : 1;
+  const refDate = activeLogDate, refStr = getLogDateStr();
+  const startI = (exH[refStr]||0) >= totalSets ? 0 : 1;
   let streak = 0;
   for (let i = startI; i < 365; i++) {
-    const d = new Date(today); d.setDate(d.getDate()-i);
+    const d = new Date(refDate); d.setDate(d.getDate()-i);
     if ((exH[localDateStr(d)]||0) >= totalSets) streak++;
     else break;
   }
