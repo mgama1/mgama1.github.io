@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>محرر الجدول الأكاديمي - HTI</title>
+<title>مراجعة وتحرير الجدول الآلي - HTI</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -75,6 +75,8 @@ button{cursor:pointer}
 .btn-ghost{background:transparent;color:var(--muted);border-color:transparent}
 .btn-ghost:hover{background:rgba(100,116,139,.08);color:var(--text)}
 .btn-square{width:40px;height:40px;justify-content:center;padding:0}
+.btn-sm{padding:7px 12px;font-size:12px}
+.btn-outline.active{background:var(--brand);color:#fff;border-color:var(--brand)}
 .status-row{
   display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;
   padding:16px 24px 0
@@ -98,12 +100,13 @@ button{cursor:pointer}
   background:rgba(255,255,255,.92);border:1px solid var(--line);
   border-radius:var(--r-lg);box-shadow:var(--shadow-md);overflow:hidden;min-width:0
 }
-.board-head,.side-head{
+.board-head{
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
   padding:18px 18px 16px;border-bottom:1px solid var(--line-2);background:linear-gradient(180deg,#fff, #f9fbfd)
 }
-.board-title,.side-title{margin:0;font-size:18px;font-weight:900}
-.board-sub,.side-sub{margin-top:4px;font-size:13px;color:var(--muted);line-height:1.6}
+.board-title{margin:0;font-size:18px;font-weight:900}
+.board-sub{margin-top:4px;font-size:13px;color:var(--muted);line-height:1.6}
+.board-sub:empty{margin-top:0}
 .tabs{
   display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start
 }
@@ -144,13 +147,13 @@ button{cursor:pointer}
 .period-head{min-width:170px}
 .day-cell,.section-cell,.empty-cell,.assignment-cell{background:#fff}
 .day-cell{
-  background:linear-gradient(180deg,#f7fafc,#eef5fb);padding:14px 12px;font-weight:900;
+  background:linear-gradient(180deg,#f7fafc,#eef5fb);padding:10px 12px;font-weight:900;
   color:var(--brand);min-width:130px
 }
 .day-cell .day-name{font-size:15px}
-.day-cell .day-meta{margin-top:6px;font-size:12px;color:var(--muted);font-weight:700;line-height:1.4}
+.day-cell .day-meta{margin-top:4px;font-size:12px;color:var(--muted);font-weight:700;line-height:1.3}
 .section-cell{
-  background:linear-gradient(180deg,#fbfdff,#f5f8fb);padding:12px 10px;min-width:110px
+  background:linear-gradient(180deg,#fbfdff,#f5f8fb);padding:9px 10px;min-width:110px
 }
 .section-pill{
   display:flex;flex-direction:column;gap:5px
@@ -161,52 +164,80 @@ button{cursor:pointer}
   background:#fff;padding:0;min-width:170px;max-width:190px;position:relative
 }
 .empty-cell{
-  padding:8px;min-height:120px
+  padding:6px;min-height:88px
 }
 .empty-btn{
-  width:100%;min-height:120px;border:1px dashed #c9d4e2;background:
+  width:100%;min-height:88px;border:1px dashed #c9d4e2;background:
     linear-gradient(180deg,#fff,#f8fbfe);
   border-radius:10px;color:var(--soft);display:flex;align-items:center;justify-content:center;
-  font-size:20px;font-weight:900
+  font-size:18px;font-weight:900
 }
 .empty-btn:hover{border-color:var(--brand-2);color:var(--brand-2);background:#fff}
 .assignment-cell{padding:6px}
+/* Merged (rowspan) cells: color the WHOLE spanned cell so it can never
+   read as empty. The card itself fills the cell completely, so the
+   outer gradient is only a seamless safety-net behind it. */
+.assignment-cell.merged-cell{vertical-align:stretch;padding:0;position:relative;background:#fff}
+.assignment-cell.merged-cell.lecture{background:#fff}
+.assignment-cell.merged-cell.recitation{background:#fff}
+.assignment-cell.merged-cell.lab{background:#fff}
+.assignment-cell.merged-cell.default{background:#fff}
+.assignment-cell.merged-cell .assignment-card{
+  position:absolute;inset:8px;width:auto;height:auto;min-height:0;
+  border-radius:14px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), 0 14px 30px -12px rgba(15,23,42,.35)
+}
+.assignment-cell.merged-cell .assignment-card .card-content{justify-content:center}
 .assignment-card{
-  width:100%;height:100%;min-height:120px;border:none;border-radius:10px;padding:10px 10px 9px;
-  display:flex;flex-direction:column;gap:7px;align-items:stretch;text-align:right;
-  color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), var(--shadow-sm)
+  position:relative;overflow:hidden;
+  width:100%;height:100%;min-height:88px;border:none;border-radius:10px;padding:9px 10px 8px;
+  display:flex;flex-direction:column;align-items:stretch;justify-content:center;text-align:right;
+  color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), var(--shadow-sm);
+  transition:transform .12s ease,box-shadow .12s ease
 }
 .assignment-card:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22), var(--shadow-md)}
-.assignment-card.lecture{background:linear-gradient(180deg,#2f6fed,#2157c5)}
-.assignment-card.recitation{background:linear-gradient(180deg,#14918a,#0f6c66)}
-.assignment-card.lab{background:linear-gradient(180deg,#e48a18,#c56f05)}
-.assignment-card.default{background:linear-gradient(180deg,#475569,#334155)}
+/* A soft glassy highlight across the top keeps large flat color blocks
+   from looking dull/empty, and reads consistently at any card height. */
+.assignment-card.lecture{background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 42%),linear-gradient(180deg,#2f6fed,#2157c5)}
+.assignment-card.recitation{background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 42%),linear-gradient(180deg,#14918a,#0f6c66)}
+.assignment-card.lab{background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 42%),linear-gradient(180deg,#e48a18,#c56f05)}
+.assignment-card.default{background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 42%),linear-gradient(180deg,#475569,#334155)}
+.card-content{flex:0 0 auto;display:flex;flex-direction:column;gap:4px;justify-content:center;min-height:0}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.course-name{font-size:14px;font-weight:900;line-height:1.35}
+.course-name{font-size:14px;font-weight:900;line-height:1.3;color:#fff}
 .type-badge{
-  flex:0 0 auto;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.18);
+  flex:0 0 auto;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;
   font-size:11px;font-weight:900
 }
-.card-meta{font-size:12px;line-height:1.45;color:rgba(255,255,255,.92)}
-.card-meta strong{font-weight:900}
+.card-meta{font-size:12px;line-height:1.3;color:rgba(255,255,255,.92)}
+.card-meta strong{font-weight:900;color:#fff}
+.card-meta-row{display:flex;flex-wrap:wrap;gap:4px 14px}
 .card-footer{
   margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;
   font-size:11px;color:rgba(255,255,255,.92)
 }
 .mini-badge{
   display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 8px;
-  background:rgba(255,255,255,.16);font-weight:800
+  background:rgba(255,255,255,.16);font-weight:800;color:#fff
 }
 .mini-badge.warn{background:rgba(248,219,154,.28);color:#fff}
 .mini-badge.bad{background:rgba(255,201,201,.22);color:#fff}
+.stacked-cards{display:flex;flex-direction:column;gap:6px;padding:2px}
+.assignment-cell.collapsed-cell{padding:6px}
+.empty-btn-mini{
+  width:100%;min-height:44px;border:1px dashed #c9d4e2;background:linear-gradient(180deg,#fff,#f8fbfe);
+  border-radius:10px;color:var(--soft);display:flex;align-items:center;justify-content:center;
+  gap:6px;font-size:12px;font-weight:800;padding:6px 8px;text-align:center
+}
+.empty-btn-mini:hover{border-color:var(--brand-2);color:var(--brand-2);background:#fff}
 .grid-empty{
   padding:22px;border:1px dashed var(--line);border-radius:14px;background:#fff;color:var(--muted)
 }
 .view-tabs{margin-top:10px;display:inline-flex;gap:6px;flex-wrap:wrap}
 .view-tabs .tab{padding:6px 10px;font-size:12px;white-space:nowrap}
-.empty-cell.readonly{padding:8px;min-height:120px}
+.empty-cell.readonly{padding:6px;min-height:88px}
 .no-class-mark{
-  width:100%;min-height:120px;border:1px dashed #e3e9f1;background:#fafcfe;
+  width:100%;min-height:88px;border:1px dashed #e3e9f1;background:#fafcfe;
   border-radius:10px;color:#c3cddb;display:flex;align-items:center;justify-content:center;
   font-size:12px;font-weight:700
 }
@@ -217,7 +248,6 @@ button{cursor:pointer}
 .instructor-filter{width:150px;padding:8px 10px;font-size:13px}
 .instructor-select{min-width:190px;max-width:260px;padding:8px 10px;font-size:13px;font-weight:800}
 .instructor-step-btn{width:34px;height:34px;border-radius:8px;padding:0;font-size:16px}
-.side-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px}
 .search-wrap{display:flex;flex-direction:column;gap:8px}
 .search-input,.field-input,.field-select,.field-textarea{
   width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);
@@ -227,22 +257,7 @@ button{cursor:pointer}
   border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(29,111,168,.12)
 }
 .search-input::placeholder,.field-input::placeholder,.field-textarea::placeholder{color:var(--soft)}
-.summary-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.summary-card{
-  padding:12px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fbfe)
-}
-.summary-card .k{font-size:12px;color:var(--muted);font-weight:800}
-.summary-card .v{margin-top:6px;font-size:20px;font-weight:900}
-.summary-card .s{margin-top:4px;font-size:12px;color:var(--muted)}
-.issue-list,.assignment-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow:auto;padding-inline-end:2px}
-.issue{
-  border-radius:14px;border:1px solid var(--line);background:#fff;padding:12px
-}
-.issue.hard{border-color:rgba(180,35,24,.2);background:var(--bad-soft)}
-.issue.warn{border-color:rgba(183,121,31,.2);background:var(--warn-soft)}
-.issue .t{font-weight:900;font-size:13px;line-height:1.45}
-.issue .d{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
-.issue .x{margin-top:8px;font-size:12px;color:inherit;font-weight:800}
+.assignment-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow:auto;padding-inline-end:2px}
 .assignment-item{
   border-radius:14px;border:1px solid var(--line);background:#fff;padding:12px;text-align:right
 }
@@ -341,11 +356,8 @@ button{cursor:pointer}
 }
 .autosave-pill.saving .autosave-dot{animation:savepulse .9s ease-in-out infinite}
 @keyframes savepulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-@media (max-width: 1180px){
-  .layout{grid-template-columns:1fr}
-}
 @media (max-width: 860px){
-  .topbar,.board-head,.side-head,.modal-head,.modal-body,.modal-actions{flex-direction:column;align-items:stretch}
+  .topbar,.board-head,.modal-head,.modal-body,.modal-actions{flex-direction:column;align-items:stretch}
   .board-toolbar{flex-direction:column;align-items:stretch}
   .board-toolbar .left,.board-toolbar .right{justify-content:stretch}
   .form-grid{grid-template-columns:1fr}
@@ -358,31 +370,27 @@ button{cursor:pointer}
 <div class="shell">
   <header class="topbar">
     <div class="brand">
-      <div class="eyebrow">HTI MANUAL SCHEDULE EDITOR</div>
-      <h1>محرر الجدول الأكاديمي</h1>
-      <p>محرر يدوي مستقل: يمنع تعارضات القاعات والمدرسين، ويترك تنبيه السعة فقط كتحذير.</p>
+      <div class="eyebrow">HTI SCHEDULE REVIEW &amp; EDITOR</div>
+      <h1>مراجعة وتحرير الجدول الآلي</h1>
     </div>
     <div class="topbar-actions">
       <div class="autosave-pill" id="autosavePill">
         <span class="autosave-dot"></span>
         <span id="autosaveText">لم يُحفظ بعد</span>
       </div>
-      <button class="btn btn-outline" id="loadDataBtn" type="button">استيراد البيانات</button>
-      <button class="btn btn-outline" id="importScheduleBtn" type="button">استيراد جدول</button>
+      <button class="btn btn-outline" id="loadDataBtn" type="button">تحميل ملف الجدول</button>
       <button class="btn btn-primary" id="exportScheduleBtn" type="button">تنزيل الجدول</button>
-      <button class="btn btn-primary" id="addAssignmentBtn" type="button">إضافة حصة</button>
       <button class="btn btn-danger" id="resetScheduleBtn" type="button">مسح الجدول</button>
-      <input id="dataFileInput" type="file" accept=".json,application/json" hidden>
       <input id="scheduleFileInput" type="file" accept=".json,application/json" hidden>
     </div>
   </header>
 
-  <main class="layout">
+  <main class="layout" id="layoutMain">
     <section class="panel" id="boardPanel">
       <div class="board-head">
         <div>
           <h2 class="board-title" id="boardTitle">لا توجد بيانات بعد</h2>
-          <div class="board-sub" id="boardSubtitle">استورد hti_data.json أو ارفع ملف البيانات اليدوي لبدء بناء الجدول.</div>
+          <div class="board-sub" id="boardSubtitle">حمّل timetable_schedule.json (ناتج الـ solver) أو ملف hti_data.json لبدء المراجعة.</div>
           <div class="tabs view-tabs" id="viewTabs">
             <button type="button" class="tab active" data-view-tab="level">الجدول حسب المستوى</button>
             <button type="button" class="tab" data-view-tab="teacher">الجدول الشخصي لكل مدرس</button>
@@ -395,6 +403,10 @@ button{cursor:pointer}
           <span class="chip" id="levelChip">المستوى: <strong>-</strong></span>
           <span class="chip" id="groupsChip">الفرق: <strong>0</strong></span>
           <span class="chip" id="periodsChip">الفترات: <strong>0</strong></span>
+          <button type="button" class="btn btn-outline btn-sm" id="toggleGroupViewBtn" title="عرض كل فرقة في صف منفصل أو دمج الفرق في خلية واحدة">
+            <span id="toggleGroupViewIcon">▦</span>
+            <span id="toggleGroupViewLabel">دمج الفرق</span>
+          </button>
         </div>
         <div class="right">
           <span class="chip good" id="validityChip">الجدول صالح</span>
@@ -403,14 +415,15 @@ button{cursor:pointer}
       </div>
       <div class="board-wrap" id="boardWrap">
         <div class="empty-state" id="boardEmpty">
-          <h2>ابدأ من البيانات</h2>
-          <p>هذا الملف لا يعتمد على solver. حمّل <strong>hti_data.json</strong> ثم أضف الحصص يدوياً في شبكة اليوم/الفرقة/الوقت. أي تعارض في القاعة أو المدرس أو الفرقة سيتم منعه قبل الحفظ.</p>
+          <h2>ابدأ بتحميل جدول</h2>
+          <p>اضغط <strong>تحميل ملف الجدول</strong> واختر <strong>timetable_schedule.json</strong> الناتج عن الـ solver لمراجعته وإصلاح أي تنبيهات. يمكنك أيضاً رفع <strong>hti_data.json</strong> فقط والبدء ببناء الجدول يدوياً من الصفر. أي تعارض في القاعة أو المدرس أو الفرقة سيتم منعه قبل الحفظ.</p>
         </div>
       </div>
       <div class="foot-note" id="boardFootNote">
         اضغط على أي خلية فارغة لإضافة حصة مباشرة في اليوم والفرقة والوقت المحددين. اضغط على بطاقة الحصة لتعديلها. إذا تجاوز عدد الطلاب سعة القاعة تظهر ملاحظة فقط، لكن الحفظ يظل مسموحاً.
       </div>
     </section>
+
   </main>
 </div>
 
@@ -478,6 +491,8 @@ button{cursor:pointer}
         <input type="hidden" id="assignmentDay">
         <input type="hidden" id="assignmentPeriod">
         <input type="hidden" id="assignmentId">
+        <input type="hidden" id="assignmentOffering">
+        <input type="hidden" id="assignmentTemplate">
         <div class="modal-actions">
           <div class="left">
             <button class="btn btn-danger" id="deleteAssignmentBtn" type="button">حذف الحصة</button>
@@ -507,6 +522,7 @@ button{cursor:pointer}
 
 <script>
 const SOURCE_FILE = "hti_data.json";
+const SCHEDULE_SOURCE_FILE = "timetable_schedule.json";
 const STORAGE_KEY = "hti_manual_schedule_editor_v1";
 const CATALOG_KEY = "hti_catalog_payload_v1";
 const DAY_ORDER = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -532,10 +548,15 @@ const state = {
   assignments: [],
   activeLevel: "",
   view: "level",
+  groupView: localStorage.getItem("hti_groupView") || "expanded", // "expanded" | "collapsed"
   activeInstructor: "",
   search: "",
   modal: { open: false, editId: "", source: null },
-  lastSavedAt: null
+  lastSavedAt: null,
+  // Solver-run context — filled in when a timetable_schedule.json (the
+  // combined catalog+assignments+diagnostics export) is loaded.
+  meta: null,
+  diagnostics: []        // raw diagnostics as produced by the solver run
 };
 
 let uidSeed = 0;
@@ -632,7 +653,9 @@ function loadStoredState() {
       activeLevel: toText(parsed.activeLevel),
       view: parsed.view === "teacher" ? "teacher" : "level",
       activeInstructor: toText(parsed.activeInstructor),
-      lastSavedAt: parsed.lastSavedAt || null
+      lastSavedAt: parsed.lastSavedAt || null,
+      meta: parsed.meta || null,
+      diagnostics: Array.isArray(parsed.diagnostics) ? parsed.diagnostics : []
     };
   } catch {
     return null;
@@ -647,7 +670,9 @@ function persistState() {
       activeLevel: state.activeLevel,
       view: state.view,
       activeInstructor: state.activeInstructor,
-      lastSavedAt: state.lastSavedAt
+      lastSavedAt: state.lastSavedAt,
+      meta: state.meta,
+      diagnostics: state.diagnostics
     }));
     setAutosaveState("saved", formatRelTime(state.lastSavedAt));
     startRelTimer();
@@ -928,7 +953,12 @@ function normalizeAssignment(raw) {
     instructor: toText(raw.instructor),
     room: toText(raw.room),
     students: toText(raw.students),
-    notes: toText(raw.notes)
+    notes: toText(raw.notes),
+    // Read-only provenance from the solver run, if present. Never required,
+    // never validated — purely informational (shown in the edit modal).
+    offering: toText(raw.offering),
+    template: toText(raw.template),
+    autoGenerated: Boolean(raw.offering || raw.template)
   };
   return next;
 }
@@ -944,6 +974,15 @@ function overlaps(a, b) {
   const ra = rangeOfAssignment(a);
   const rb = rangeOfAssignment(b);
   return ra.start <= rb.end && rb.start <= ra.end;
+}
+
+// Placeholder instructor names (solver output for "not yet assigned") are not
+// a real person, so two classes both marked "TBA" at the same time are not
+// actually a scheduling conflict — treating them as one is what was
+// collapsing 83 classes down to ~13 every time the schedule was re-validated.
+const PLACEHOLDER_INSTRUCTOR_NAMES = new Set(["tba", "tbd", "n/a", "غير محدد", "-"]);
+function isPlaceholderInstructor(name) {
+  return PLACEHOLDER_INSTRUCTOR_NAMES.has(toText(name).toLowerCase());
 }
 
 function validateAssignment(candidate, ignoreId = "") {
@@ -974,7 +1013,10 @@ function validateAssignment(candidate, ignoreId = "") {
     if (existing.room && current.room && existing.room === current.room) {
       errors.push(`تعارض قاعة: القاعة ${current.room} مستخدمة في ${describeAssignment(existing)}.`);
     }
-    if (existing.instructor && current.instructor && existing.instructor === current.instructor) {
+    if (
+      existing.instructor && current.instructor && existing.instructor === current.instructor &&
+      !isPlaceholderInstructor(current.instructor)
+    ) {
       errors.push(`تعارض مدرس: ${current.instructor} لديه حصة أخرى في ${describeAssignment(existing)}.`);
     }
     if (existing.level === current.level && existing.groups.some((group) => current.groups.includes(group))) {
@@ -1100,10 +1142,22 @@ function renderRightTabs() {
     tabs.innerHTML = "";
     return;
   }
-  tabs.innerHTML = state.catalog.levelsOrder.map((level) => {
-    const count = state.assignments.filter((item) => item.level === level).length;
-    return `<button type="button" class="tab${level === state.activeLevel ? " active" : ""}" data-level-tab="${escapeHtml(level)}">${escapeHtml(level)} (${count})</button>`;
-  }).join("");
+  tabs.innerHTML = `
+    <select class="field-select level-select" id="levelSelect">
+      ${state.catalog.levelsOrder.map((level) => {
+        const count = state.assignments.filter((item) => item.level === level).length;
+        return `<option value="${escapeHtml(level)}"${level === state.activeLevel ? " selected" : ""}>${escapeHtml(level)} (${count})</option>`;
+      }).join("")}
+    </select>
+  `;
+  const levelSelect = document.getElementById("levelSelect");
+  if (levelSelect) {
+    levelSelect.addEventListener("change", () => {
+      state.activeLevel = levelSelect.value;
+      schedulePersist();
+      renderAll();
+    });
+  }
 }
 
 function computeAllWarnings(assignments = state.assignments) {
@@ -1129,6 +1183,8 @@ function computeHardIssues(assignments = state.assignments) {
 }
 
 function renderBoard() {
+  const toggleBtn = document.getElementById("toggleGroupViewBtn");
+  if (toggleBtn) toggleBtn.classList.toggle("hidden", state.view === "teacher");
   if (state.view === "teacher") {
     renderTeacherBoard();
     return;
@@ -1144,7 +1200,7 @@ function renderLevelBoard() {
     boardWrap.innerHTML = "";
     boardWrap.appendChild(boardEmpty);
     document.getElementById("boardTitle").textContent = "لا توجد بيانات بعد";
-    document.getElementById("boardSubtitle").textContent = "استورد hti_data.json أو ارفع ملف البيانات اليدوي لبدء بناء الجدول.";
+    document.getElementById("boardSubtitle").textContent = "حمّل timetable_schedule.json (ناتج الـ solver) أو ملف hti_data.json لبدء المراجعة.";
     return;
   }
 
@@ -1155,7 +1211,7 @@ function renderLevelBoard() {
   const assignments = state.assignments.filter((item) => item.level === level);
 
   document.getElementById("boardTitle").textContent = `الجدول - ${level}`;
-  document.getElementById("boardSubtitle").textContent = `شبكة يوم/فرقة/وقت للمستوى ${level}. ${groups.length} فرقة، ${periods.length} فترات يومياً.`;
+  document.getElementById("boardSubtitle").textContent = "";
   document.getElementById("levelChip").innerHTML = `المستوى: <strong>${escapeHtml(level || "-")}</strong>`;
   document.getElementById("groupsChip").innerHTML = `الفرق: <strong>${groups.length}</strong>`;
   document.getElementById("periodsChip").innerHTML = `الفترات: <strong>${periods.length}</strong>`;
@@ -1178,12 +1234,20 @@ function renderLevelBoard() {
     return;
   }
 
+  const isCollapsed = state.groupView === "collapsed";
+  const btnLabel = document.getElementById("toggleGroupViewLabel");
+  const btnIcon = document.getElementById("toggleGroupViewIcon");
+  const toggleBtn = document.getElementById("toggleGroupViewBtn");
+  if (btnLabel) btnLabel.textContent = isCollapsed ? "فصل الفرق" : "دمج الفرق";
+  if (btnIcon) btnIcon.textContent = isCollapsed ? "▤" : "▦";
+  if (toggleBtn) toggleBtn.classList.toggle("active", isCollapsed);
+
   let table = `
     <table class="schedule-table">
       <thead>
         <tr>
           <th class="corner-head">اليوم</th>
-          <th class="section-head">الفرقة</th>
+          ${isCollapsed ? "" : `<th class="section-head">الفرقة</th>`}
           ${periods.map((period) => {
             const start = getPeriodStart(period);
             return `<th class="period-head">${escapeHtml(getPeriodLabel(period))}${start ? `<div style="font-size:11px;opacity:.85;margin-top:4px">${escapeHtml(start)}</div>` : ""}</th>`;
@@ -1191,7 +1255,9 @@ function renderLevelBoard() {
         </tr>
       </thead>
       <tbody>
-        ${days.map((day) => renderDayBlock(level, day, groups, periods)).join("")}
+        ${days.map((day) => (isCollapsed
+          ? renderDayBlockCollapsed(level, day, groups, periods)
+          : renderDayBlock(level, day, groups, periods))).join("")}
       </tbody>
     </table>
   `;
@@ -1199,8 +1265,21 @@ function renderLevelBoard() {
   boardWrap.innerHTML = table;
 }
 
+function findAssignmentAt(level, day, groupCode, period) {
+  return state.assignments.find((item) =>
+    item.level === level &&
+    item.day === day &&
+    (item.groups || []).includes(groupCode) &&
+    toNumber(item.period) === toNumber(period)
+  );
+}
+
 function renderDayBlock(level, day, groups, periods) {
   const rows = [];
+  // Tracks, per period-index, how many more subsequent group-rows should
+  // skip rendering a cell there because it's covered by a rowspan started earlier.
+  const skipRows = new Array(periods.length).fill(0);
+
   for (let g = 0; g < groups.length; g += 1) {
     const group = groups[g];
     let html = "<tr>";
@@ -1224,34 +1303,43 @@ function renderDayBlock(level, day, groups, periods) {
     let index = 0;
     while (index < periods.length) {
       const period = periods[index];
-      const assignment = state.assignments.find((item) =>
-        item.level === level &&
-        item.day === day &&
-        (item.groups || []).includes(group.group) &&
-        toNumber(item.period) === toNumber(period)
-      );
+
+      if (skipRows[index] > 0) {
+        skipRows[index] -= 1;
+        index += 1;
+        continue;
+      }
+
+      const assignment = findAssignmentAt(level, day, group.group, period);
 
       if (assignment) {
         const span = Math.min(Math.max(1, toNumber(assignment.duration, 1)), periods.length - index);
-        const typeMeta = TYPE_META[assignment.type] || { label: assignment.type || "حصة", className: "default" };
-        const roomCapacity = toNumber(getRoomCapacity(assignment.room), NaN);
-        const students = toNumber(assignment.students, NaN);
-        const warning = Number.isFinite(roomCapacity) && Number.isFinite(students) && students > roomCapacity;
+
+        // Look ahead at the following group rows: if they share this exact
+        // same assignment starting at this same period, merge (rowspan)
+        // instead of repeating the identical card for every group.
+        let rowspan = 1;
+        for (let g2 = g + 1; g2 < groups.length; g2 += 1) {
+          const nextAssignment = findAssignmentAt(level, day, groups[g2].group, period);
+          if (nextAssignment && nextAssignment.id === assignment.id) {
+            rowspan += 1;
+          } else {
+            break;
+          }
+        }
+
+        if (rowspan > 1) {
+          for (let s = index; s < index + span; s += 1) {
+            skipRows[s] = rowspan - 1;
+          }
+        }
+
+        const typeMetaForCell = TYPE_META[assignment.type] || { className: "default" };
+        const mergedClass = rowspan > 1 ? ` merged-cell ${typeMetaForCell.className}` : "";
+        const rowspanAttr = rowspan > 1 ? ` rowspan="${rowspan}"` : "";
         html += `
-          <td class="assignment-cell" colspan="${span}">
-            <button type="button" class="assignment-card ${typeMeta.className}" data-edit-id="${escapeHtml(assignment.id)}" title="اضغط للتعديل">
-              <div class="card-top">
-                <div class="course-name">${escapeHtml(assignment.course || "مقرر غير محدد")}</div>
-                <div class="type-badge">${escapeHtml(typeMeta.label)}</div>
-              </div>
-              <div class="card-meta"><strong>المدرس:</strong> ${escapeHtml(assignment.instructor || "-")}</div>
-              <div class="card-meta"><strong>القاعة:</strong> ${escapeHtml(assignment.room || "-")} • <strong>الطلاب:</strong> ${escapeHtml(assignment.students || group.size || "-")}</div>
-              <div class="card-meta"><strong>الفرق:</strong> ${escapeHtml((assignment.groups || []).join("، ") || "-")}</div>
-              <div class="card-footer">
-                <span class="mini-badge">${escapeHtml(getAssignmentRangeText(assignment))}</span>
-                ${warning ? `<span class="mini-badge warn">تجاوز السعة</span>` : ""}
-              </div>
-            </button>
+          <td class="assignment-cell${mergedClass}" colspan="${span}"${rowspanAttr}>
+            ${renderAssignmentCard(assignment, { fallbackSize: group.size })}
           </td>
         `;
         index += span;
@@ -1280,6 +1368,97 @@ function renderDayBlock(level, day, groups, periods) {
   return rows.join("");
 }
 
+function renderAssignmentCard(assignment, options = {}) {
+  const typeMeta = TYPE_META[assignment.type] || { label: assignment.type || "حصة", className: "default" };
+  const roomCapacity = toNumber(getRoomCapacity(assignment.room), NaN);
+  const students = toNumber(assignment.students, NaN);
+  const warning = Number.isFinite(roomCapacity) && Number.isFinite(students) && students > roomCapacity;
+  const fallbackSize = options.fallbackSize || "-";
+  return `
+    <button type="button" class="assignment-card ${typeMeta.className}" data-edit-id="${escapeHtml(assignment.id)}" title="اضغط للتعديل">
+      <div class="card-content">
+        <div class="card-top">
+          <div class="course-name">${escapeHtml(assignment.course || "مقرر غير محدد")}</div>
+          <div class="type-badge">${escapeHtml(typeMeta.label)}</div>
+        </div>
+        <div class="card-meta-row">
+          <span class="card-meta"><strong>المدرس:</strong> ${escapeHtml(assignment.instructor || "-")}</span>
+          <span class="card-meta"><strong>القاعة:</strong> ${escapeHtml(assignment.room || "-")}</span>
+        </div>
+        <div class="card-meta"><strong>الفرق:</strong> ${escapeHtml((assignment.groups || []).join("، ") || "-")}</div>
+        ${warning ? `<div class="card-footer"><span class="mini-badge warn">تجاوز السعة</span></div>` : ""}
+      </div>
+    </button>
+  `;
+}
+
+function renderDayBlockCollapsed(level, day, groups, periods) {
+  let html = "<tr>";
+  html += `
+    <td class="day-cell">
+      <div class="day-name">${escapeHtml(DAY_LABELS[day] || day)}</div>
+      <div class="day-meta">${escapeHtml(day)}</div>
+    </td>
+  `;
+
+  let index = 0;
+  while (index < periods.length) {
+    const period = periods[index];
+    const startingAssignments = state.assignments.filter((item) =>
+      item.level === level &&
+      item.day === day &&
+      toNumber(item.period) === toNumber(period)
+    );
+
+    if (startingAssignments.length) {
+      const span = Math.min(
+        Math.max(1, ...startingAssignments.map((a) => toNumber(a.duration, 1))),
+        periods.length - index
+      );
+      const coveredGroups = new Set();
+      startingAssignments.forEach((a) => (a.groups || []).forEach((g) => coveredGroups.add(g)));
+      const missingGroups = groups.filter((g) => !coveredGroups.has(g.group));
+      html += `
+        <td class="assignment-cell collapsed-cell" colspan="${span}">
+          <div class="stacked-cards">
+            ${startingAssignments.map((assignment) => renderAssignmentCard(assignment)).join("")}
+            ${missingGroups.length ? `
+              <button
+                type="button"
+                class="empty-btn-mini"
+                data-open-assignment="1"
+                data-level="${escapeHtml(level)}"
+                data-day="${escapeHtml(day)}"
+                data-period="${escapeHtml(period)}"
+                title="إضافة حصة لفرق: ${escapeHtml(missingGroups.map((g) => g.group).join("، "))}"
+              >+ فرق ${escapeHtml(missingGroups.map((g) => g.group).join("، "))}</button>
+            ` : ""}
+          </div>
+        </td>
+      `;
+      index += span;
+    } else {
+      html += `
+        <td class="empty-cell">
+          <button
+            type="button"
+            class="empty-btn"
+            data-open-assignment="1"
+            data-level="${escapeHtml(level)}"
+            data-day="${escapeHtml(day)}"
+            data-period="${escapeHtml(period)}"
+            title="إضافة حصة هنا"
+          >+</button>
+        </td>
+      `;
+      index += 1;
+    }
+  }
+
+  html += "</tr>";
+  return html;
+}
+
 function renderTeacherBoard() {
   const boardEmpty = document.getElementById("boardEmpty");
   const boardWrap = document.getElementById("boardWrap");
@@ -1289,7 +1468,7 @@ function renderTeacherBoard() {
     boardWrap.innerHTML = "";
     boardWrap.appendChild(boardEmpty);
     document.getElementById("boardTitle").textContent = "لا توجد بيانات بعد";
-    document.getElementById("boardSubtitle").textContent = "استورد hti_data.json أو ارفع ملف البيانات اليدوي لبدء بناء الجدول.";
+    document.getElementById("boardSubtitle").textContent = "حمّل timetable_schedule.json (ناتج الـ solver) أو ملف hti_data.json لبدء المراجعة.";
     return;
   }
 
@@ -1395,16 +1574,15 @@ function renderTeacherDayRow(instructor, day, periods) {
       html += `
         <td class="assignment-cell" colspan="${span}">
           <button type="button" class="assignment-card ${typeMeta.className}" data-edit-id="${escapeHtml(assignment.id)}" title="اضغط للتعديل">
-            <div class="card-top">
-              <div class="course-name">${escapeHtml(assignment.course || "مقرر غير محدد")}</div>
-              <div class="type-badge">${escapeHtml(typeMeta.label)}</div>
-            </div>
-            <div class="card-meta"><strong>المستوى:</strong> ${escapeHtml(assignment.level || "-")}</div>
-            <div class="card-meta"><strong>الفرق:</strong> ${escapeHtml((assignment.groups || []).join("، ") || "-")}</div>
-            <div class="card-meta"><strong>القاعة:</strong> ${escapeHtml(assignment.room || "-")} • <strong>الطلاب:</strong> ${escapeHtml(assignment.students || "-")}</div>
-            <div class="card-footer">
-              <span class="mini-badge">${escapeHtml(getAssignmentRangeText(assignment))}</span>
-              ${warning ? `<span class="mini-badge warn">تجاوز السعة</span>` : ""}
+            <div class="card-content">
+              <div class="card-top">
+                <div class="course-name">${escapeHtml(assignment.course || "مقرر غير محدد")}</div>
+                <div class="type-badge">${escapeHtml(typeMeta.label)}</div>
+              </div>
+              <div class="card-meta"><strong>المستوى:</strong> ${escapeHtml(assignment.level || "-")}</div>
+              <div class="card-meta"><strong>الفرق:</strong> ${escapeHtml((assignment.groups || []).join("، ") || "-")}</div>
+              <div class="card-meta"><strong>القاعة:</strong> ${escapeHtml(assignment.room || "-")}</div>
+              ${warning ? `<div class="card-footer"><span class="mini-badge warn">تجاوز السعة</span></div>` : ""}
             </div>
           </button>
         </td>
@@ -1492,9 +1670,16 @@ function openModal(prefill = {}, editId = "") {
     document.getElementById("assignmentRoom").value = existing.room;
     document.getElementById("assignmentNotes").value = existing.notes;
     document.getElementById("assignmentRoomInfo").value = getRoomCapacity(existing.room) || "-";
+    document.getElementById("assignmentOffering").value = existing.offering || "";
+    document.getElementById("assignmentTemplate").value = existing.template || "";
+    document.getElementById("assignmentModalSubtitle").textContent = existing.autoGenerated
+      ? `عدّل الحقول ثم احفظ. هذه الحصة أنشأها الـ solver تلقائياً (${existing.offering || existing.template}). أي تعارض صلب سيمنع الحفظ.`
+      : "عدّل الحقول ثم احفظ. أي تعارض صلب سيمنع الحفظ.";
     updateStudentsFromGroups();
   } else {
     resetFormToCurrentLevel();
+    document.getElementById("assignmentOffering").value = "";
+    document.getElementById("assignmentTemplate").value = "";
     if (prefill.level) document.getElementById("assignmentLevel").value = prefill.level;
     if (prefill.day) document.getElementById("assignmentDay").value = prefill.day;
     if (prefill.period) document.getElementById("assignmentPeriod").value = String(prefill.period);
@@ -1652,7 +1837,9 @@ function readModalAssignment() {
     instructor: document.getElementById("assignmentInstructor").value,
     room: document.getElementById("assignmentRoom").value,
     students: document.getElementById("assignmentStudents").value,
-    notes: document.getElementById("assignmentNotes").value
+    notes: document.getElementById("assignmentNotes").value,
+    offering: document.getElementById("assignmentOffering").value,
+    template: document.getElementById("assignmentTemplate").value
   });
 }
 
@@ -1734,19 +1921,95 @@ function deleteCurrentAssignment() {
   showToast("تم حذف الحصة");
 }
 
+function looksLikeCatalog(payload) {
+  return payload && typeof payload === "object" && (
+    Array.isArray(payload.LevelsGroups) || Array.isArray(payload.Rooms) ||
+    Array.isArray(payload.TimeSlots) || Array.isArray(payload.Courses)
+  );
+}
+
+function looksLikeSolverExport(payload) {
+  return payload && typeof payload === "object" &&
+    looksLikeCatalog(payload.catalog) && Array.isArray(payload.assignments);
+}
+
 function importCatalogFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
       const payload = JSON.parse(String(reader.result || "{}"));
       if (!payload || typeof payload !== "object") throw new Error("invalid");
-      setCatalog(payload, file.name || SOURCE_FILE);
-      showToast("تم استيراد البيانات");
+
+      if (looksLikeSolverExport(payload)) {
+        // Combined timetable_schedule.json from timetable_solver.py:
+        // catalog + assignments + diagnostics + meta, all in one file.
+        loadSolverExport(payload, file.name);
+        return;
+      }
+
+      if (looksLikeCatalog(payload)) {
+        // Plain hti_data.json-style catalog — keep existing assignments as-is.
+        setCatalog(payload, file.name || SOURCE_FILE);
+        showToast("تم استيراد البيانات");
+        return;
+      }
+
+      throw new Error("unrecognized shape");
     } catch {
-      showToast("تعذر قراءة ملف البيانات");
+      showToast("تعذر قراءة الملف — تأكد أنه ملف بيانات (hti_data.json) أو ملف جدول من الـ solver (timetable_schedule.json)");
     }
   };
   reader.readAsText(file, "utf-8");
+}
+
+function loadSolverExport(payload, fileName, options = {}) {
+  // `replaceAssignments` controls whether the solver's own assignments list
+  // overwrites whatever is currently in state.assignments.
+  // - true  (default): an explicit user-initiated import — replace wholesale.
+  // - false: an automatic background catalog seed (see loadSeedCatalog). In
+  //   that case we must NEVER clobber a schedule the user already has saved
+  //   in localStorage — we only adopt the catalog, and keep/re-validate the
+  //   assignments already in state (sanitizeAssignments drops any that are
+  //   no longer valid against the new catalog, nothing more).
+  const replaceAssignments = options.replaceAssignments !== false;
+
+  state.catalog = normalizeCatalog(payload.catalog);
+  state.catalogName = fileName || (payload.meta && payload.meta.source) || SOURCE_FILE;
+  state.meta = payload.meta || null;
+  state.diagnostics = Array.isArray(payload.diagnostics) ? payload.diagnostics : [];
+
+  let rejected = 0;
+  if (replaceAssignments) {
+    const rows = Array.isArray(payload.assignments) ? payload.assignments : [];
+    const next = [];
+    for (const row of rows) {
+      const assignment = normalizeAssignment(row);
+      const check = validateAssignment(assignment, assignment.id);
+      if (check.errors.length) { rejected += 1; continue; }
+      if (next.some((item) => item.id === assignment.id)) assignment.id = uid();
+      next.push(assignment);
+    }
+    state.assignments = next;
+  } else {
+    // Keep the existing (already-restored) assignments; just re-check them
+    // against the freshly-loaded catalog.
+    sanitizeAssignments();
+  }
+
+  saveCatalogToStorage(payload.catalog, state.catalogName);
+  syncDatalists();
+  if (!state.activeLevel || !state.catalog.levelsOrder.includes(state.activeLevel)) {
+    state.activeLevel = state.catalog.levelsOrder[0] || "";
+  }
+  renderAll();
+  schedulePersist();
+
+  if (replaceAssignments) {
+    const parts = [`تم تحميل ${state.assignments.length} حصة`];
+    if (rejected) parts.push(`(تم تجاهل ${rejected} بسبب تعارض)`);
+    if (state.diagnostics.length) parts.push(`و${state.diagnostics.length} تنبيه من الـ solver`);
+    showToast(parts.join(" "));
+  }
 }
 
 function importScheduleFile(file) {
@@ -1774,23 +2037,36 @@ function importScheduleFile(file) {
   reader.readAsText(file, "utf-8");
 }
 
+function getCatalogRawForExport() {
+  // Prefer the exact payload we last loaded/cached (round-trips cleanly);
+  // fall back to null if nothing was ever loaded.
+  const stored = loadStoredCatalog();
+  return stored ? stored.payload : null;
+}
+
 function exportSchedule() {
+  const rawCatalog = getCatalogRawForExport();
   const payload = {
     meta: {
+      ...(state.meta || {}),
       source: state.catalogName || SOURCE_FILE,
-      exportedAt: new Date().toISOString(),
+      exported_at: new Date().toISOString(),
+      edited_in_browser: true,
+      scheduled_count: state.assignments.length,
       version: 1
     },
-    assignments: state.assignments
+    catalog: rawCatalog,
+    assignments: state.assignments,
+    diagnostics: state.diagnostics
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "hti_schedule.json";
+  a.download = "timetable_schedule_edited.json";
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 500);
-  showToast("تم تنزيل hti_schedule.json");
+  showToast("تم تنزيل timetable_schedule_edited.json");
 }
 
 function resetSchedule() {
@@ -1826,16 +2102,37 @@ function loadSeedCatalog() {
     }
   }
 
-  // 2. Try fetching hti_data.json from same origin
-  fetch(SOURCE_FILE, { cache: "no-store" })
+  // 2. Try fetching the solver's combined export from the same origin first
+  //    (this is the normal deployment: timetable_solver.py writes it right
+  //    next to this HTML file), then fall back to a plain catalog file.
+  fetch(SCHEDULE_SOURCE_FILE, { cache: "no-store" })
     .then((response) => {
       if (!response.ok) throw new Error("fetch failed");
       return response.json();
     })
-    .then((payload) => setCatalog(payload, SOURCE_FILE))
+    .then((payload) => {
+      if (looksLikeSolverExport(payload)) {
+        // Background/auto-load on startup: never overwrite a schedule the
+        // user already has saved locally (that's what caused classes to
+        // vanish on refresh). Only replace assignments outright when there
+        // is nothing saved yet, i.e. a genuine first run.
+        const hasLocalSchedule = state.assignments.length > 0;
+        loadSolverExport(payload, SCHEDULE_SOURCE_FILE, { replaceAssignments: !hasLocalSchedule });
+      } else {
+        throw new Error("not a solver export");
+      }
+    })
     .catch(() => {
-      renderAll();
-      showToast("لم يتم تحميل hti_data.json تلقائياً. استخدم الاستيراد.");
+      fetch(SOURCE_FILE, { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) throw new Error("fetch failed");
+          return response.json();
+        })
+        .then((payload) => setCatalog(payload, SOURCE_FILE))
+        .catch(() => {
+          renderAll();
+          showToast("لم يتم العثور على timetable_schedule.json أو hti_data.json تلقائياً. استخدم زر التحميل.");
+        });
     });
 }
 
@@ -1951,10 +2248,16 @@ document.addEventListener("change", (event) => {
 });
 
 document.getElementById("loadDataBtn").addEventListener("click", () => document.getElementById("catalogFileInput").click());
-document.getElementById("importScheduleBtn").addEventListener("click", () => document.getElementById("scheduleFileInput").click());
 document.getElementById("exportScheduleBtn").addEventListener("click", exportSchedule);
-document.getElementById("addAssignmentBtn").addEventListener("click", () => openModal());
 document.getElementById("resetScheduleBtn").addEventListener("click", resetSchedule);
+
+
+document.getElementById("toggleGroupViewBtn").addEventListener("click", () => {
+  state.groupView = state.groupView === "collapsed" ? "expanded" : "collapsed";
+  localStorage.setItem("hti_groupView", state.groupView);
+  renderBoard();
+});
+
 document.getElementById("catalogFileInput").addEventListener("change", (event) => {
   const [file] = event.target.files || [];
   if (file) importCatalogFile(file);
@@ -1992,6 +2295,8 @@ if (stored) {
   state.view = stored.view || "level";
   state.activeInstructor = stored.activeInstructor || "";
   state.lastSavedAt = stored.lastSavedAt || null;
+  state.meta = stored.meta || null;
+  state.diagnostics = stored.diagnostics || [];
 }
 populateModalStaticFields();
 openFirstAvailableLevel();
