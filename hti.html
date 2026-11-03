@@ -397,6 +397,27 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 #addProctorModal .vitem.unavailable .vicon{color:var(--red)}
 #addProctorModal .vitem.unavailable .subtle{color:#b91c1c}
 
+
+/* ── NEW PROCTOR FORM ── */
+.np-toggle{margin-right:auto}
+.np-form{display:none;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;flex-direction:column;gap:12px}
+.np-form.open{display:flex}
+.np-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.np-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.np-field label{font-size:12px;font-weight:800;color:var(--text-2)}
+.np-field input[type=text],.np-field select{
+  padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);
+  font-family:'Cairo',sans-serif;font-size:14px;background:#fff;color:var(--text);
+}
+.np-field input:focus,.np-field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,96,159,.15)}
+.np-days{display:flex;flex-wrap:wrap;gap:6px}
+.np-day{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;user-select:none}
+.np-day input{accent-color:var(--accent)}
+.np-err{color:var(--red);font-size:13px;font-weight:700;display:none}
+.np-actions{display:flex;gap:8px;justify-content:flex-start}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#04507f}
+
 /* ── PROCTOR VIEW ── */
 #proctorPanel{padding:32px 40px;display:none}
 .pv-toolbar{display:flex;align-items:center;gap:16px;margin-bottom:32px;flex-wrap:wrap}
@@ -643,6 +664,33 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
       <div id="addProctorMeta" style="margin-bottom:16px;font-weight:700;color:var(--text-2)"></div>
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
         <button class="btn btn-outline" id="addProctorToggle" onclick="toggleAddProctorAvailability()">عرض كل المراقبين</button>
+        <button class="btn btn-indigo np-toggle" id="newProctorToggle" onclick="toggleNewProctorForm()"><i class="fa-solid fa-user-plus"></i> مراقب جديد</button>
+      </div>
+      <div class="np-form" id="newProctorForm">
+        <div class="np-row">
+          <div class="np-field" style="flex:2;min-width:180px">
+            <label for="npName">اسم المراقب</label>
+            <input type="text" id="npName" placeholder="الاسم الكامل" onkeydown="if(event.key==='Enter')submitNewProctor()">
+          </div>
+          <div class="np-field">
+            <label for="npType">النوع</label>
+            <select id="npType"><option value="easy">مساعد</option><option value="hard">أساسي</option></select>
+          </div>
+          <div class="np-field">
+            <label for="npWeight">الوزن</label>
+            <select id="npWeight"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+          </div>
+        </div>
+        <label class="np-day" style="width:fit-content"><input type="checkbox" id="npAcademic"> أكاديمي</label>
+        <div class="np-field">
+          <label>الأيام المتاحة</label>
+          <div class="np-days" id="npDays"></div>
+        </div>
+        <div class="np-err" id="npErr"></div>
+        <div class="np-actions">
+          <button class="btn btn-primary" onclick="submitNewProctor()"><i class="fa-solid fa-plus"></i> إنشاء وإضافة للقاعة</button>
+          <button class="btn btn-outline" onclick="toggleNewProctorForm(false)">إلغاء</button>
+        </div>
       </div>
       <input type="text" class="search-input" id="addProctorSearch" placeholder="بحث باسم المراقب..." oninput="filterAddProctorList(this.value)" style="width:100%;margin-bottom:16px;">
       <div id="addProctorList" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px;"></div>
@@ -931,14 +979,55 @@ function showAddProctorModal(tsKey, roomName) {
   currentAddProctorTs = tsKey; currentAddProctorRoom = roomName; currentAddProctorFilter = '';
   showAllAddProctors = false;
   const tsData = schedule[tsKey];
-  document.getElementById('addProctorMeta').textContent = `${tsData.day} — ${tsData.exam_time} | قاعة ${roomName}`;
+  document.getElementById('addProctorMeta').textContent = `${tsData.day} — ${fmtExamTime(tsData.exam_time)} | قاعة ${roomName}`;
   document.getElementById('addProctorSearch').value = '';
   updateAddProctorToggle();
   document.getElementById('addProctorModal').style.display = 'flex';
   renderAddProctorList();
 }
 
+const NP_ALL_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','السبت'];
+
+function toggleNewProctorForm(force) {
+  const form = document.getElementById('newProctorForm');
+  const open = typeof force === 'boolean' ? force : !form.classList.contains('open');
+  form.classList.toggle('open', open);
+  if (open) {
+    const scheduleDays = [...new Set(Object.values(schedule).map(t => t.day))];
+    const days = [...new Set([...NP_ALL_DAYS, ...scheduleDays])];
+    document.getElementById('npDays').innerHTML = days.map(d =>
+      `<label class="np-day"><input type="checkbox" value="${d}" checked> ${d}</label>`).join('');
+    document.getElementById('npName').value = (currentAddProctorFilter || '').trim();
+    document.getElementById('npType').value = 'easy';
+    document.getElementById('npWeight').value = '1';
+    document.getElementById('npAcademic').checked = false;
+    document.getElementById('npErr').style.display = 'none';
+    setTimeout(() => document.getElementById('npName').focus(), 0);
+  }
+}
+
+function submitNewProctor() {
+  const err = document.getElementById('npErr');
+  const showErr = msg => { err.textContent = msg; err.style.display = 'block'; };
+  const name = document.getElementById('npName').value.replace(/\s+/g, ' ').trim();
+  if (!name) return showErr('الرجاء إدخال اسم المراقب');
+  if (name.includes('"') || name.includes("'") || name.includes('<') || name.includes('>')) return showErr('الاسم يحتوي على رموز غير مسموحة');
+  if (Object.keys(proctorMeta).some(n => n.trim() === name)) return showErr('يوجد مراقب بنفس الاسم بالفعل — ابحث عنه في القائمة');
+  const days = [...document.querySelectorAll('#npDays input:checked')].map(i => i.value);
+  if (!days.length) return showErr('اختر يوماً واحداً على الأقل');
+
+  proctorMeta[name] = {
+    avail_days: days,
+    weight: parseInt(document.getElementById('npWeight').value) || 1,
+    type: document.getElementById('npType').value,
+    is_academic: document.getElementById('npAcademic').checked
+  };
+  // Reuse the normal add flow so conflict/availability warnings still apply
+  addProctorToRoom(name);
+}
+
 function closeAddProctorModal() {
+  toggleNewProctorForm(false);
   document.getElementById('addProctorModal').style.display = 'none';
   currentAddProctorTs = null; currentAddProctorRoom = null;
 }
@@ -1026,11 +1115,35 @@ function actuallyAddProctor(name, tsKey, room, fromStaging) {
   showToast(`تمت إضافة "${name}" للقاعة ${room}`);
 }
 
+function fmtExamClock(clockText) {
+  const m = String(clockText).trim().match(/^(\d{1,2})(?::(\d{2}))?$/);
+  if (!m) return String(clockText).trim();
+  const h = Number(m[1]), min = m[2] || '00';
+  // Same convention as examClockToMinutes: 1-5 and 12 are PM, 6-11 are AM; 13-23 are real 24h values
+  let h24;
+  if (h >= 13) h24 = h;
+  else if (h === 0) h24 = 0;
+  else if (h === 12 || (h >= 1 && h <= 5)) h24 = h === 12 ? 12 : h + 12;
+  else h24 = h;
+  const period = h24 >= 12 && h24 < 24 ? 'PM' : 'AM';
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  return `${h12}:${min} ${period}`;
+}
+
+function fmtExamTime(range, plain) {
+  const raw = String(range ?? '');
+  const parts = raw.replace(/[–—]/g, '-').split('-').map(x => x.trim()).filter(Boolean);
+  if (!parts.length) return raw;
+  const out = parts.map(fmtExamClock).join(' - ');
+  return plain ? out : `\u2066${out}\u2069`;
+}
+
 function examClockToMinutes(clockText) {
   const [rawHour, rawMinute] = String(clockText).trim().split(':');
   const hour = Number(rawHour), minute = Number(rawMinute);
   if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
 
+  if (hour >= 13 && hour <= 23) return hour * 60 + minute;
   if (hour >= 1 && hour <= 5) return (hour + 12) * 60 + minute;
   if (hour >= 8 && hour <= 11) return hour * 60 + minute;
   if (hour === 12) return 12 * 60 + minute;
@@ -1041,6 +1154,36 @@ function examTimeStartMinutes(timeRange) {
   const normalized = String(timeRange || '').replace(/[–—]/g, '-').trim();
   const [start] = normalized.split('-').map(part => part.trim()).filter(Boolean);
   return start ? examClockToMinutes(start) : null;
+}
+
+function examRangeMinutes(timeRange) {
+  const parts = String(timeRange || '').replace(/[–—]/g, '-').split('-').map(x => x.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  const start = examClockToMinutes(parts[0]), end = examClockToMinutes(parts[1]);
+  if (start === null || end === null || end <= start) return null;
+  return [start, end];
+}
+
+// True when two different exam slots on the same date overlap in time (identical slots are handled separately)
+function slotsOverlap(tsA, tsB) {
+  if (!tsA || !tsB || tsA.date !== tsB.date || tsA.exam_time === tsB.exam_time) return false;
+  const a = examRangeMinutes(tsA.exam_time), b = examRangeMinutes(tsB.exam_time);
+  if (!a || !b) return false;
+  return a[0] < b[1] && b[0] < a[1];
+}
+
+// Rooms in OTHER overlapping slots where this proctor is already assigned
+function findOverlapConflicts(name, tsKey, ignore) {
+  const here = schedule[tsKey], out = [];
+  if (!here) return out;
+  for (const [otherKey, other] of Object.entries(schedule)) {
+    if (otherKey === tsKey || !slotsOverlap(here, other)) continue;
+    for (const [rn, r] of Object.entries(other.rooms || {})) {
+      if (ignore && ignore.tsKey === otherKey && ignore.room === rn) continue;
+      if ((r.proctors || []).includes(name)) out.push({ tsKey: otherKey, room: rn, exam_time: other.exam_time });
+    }
+  }
+  return out;
 }
 
 function sortTimes(a, b) {
@@ -1414,7 +1557,7 @@ function renderSchedule(sched, filter=''){
           <thead>
             <tr>
               <th style="width:160px;">القاعة / الوقت</th>
-              ${times.map(t => `<th class="time-col">${t}</th>`).join('')}
+              ${times.map(t => `<th class="time-col">${fmtExamTime(t)}</th>`).join('')}
             </tr>
           </thead>
           <tbody></tbody>
@@ -1522,7 +1665,7 @@ function renderStaging(){
   const byTs={};
   for(const s of staging){if(!byTs[s.fromTsKey])byTs[s.fromTsKey]=[];byTs[s.fromTsKey].push(s);}
   for(const [tsKey,items] of Object.entries(byTs)){
-    const ts=schedule[tsKey],lbl=ts?`${ts.day} ${ts.exam_time}`:tsKey;
+    const ts=schedule[tsKey],lbl=ts?`${ts.day} ${fmtExamTime(ts.exam_time)}`:tsKey;
     const grp=document.createElement('div'); grp.className='staging-group';
     grp.innerHTML=`<div class="staging-group-lbl">${lbl}</div><div class="staging-group-chips"></div>`;
     const chips=grp.querySelector('.staging-group-chips');
@@ -1571,7 +1714,7 @@ function renderProctorView(filter=''){
 
     const colsStr = `100px repeat(${pTimes.length||1}, 1fr)`;
     const theadHtml = `<div class="pc-thead" style="grid-template-columns: ${colsStr};"><div class="pc-cell h">اليوم</div>` + 
-                      pTimes.map(t => `<div class="pc-cell h" style="text-align:center">${t}</div>`).join('') + `</div>`;
+                      pTimes.map(t => `<div class="pc-cell h" style="text-align:center">${fmtExamTime(t)}</div>`).join('') + `</div>`;
 
     let tbodyHtml = '';
     if (!entries.length) {
@@ -1656,7 +1799,7 @@ function buildFinalScheduleWorkbook(){
 
     times.forEach((time, timeIdx) => {
       const titleRow = rows.length;
-      rows.push([`جدول ${year} ( من الساعة ${time} )`, '', '', '', '', '', '', '']);
+      rows.push([`جدول ${year} ( من الساعة ${fmtExamTime(time, true)} )`, '', '', '', '', '', '', '']);
       rows.push(header);
       merges.push({ s: { r: titleRow, c: 0 }, e: { r: titleRow, c: 7 } });
 
@@ -1770,6 +1913,8 @@ function validateMove(name,fromTsKey,fromRoom,toTsKey,toRoom){
     const toTs=schedule[toTsKey];
     const existing=Object.entries(schedule[toTsKey]?.rooms||{}).filter(([rn,r])=>!(fromTsKey===toTsKey&&rn===fromRoom)&&r.proctors.includes(name));
     if(existing.length)issues.push({type:'error',msg:`⛔ تعارض — المراقب معين بالفعل في قاعة ${existing[0][0]} في هذا الوقت`});
+    const overlaps=findOverlapConflicts(name,toTsKey,fromRoom&&fromRoom!=='__staging__'?{tsKey:fromTsKey,room:fromRoom}:null);
+    if(overlaps.length)issues.push({type:'error',msg:`⏱ تداخل زمني — المراقب معين في قاعة ${overlaps[0].room} (${fmtExamTime(overlaps[0].exam_time)}) ويتداخل مع هذا الموعد`});
     if(toTs&&meta.avail_days&&!meta.avail_days.includes(toTs.day))issues.push({type:'error',msg:`📅 المراقب غير متاح يوم ${toTs.day}`});
   }
   if(fromRoom&&fromRoom!=='__staging__'){
@@ -1790,6 +1935,7 @@ function getViolations(tsKey,roomName,roomData){
   if(proctors.length<required_n)v.push('count');
   const tsData=schedule[tsKey];
   if(tsData)for(const p of proctors)if(Object.entries(tsData.rooms).some(([rn,r])=>rn!==roomName&&r.proctors.includes(p))){v.push('double');break;}
+  if(tsData&&proctors.some(p=>findOverlapConflicts(p,tsKey).length))v.push('overlap');
   return v;
 }
 
@@ -1820,8 +1966,8 @@ function removeProctorFromRoom(nameEnc, tsKeyEnc, roomEnc){
 // ── MODAL ──
 function showConfirmModal(name,fromTsKey,fromRoom,target,dest,issues,onConfirm){
   const fromTs=schedule[fromTsKey];
-  const fromLbl=fromRoom==='__staging__'?'منطقة الانتظار':`${fromRoom} (${fromTs?.day} ${fromTs?.exam_time})`;
-  const toLbl=target==='staging'?'منطقة الانتظار':`${dest.room} (${schedule[dest.tsKey]?.day} ${schedule[dest.tsKey]?.exam_time})`;
+  const fromLbl=fromRoom==='__staging__'?'منطقة الانتظار':`${fromRoom} (${fromTs?.day} ${fmtExamTime(fromTs?.exam_time)})`;
+  const toLbl=target==='staging'?'منطقة الانتظار':`${dest.room} (${schedule[dest.tsKey]?.day} ${fmtExamTime(schedule[dest.tsKey]?.exam_time)})`;
   document.getElementById('movePreview').innerHTML=`<div class="mp-item"><div class="mp-lbl">المراقب</div><div class="mp-val">${name}</div></div><div class="mp-item"><div class="mp-lbl">من</div><div class="mp-val">${fromLbl}</div></div><div class="mp-item"><div class="mp-lbl">إلى</div><div class="mp-val">${toLbl}</div></div>`;
   document.getElementById('validList').innerHTML=issues.map(v=>`<div class="vitem ${v.type}"><div class="vicon">${v.type==='error'?'❌':v.type==='warn'?'⚠️':'✅'}</div><div>${v.msg}</div></div>`).join('');
   const hasErr=issues.some(v=>v.type==='error');
