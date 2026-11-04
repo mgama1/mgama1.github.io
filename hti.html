@@ -450,6 +450,19 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
 .pc-empty{padding:24px;font-size:15px;color:var(--text-3);text-align:center;font-weight:600;}
 .pc-total{padding:12px 20px;font-size:14px;font-weight:700;color:var(--text-2);display:flex;justify-content:space-between;background:var(--s2);border-top:1px solid var(--border);}
 
+/* ── لجنة خاصة ── */
+.sp-badge{display:inline-block;font-size:11px;font-weight:800;color:var(--indigo);background:var(--indigo-dim);border:1px solid #c7d4e6;border-radius:999px;padding:0 8px;margin-inline-start:6px;vertical-align:middle}
+.matrix-cell.special .mc-info{border-top:3px solid var(--indigo)}
+.room-info-btn.danger{color:var(--red);border-color:#e7c3c3}
+.room-info-btn.danger:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.sp-list{max-height:58vh;overflow-y:auto;padding:2px}
+.sp-row{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:flex-end;padding:12px;border:1px solid var(--border);border-radius:var(--r);background:#fff;margin-bottom:10px}
+.sp-row.locked{opacity:.55}
+.sp-subj{flex:1 1 100%;font-weight:800;font-size:14px;color:var(--text)}
+.sp-subj small{font-weight:600;color:var(--text-3);margin-inline-start:8px}
+.sp-row .np-err{flex:1 1 100%}
+.sp-note{font-size:13px;font-weight:700;color:var(--text-3);flex:1 1 100%}
+
 /* ── MODAL ── */
 .overlay{
   position:fixed;inset:0;background:rgba(17,24,39,.6);z-index:500;
@@ -587,6 +600,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
       <button class="search-clear" onclick="document.getElementById('searchInput').value='';filterSchedule('');this.style.display='none'">✕</button>
     </div>
     <button class="btn btn-outline" onclick="scrollToToday()" title="الانتقال إلى اليوم الحالي"><i class="fa-regular fa-calendar-check"></i> اليوم</button>
+    <button class="btn btn-primary" onclick="openSpecialModal()"><i class="fa-solid fa-plus"></i> إضافة لجنة خاصة</button>
     <button class="btn btn-indigo" onclick="exportToExcel()"><span style="color: #0c7238;">تصدير</span> <i class="fa-solid fa-file-excel" style="color: rgb(12, 114, 56);"></i></button>
   </div>
 
@@ -709,6 +723,26 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-
     </div>
     <div class="modal-ftr">
       <button class="btn btn-outline" onclick="closeBackupHistory()">إغلاق</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="specialModal" style="display:none">
+  <div class="modal" style="width:860px;max-width:94vw;">
+    <div class="modal-hdr"><div class="modal-title">إضافة لجنة خاصة</div></div>
+    <div class="modal-body">
+      <div class="np-field" style="margin-bottom:14px;max-width:360px">
+        <label for="spGroup">القسم والفرقة</label>
+        <select id="spGroup" onchange="spLoadGroup()"></select>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--text-3);margin-bottom:12px">
+        تُنشأ لكل مادة لجنة خاصة في نفس تاريخ ووقت امتحانها الأصلي تمامًا. اسم القاعة حرّ، لكن لا يمكن اختيار قاعة مشغولة في الموعد.
+      </div>
+      <div class="sp-list" id="spList"></div>
+      <datalist id="spRoomList"></datalist>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-primary" id="spConfirmBtn" onclick="spConfirm()">إضافة اللجان</button>
+      <button class="btn btn-outline" onclick="closeSpecialModal()">إلغاء</button>
     </div>
   </div>
 </div>
@@ -1310,6 +1344,7 @@ function parseCSV(text) {
     if(room){
       if(!schedule[tsKey].rooms[room]) schedule[tsKey].rooms[room]={subject:'',department:'',year:'',student_count:'',professor:'',required_n:0,required_w:0,room_has_academic:false,proctors:[],entries:[]};
       const rm = schedule[tsKey].rooms[room];
+      if(String(row.is_special||'').toLowerCase()==='yes') rm.special = true;
       const courseEntries = parseCoursesField(courses);
       if (courseEntries.length) {
         courseEntries.forEach(entry => mergeRoomMetadata(rm, {
@@ -1606,7 +1641,7 @@ function renderMatrixCell(tsKey, roomName, roomData){
 
   const isUnderstaffed = required_n > 0 && proctors.length < required_n;
   
-  let classes = 'matrix-cell';
+  let classes = 'matrix-cell' + (roomData.special ? ' special' : '');
   if (viols.length) classes += ' violation';
   else if (isUnderstaffed) classes += ' understaffed';
 
@@ -1629,8 +1664,9 @@ function renderMatrixCell(tsKey, roomName, roomData){
          ondrop="onDrop(event, 'room', {tsKey: '${tsKey}', room: '${roomName}'})">
       <div class="mc-info">
         <div class="mc-hdr">
-           <div class="mc-subj">${subject || 'بدون مادة'} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${(department||'') + (year||'')}</div>${student_count ? `<div class="student-count-badge"><i class="fa-solid fa-user-group" style="font-size:9px;opacity:.7;"></i>${student_count}</div>` : ''}</div>
+           <div class="mc-subj">${subject || 'بدون مادة'}${roomData.special ? '<span class="sp-badge">لجنة خاصة</span>' : ''} <div style="font-size:12px;color:var(--text-3);font-weight:600;margin-top:2px;">${(department||'') + (year||'')}</div>${student_count ? `<div class="student-count-badge"><i class="fa-solid fa-user-group" style="font-size:9px;opacity:.7;"></i>${student_count}</div>` : ''}</div>
            <div style="display:flex;gap:4px;">
+             ${roomData.special ? `<button class="room-info-btn danger" onclick="event.stopPropagation();deleteSpecialSession('${encodeURIComponent(tsKey)}','${encodeURIComponent(roomName)}')" title="حذف اللجنة الخاصة"><i class="fa-solid fa-trash" style="font-size:11px;"></i></button>` : ''}
              <button class="room-info-btn" onclick="event.stopPropagation();showAddProctorModal('${tsKey}', '${roomName}')" title="إضافة مراقب" style="color:var(--accent);border-color:var(--accent-mid);"><i class="fa-solid fa-user-plus" style="font-size:11px;"></i></button>
              <button class="room-info-btn" onclick="event.stopPropagation();this.closest('.mc-info').querySelector('.room-info-panel').classList.toggle('open')" title="التفاصيل">ℹ</button>
            </div>
@@ -2038,11 +2074,169 @@ function resetAll(){
   updateRecoveryUI();
 }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+// ── إضافة لجنة خاصة ──
+let spRows = [];
+const SP_BAD_CHARS = /['"`<>\\&]/;
+
+function spEsc(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function spNorm(s){ return String(s || '').trim().replace(/\s+/g,' ').toLowerCase(); }
+function spSlotLabel(tsKey){ const t = schedule[tsKey]; return t ? `${t.day} ${t.date} — ${fmtExamTime(t.exam_time, true)}` : tsKey; }
+function spSortedSlots(){
+  return Object.keys(schedule).sort((a,b) => {
+    const A = schedule[a], B = schedule[b];
+    if (A.date !== B.date) return A.date.localeCompare(B.date);
+    return sortTimes(A.exam_time, B.exam_time);
+  });
+}
+function spRoomEntries(r){
+  if (Array.isArray(r.entries) && r.entries.length) return r.entries;
+  return [{ subject: r.subject, department: r.department, year: r.year, student_count: r.student_count, professor: r.professor }];
+}
+function spGroupKey(e){ return `${(e.department||'').trim()}||${String(e.year||'').trim()}`; }
+
+function spGroups(){
+  const map = new Map();
+  for (const ts of Object.values(schedule)) for (const r of Object.values(ts.rooms || {})) {
+    if (r.special) continue;
+    for (const e of spRoomEntries(r)) {
+      if (!e.subject) continue;
+      const k = spGroupKey(e);
+      if (!map.has(k)) map.set(k, { key: k, department: (e.department||'').trim(), year: String(e.year||'').trim() });
+    }
+  }
+  return Array.from(map.values()).sort((a,b) => a.department.localeCompare(b.department,'ar') || a.year.localeCompare(b.year, undefined, {numeric:true}));
+}
+
+function spCoursesFor(groupKey){
+  const out = new Map();
+  for (const tsKey of spSortedSlots()) {
+    for (const r of Object.values(schedule[tsKey].rooms || {})) {
+      if (r.special) continue;
+      for (const e of spRoomEntries(r)) {
+        if (!e.subject || spGroupKey(e) !== groupKey || out.has(e.subject)) continue;
+        out.set(e.subject, { subject: e.subject, department: (e.department||'').trim(), year: String(e.year||'').trim(), professor: e.professor || '', origTsKey: tsKey });
+      }
+    }
+  }
+  return Array.from(out.values());
+}
+
+function spHasSpecial(c){
+  return Object.values(schedule).some(ts => Object.values(ts.rooms || {}).some(r => r.special &&
+    spRoomEntries(r).some(e => e.subject === c.subject && spGroupKey(e) === `${c.department}||${c.year}`)));
+}
+
+function openSpecialModal(){
+  const groups = spGroups();
+  if (!groups.length) { showToast('لا يوجد جدول لإضافة لجان خاصة إليه'); return; }
+  document.getElementById('spGroup').innerHTML = groups.map(g =>
+    `<option value="${spEsc(g.key)}">${spEsc(g.department)} — الفرقة ${spEsc(g.year)}</option>`).join('');
+  const names = new Set();
+  Object.values(schedule).forEach(ts => Object.keys(ts.rooms || {}).forEach(n => names.add(n)));
+  document.getElementById('spRoomList').innerHTML = Array.from(names).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).map(n => `<option value="${spEsc(n)}">`).join('');
+  document.getElementById('specialModal').style.display = 'flex';
+  spLoadGroup();
+}
+function closeSpecialModal(){ document.getElementById('specialModal').style.display = 'none'; spRows = []; }
+
+function spLoadGroup(){
+  const key = document.getElementById('spGroup').value;
+  spRows = spCoursesFor(key).map(c => ({ course: c, tsKey: c.origTsKey, room: '', count: '', locked: spHasSpecial(c) }));
+  document.getElementById('spList').innerHTML = spRows.map((row, i) => `
+    <div class="sp-row ${row.locked ? 'locked' : ''}">
+      <div class="sp-subj">${spEsc(row.course.subject)}${row.course.professor ? `<small>${spEsc(row.course.professor)}</small>` : ''}</div>
+      ${row.locked ? `<div class="sp-note">توجد لجنة خاصة لهذه المادة بالفعل — احذفها أولًا لإنشاء أخرى.</div>` : `
+      <div class="np-field" style="flex:2;min-width:240px">
+        <label>الموعد</label>
+        <input type="text" value="${spEsc(spSlotLabel(row.tsKey))}" readonly tabindex="-1" style="background:var(--s2);color:var(--text-2);cursor:default">
+      </div>
+      <div class="np-field" style="flex:1.2;min-width:150px">
+        <label>القاعة</label>
+        <input type="text" list="spRoomList" maxlength="40" placeholder="اكتب اسم القاعة" oninput="spSet(${i},'room',this.value)">
+      </div>
+      <div class="np-field" style="flex:0 0 110px;min-width:90px">
+        <label>عدد الطلاب</label>
+        <input type="text" inputmode="numeric" placeholder="اختياري" oninput="spSet(${i},'count',this.value)">
+      </div>
+      <div class="np-err" id="spErr${i}"></div>`}
+    </div>`).join('') || '<div style="color:var(--text-3);font-weight:700">لا توجد مواد لهذا القسم.</div>';
+  spValidate();
+}
+
+function spSet(i, field, value){ spRows[i][field] = value; spValidate(); }
+
+function spConflict(i){
+  const row = spRows[i], name = spNorm(row.room);
+  if (!name) return '';
+  if (SP_BAD_CHARS.test(row.room)) return 'اسم القاعة يحتوي على رموز غير مسموحة ( \' " ` < > \\ & )';
+  const here = schedule[row.tsKey];
+  for (const [k, ts] of Object.entries(schedule)) {
+    if (k !== row.tsKey && !slotsOverlap(here, ts)) continue;
+    for (const rn of Object.keys(ts.rooms || {})) {
+      if (spNorm(rn) === name) return `القاعة "${rn}" مشغولة في ${ts.day} ${ts.date} (${fmtExamTime(ts.exam_time, true)})`;
+    }
+  }
+  for (let j = 0; j < spRows.length; j++) {
+    if (j === i || spRows[j].locked || spNorm(spRows[j].room) !== name) continue;
+    if (spRows[j].tsKey === row.tsKey || slotsOverlap(here, schedule[spRows[j].tsKey]))
+      return `نفس القاعة مختارة لمادة أخرى ("${spRows[j].course.subject}") في وقت متداخل`;
+  }
+  return '';
+}
+
+function spValidate(){
+  let ok = true, active = 0;
+  spRows.forEach((row, i) => {
+    if (row.locked) return;
+    active++;
+    const msg = spConflict(i);
+    const el = document.getElementById('spErr' + i);
+    if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+    if (msg || !spNorm(row.room)) ok = false;
+  });
+  document.getElementById('spConfirmBtn').disabled = !ok || !active;
+  document.getElementById('spConfirmBtn').style.opacity = (!ok || !active) ? '.5' : '1';
+}
+
+function spConfirm(){
+  spValidate();
+  if (document.getElementById('spConfirmBtn').disabled) return;
+  let n = 0;
+  for (const row of spRows) {
+    if (row.locked) continue;
+    const room = row.room.trim().replace(/\s+/g, ' ');
+    const c = row.course, count = String(row.count || '').trim();
+    const entry = { subject: c.subject, department: c.department, year: c.year, student_count: count, professor: c.professor };
+    schedule[row.tsKey].rooms[room] = {
+      subject: c.subject, department: c.department, year: c.year, student_count: count, professor: c.professor,
+      required_n: 0, required_w: 0, room_has_academic: false, proctors: [], entries: [entry], special: true
+    };
+    n++;
+  }
+  closeSpecialModal();
+  renderSchedule(schedule, document.getElementById('searchInput').value);
+  updateStats(); saveState();
+  showToast(`تمت إضافة ${n} لجنة خاصة`);
+}
+
+function deleteSpecialSession(tsKeyEnc, roomEnc){
+  const tsKey = decodeURIComponent(tsKeyEnc), room = decodeURIComponent(roomEnc);
+  const r = schedule[tsKey]?.rooms[room];
+  if (!r || !r.special) return;
+  const extra = r.proctors.length ? `\nسيتم نقل ${r.proctors.length} مراقب إلى الانتظار.` : '';
+  if (!confirm(`حذف اللجنة الخاصة "${r.subject}" في القاعة ${room}؟${extra}`)) return;
+  r.proctors.forEach(name => staging.push({ name, fromTsKey: tsKey, fromRoom: '__staging__' }));
+  delete schedule[tsKey].rooms[room];
+  renderSchedule(schedule, document.getElementById('searchInput').value);
+  renderStaging(); updateStats(); saveState();
+  showToast('تم حذف اللجنة الخاصة');
+}
+
 function exportCSV(){
-  const h=['date','day','exam_time','department','year','room','subject','student_count','professor','proctor','proctor_weight','proctor_type','is_academic','room_required_n','room_required_w','room_has_academic','avail_days'];
+  const h=['date','day','exam_time','department','year','room','subject','student_count','professor','proctor','proctor_weight','proctor_type','is_academic','room_required_n','room_required_w','room_has_academic','avail_days','is_special'];
   const rows=[h.join(',')];
-  for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms))for(const p of r.proctors){const m=proctorMeta[p]||{};rows.push([ts.date,ts.day,ts.exam_time,r.department,r.year,rn,r.subject,r.student_count,r.professor||'',p,m.weight||1,m.type||'easy',m.is_academic?'yes':'no',r.required_n,r.required_w,r.room_has_academic?'yes':'no',(m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
-  for(const s of staging){const ts=schedule[s.fromTsKey];const m=proctorMeta[s.name]||{};rows.push([ts?.date||'',ts?.day||'',ts?.exam_time||'','','','UNASSIGNED','','','',s.name,m.weight||1,m.type||'easy',m.is_academic?'yes':'no','','','',( m.avail_days||[]).join(', ')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
+  for(const [tsKey,ts] of Object.entries(schedule))for(const [rn,r] of Object.entries(ts.rooms))for(const p of (r.special&&!r.proctors.length?['']:r.proctors)){const m=proctorMeta[p]||{};rows.push([ts.date,ts.day,ts.exam_time,r.department,r.year,rn,r.subject,r.student_count,r.professor||'',p,m.weight||1,m.type||'easy',m.is_academic?'yes':'no',r.required_n,r.required_w,r.room_has_academic?'yes':'no',(m.avail_days||[]).join(', '),r.special?'yes':'no'].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
+  for(const s of staging){const ts=schedule[s.fromTsKey];const m=proctorMeta[s.name]||{};rows.push([ts?.date||'',ts?.day||'',ts?.exam_time||'','','','UNASSIGNED','','','',s.name,m.weight||1,m.type||'easy',m.is_academic?'yes':'no','','','',( m.avail_days||[]).join(', '),''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`proctor_assignments_edited_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('تم تحميل نسخة احتياطية');
 }
 </script>
