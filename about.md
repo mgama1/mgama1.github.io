@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-## A mechatronics engineer with broad interest in robotics, machine learning and control systems.
+## A mechatronics engineer with broad interest in robotics, machine learning and control systems
 
 ### Contact me
 
