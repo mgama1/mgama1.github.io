@@ -30,7 +30,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer}
 table{border-collapse:collapse;width:100%;min-width:860px}
 th,td{border:1px solid var(--line);padding:6px 8px;text-align:center;vertical-align:middle}
 th{background:#f1f5f9;color:var(--mut);font-size:13px}th.tt{font-size:20px;background:#fff;color:var(--pri);padding:12px}
-tbody.slot td{border-top-color:var(--line)}tbody.slot{border-top:3px solid var(--pribg)}tbody.slot.over td{background:var(--pribg)}
+tbody.day td{border-top-color:var(--line)}tbody.day{border-top:3px solid var(--pribg)}.slot.over td{background:var(--pribg)}tr.slot:not(.first) td.tm{border-top:2px solid var(--pribg)}
 td.nm{font-weight:700}td.dp{font-weight:600}
 .chip{display:block;font-size:11px;line-height:1.7;border-radius:10px;margin-top:3px;font-weight:600}.chip.ok{background:var(--okbg);color:var(--ok)}.chip.warn{background:#fff3e0;color:var(--amb)}.chip.bad{background:var(--warn);color:#fff}
 #rdd{position:fixed;z-index:60;display:none;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.12);max-height:220px;overflow:auto}#rdd .ri{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 10px;font-size:13px;cursor:pointer}#rdd .ri:hover,#rdd .ri.act{background:var(--pribg)}#rdd .ri.occ{background:rgba(192,57,43,.09)}#rdd .ri.occ:hover,#rdd .ri.occ.act{background:rgba(192,57,43,.2)}#rdd small{font-size:11px;color:var(--warn);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}@media print{#rdd{display:none!important}}
@@ -102,7 +102,8 @@ function table(){
  const ss=yslots().sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
  let h=`<table dir="rtl"><thead><tr><th colspan="8" class="tt">الفرقة ${YN[S.yr]}</th></tr><tr>${["اليوم","التاريخ","الوقت","اسم المادة","استاذ المادة","المكان","عدد الطلاب","القسم"].map(x=>`<th>${x}</th>`).join("")}</tr></thead>`;
  if(!ss.length)h+=`<tbody><tr><td colspan="8" class="empty" style="padding:40px">أضف موعداً من الأعلى (ولو موعداً واحداً مثل 09:00–12:00) ثم اسحب المواد من القائمة الجانبية إليه.</td></tr></tbody>`;
- ss.forEach(s=>{const all=[],bl=blocked(s);
+ const groups=[];ss.forEach(s=>{let g=groups[groups.length-1];if(!g||g.date!=s.date)groups.push(g={date:s.date,items:[]});g.items.push(s)});
+ groups.forEach(g=>{let sh="",nrows=0;g.items.forEach((s,si)=>{const all=[],bl=blocked(s);
   S.exams.filter(x=>x.slot==s.id).forEach(e=>{const eg=[];
    e.depts.forEach(d=>{const rs=e.rows.map((r,i)=>({r,i})).filter(x=>x.r.d==d),a=asg(e,d),t=tot(d),rem=t-a;const sa=rem>0||!rs.length||(ui.add&&ui.add.e==e.id&&ui.add.d==d);
     const dc=`<td class="dp" rowspan="${rs.length+(sa?1:0)}">${esc(d)}<span class="chip ${rem==0?"ok":rem<0?"bad":"warn"}">${a}/${t}${rem>0?" · باقي "+rem:rem<0?" · زيادة "+-rem:" ✓"}</span><button class="x" data-a="deldept" data-e="${e.id}" data-d="${esc(d)}" title="حذف القسم من الامتحان">✕</button></td>`;
@@ -110,13 +111,25 @@ function table(){
     if(sa)eg.push(addcell(e,d,rem)+(rs.length?"":dc))});
    eg.forEach((b,i)=>all.push((i?"":`<td class="nm" rowspan="${eg.length}">${esc(e.name)}<button class="x" data-a="delexam" data-e="${e.id}" title="حذف الامتحان">✕</button></td><td rowspan="${eg.length}"><input class="pf" list="pl" data-e="${e.id}" value="${esc(e.profs.join(" / "))}" placeholder="الأستاذ"></td>`)+b))});
   if(!all.length)all.push(`<td colspan="5" class="empty">اسحب مادة إلى هنا</td>`);
-  all.forEach((b,i)=>{if(!i)h+=`<tbody class="slot${bl?" blk":""}" data-s="${s.id}">`;
-   h+=`<tr>${i?"":`<td rowspan="${all.length+1}">${dn(s.date)}</td><td rowspan="${all.length+1}">${ui.ed==s.id?`<input type="date" class="sdt" data-s="${s.id}" value="${s.date}"><button class="pri" data-a="editok" style="padding:2px 10px;margin-inline-start:4px">OK</button><button class="x" data-a="editno">✕</button>`:`${fd(s.date)}<button class="x" data-a="editdate" data-s="${s.id}" title="تعديل التاريخ">✎</button>`}</td><td rowspan="${all.length+1}">${s.from} الى ${s.to}<button class="x" data-a="delslot" data-s="${s.id}" title="حذف الموعد">✕</button></td>`}${b}</tr>`});
-  h+=`<tr class="np"><td colspan="5" class="dz" data-a="put" data-s="${s.id}">${bl?"⛔ تعارض: هذا القسم لديه امتحان آخر في نفس الوقت":ui.pick?"اضغط لوضع المادة المحددة هنا":"⬇ اسحب مادة إلى هنا"}</td></tr></tbody>`});
+  nrows+=all.length+1;
+  all.forEach((b,i)=>{
+   sh+=`<tr class="slot${bl?" blk":""}${i||si?"":" first"}" data-s="${s.id}">${i||si?"":"@@DAY@@"}${i?"":`<td class="tm" rowspan="${all.length+1}">${s.from} الى ${s.to}<button class="x" data-a="delslot" data-s="${s.id}" title="حذف الموعد">✕</button></td>`}${b}</tr>`});
+  sh+=`<tr class="np slot${bl?" blk":""}" data-s="${s.id}"><td colspan="5" class="dz" data-a="put" data-s="${s.id}">${bl?"⛔ تعارض: هذا القسم لديه امتحان آخر في نفس الوقت":ui.pick?"اضغط لوضع المادة المحددة هنا":"⬇ اسحب مادة إلى هنا"}</td></tr>`});
+  const f=g.items[0],dc=`<td rowspan="${nrows}">${dn(g.date)}</td><td rowspan="${nrows}">${ui.ed==f.id?`<input type="date" class="sdt" data-s="${f.id}" value="${g.date}"><button class="pri" data-a="editok" style="padding:2px 10px;margin-inline-start:4px">OK</button><button class="x" data-a="editno">✕</button>`:`${fd(g.date)}<button class="x" data-a="editdate" data-s="${f.id}" title="تعديل التاريخ">✎</button>`}</td>`;
+  h+=`<tbody class="day">${sh.replace("@@DAY@@",()=>dc)}</tbody>`});
  return h+"</table>"}
 function side(){const Y=D.y[S.yr]||{};if(!Object.keys(Y).length)return`<div class="empty" style="padding:24px">لا توجد بيانات مواد. استخدم زر «استيراد البيانات الأصلية» أولاً.</div>`;return Object.keys(Y).map(d=>`<section><h3>${esc(d)}<label>عدد الطلاب <input class="tot" type="number" data-d="${esc(d)}" value="${tot(d)}"></label></h3>`+Y[d].c.map(([n,p],i)=>{const pl=placed(d,n),pk=ui.pick&&ui.pick.d==d&&ui.pick.i==i;
   return `<div class="cr${pl?" done":""}${pk?" pick":""}" draggable="true" data-a="pick" data-d="${esc(d)}" data-i="${i}"><b>${esc(n)}</b><small>${esc(p||"— لا يوجد أستاذ محاضرة")}</small>${pl?`<i>✓ ${pl}</i>`:""}</div>`}).join("")+"</section>").join("")}
+function mergeDupSlots(){const keep={},drop=new Set();let ch=false;
+ S.slots.forEach(s=>{const k=[s.yr,s.date,s.from,s.to].join("|");if(!keep[k]){keep[k]=s;return}
+  const m=keep[k];ch=true;drop.add(s.id);
+  S.exams.filter(x=>x.slot==s.id).forEach(x=>{const o=S.exams.find(y=>y.slot==m.id&&y.key==x.key);
+   if(!o){x.slot=m.id;return}
+   x.depts.forEach(d=>{if(!o.depts.includes(d))o.depts.push(d)});o.rows.push(...x.rows);
+   (x.profs||[]).forEach(p=>{if(!o.profs.includes(p))o.profs.push(p)});o.names=Object.assign({},x.names,o.names);x.slot=null})});
+ if(ch){S.exams=S.exams.filter(x=>x.slot!=null);S.slots=S.slots.filter(s=>!drop.has(s.id));save()}}
 function render(){
+ mergeDupSlots();
  const cn=y=>{const Y=D.y[y]||{};let n=0,p=0;Object.keys(Y).forEach(d=>Y[d].c.forEach(([c])=>{n++;if(placed(d,c,y))p++}));return[p,n]};
  $("#tabs").innerHTML=[1,2,3,4].map(y=>`<button class="${y==S.yr?"on":""}" data-a="yr" data-y="${y}">الفرقة ${YN[y]}<em>${cn(y).join(" / ")}</em></button>`).join("");
  const[p,n]=cn(S.yr);$("#prog").textContent=`${p} / ${n} مادة تمت جدولتها`;
@@ -135,7 +148,12 @@ function applyRoomEdit(b){const u=ui.er,e=u&&ex(u.e),row=e&&e.rows[u.i];if(!row)
  row.r=r;row.n=n;ui.er=null;save();render()}
 document.addEventListener("input",ev=>{if(!ev.target.classList||!ev.target.classList.contains("er"))return;const b=$("[data-a=erok]");if(b){delete b.dataset.ok;b.textContent="OK"}const m=$(".en-note");if(m)m.textContent=""});
 document.addEventListener("keydown",ev=>{const t=ev.target;if(!t.classList||!(t.classList.contains("er")||t.classList.contains("en"))||ev.defaultPrevented)return;if(ev.key=="Enter"){ev.preventDefault();$("[data-a=erok]").click()}else if(ev.key=="Escape"){ui.er=null;render()}});
-function applyDate(sid,val){const s=sl(sid),hyp={date:val,from:s.from,to:s.to};for(const x of S.exams.filter(x=>x.slot==s.id))for(const d of x.depts){const cl=clash(s.yr,d,x.key,hyp);if(cl.length){ui.ed=null;render();return say(`⛔ لا يمكن نقل الموعد: ${d} لديهم امتحان "${cl[0]}" في نفس الوقت`,5000)}}s.date=val;ui.ed=null;save();render();let n=0;S.exams.filter(x=>x.slot==s.id).forEach(x=>x.rows.forEach(r=>{if(conf(r.r,x).length)n++}));say(n?`تم تغيير التاريخ — تنبيه: ${n} قاعة مستخدمة في نفس الوقت بامتحان آخر`:"تم تغيير التاريخ")}
+function slotConflict(yr,date,from,to,ignore){for(const o of S.slots){if(o.yr!=yr||o.date!=date||ignore.includes(o.id))continue;if(o.from==from&&o.to==to)return"⛔ هذا الموعد موجود بالفعل في نفس اليوم";if(tm(from)<tm(o.to)&&tm(o.from)<tm(to))return`⛔ الموعد يتداخل مع موعد موجود (${o.from} الى ${o.to}) في نفس اليوم`}return""}
+function applyDate(sid,val){const s0=sl(sid),grp=S.slots.filter(s=>s.yr==s0.yr&&s.date==s0.date);if(val==s0.date){ui.ed=null;render();return}
+ const ids=grp.map(s=>s.id);
+ for(const s of grp){const cx=slotConflict(s.yr,val,s.from,s.to,ids);if(cx){ui.ed=null;render();return say(cx,5000)}
+  const hyp={date:val,from:s.from,to:s.to};for(const x of S.exams.filter(x=>x.slot==s.id))for(const d of x.depts){const cl=clash(s.yr,d,x.key,hyp);if(cl.length){ui.ed=null;render();return say(`⛔ لا يمكن نقل الموعد: ${d} لديهم امتحان "${cl[0]}" في نفس الوقت`,5000)}}}
+ grp.forEach(s=>s.date=val);ui.ed=null;save();render();let n=0;S.exams.filter(x=>ids.includes(x.slot)).forEach(x=>x.rows.forEach(r=>{if(conf(r.r,x).length)n++}));say(n?`تم تغيير التاريخ — تنبيه: ${n} قاعة مستخدمة في نفس الوقت بامتحان آخر`:"تم تغيير التاريخ")}
 document.addEventListener("keydown",ev=>{if(!ev.target.classList||!ev.target.classList.contains("sdt"))return;if(ev.key=="Enter"){ev.preventDefault();$("[data-a=editok]").click()}else if(ev.key=="Escape"){ui.ed=null;render()}});
 document.addEventListener("change",ev=>{const t=ev.target;
  if(t.classList.contains("sdt"))return;
@@ -145,6 +163,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-a]");if(
  if(a=="yr"){S.yr=+q.y;ui.add=ui.pick=null;save();render()}
  else if(a=="slot"){const date=$("#sd").value,from=$("#sf").value,to=$("#st").value;
   if(!date||!from||!to||tm(from)>=tm(to))return say("اختر التاريخ ووقت بداية ونهاية صحيحين");
+  const cx=slotConflict(S.yr,date,from,to,[]);if(cx)return say(cx,5000);
   S.slots.push({id:uid(),yr:S.yr,date,from,to});save();render()}
  else if(a=="editdate"){ui.ed=q.s;render();const i=$(".sdt");i&&i.focus()}else if(a=="editno"){ui.ed=null;render()}else if(a=="editroom"){ui.er={e:q.e,i:+q.i};ui.add=ui.pick=null;render()}else if(a=="erno"){ui.er=null;render()}else if(a=="erok"){applyRoomEdit(b)}else if(a=="editok"){const e=$(".sdt");if(!e||!e.value)say("اختر تاريخاً أولاً");else applyDate(e.dataset.s,e.value)}else if(a=="xlsx")exportXLSX();else if(a=="exp")exportJSON();else if(a=="impd")$("#fileD").click();else if(a=="imps")$("#fileS").click();else if(a=="clear"){if(confirm("مسح كل المواعيد والامتحانات؟")){S.slots=[];S.exams=[];ui.add=null;save();render()}}
  else if(a=="pick"){ui.pick=ui.pick&&ui.pick.d==q.d&&ui.pick.i==q.i?null:{d:q.d,i:+q.i};render()}
@@ -162,7 +181,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-a]");if(
  else if(a=="delexam"){S.exams=S.exams.filter(x=>x.id!=q.e);save();render()}
  else if(a=="delslot"){S.exams=S.exams.filter(x=>x.slot!=q.s);S.slots=S.slots.filter(x=>x.id!=q.s);save();render()}});
 document.addEventListener("dragstart",ev=>{const c=ev.target.closest&&ev.target.closest(".cr");if(c){ui.drag={d:c.dataset.d,i:+c.dataset.i};markBlk(ui.drag);ev.dataTransfer.setData("text/plain","c");ev.dataTransfer.effectAllowed="move"}});
-document.addEventListener("dragover",ev=>{const t=ev.target.closest&&ev.target.closest(".slot");document.querySelectorAll(".slot.over").forEach(x=>x!=t&&x.classList.remove("over"));if(t&&ui.drag&&!t.classList.contains("blk")){ev.preventDefault();t.classList.add("over")}});
+document.addEventListener("dragover",ev=>{const t=ev.target.closest&&ev.target.closest(".slot");document.querySelectorAll(".slot.over").forEach(x=>(!t||x.dataset.s!=t.dataset.s)&&x.classList.remove("over"));if(t&&ui.drag&&!t.classList.contains("blk")){ev.preventDefault();document.querySelectorAll(`.slot[data-s="${t.dataset.s}"]`).forEach(x=>x.classList.add("over"))}});
 document.addEventListener("drop",ev=>{const t=ev.target.closest&&ev.target.closest(".slot");if(t&&ui.drag){ev.preventDefault();const d=ui.drag;ui.drag=null;place(t.dataset.s,d.d,d.i)}});
 document.addEventListener("dragend",()=>{ui.drag=null;render();document.querySelectorAll(".slot.over").forEach(x=>x.classList.remove("over"))});
 
