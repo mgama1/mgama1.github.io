@@ -251,7 +251,7 @@ function lists(){$("#rl").innerHTML=D.rooms.map(r=>`<option value="${esc(r)}">`)
 function convert(r){const pr={},sz={},y={},seen={};
  r.InstructorTemplates.forEach(t=>{const[c,l,ty]=t.Template.split("::");if(ty=="Lecture"){const k=l+"::"+c;pr[k]=pr[k]||[];if(!pr[k].includes(t.Instructor))pr[k].push(t.Instructor)}});
  r.LevelsGroups.forEach(g=>sz[g.Level]=(sz[g.Level]||0)+(+g.Size||0));
- r.Courses.forEach(c=>{const k=c.Level+"::"+c.Course,m=c.Level.match(/^(.+?)(\d)$/);if(seen[k]||!m)return;seen[k]=1;const Y=y[+m[2]]=y[+m[2]]||{};(Y[m[1]]=Y[m[1]]||{t:sz[c.Level]||0,c:[]}).c.push([c.Course,(pr[k]||[]).join(" / ")])});
+ r.Courses.forEach(c=>{const k=c.Level+"::"+c.Course,m=c.Level.match(/^(.+?)(\d)$/);if((c.Type||"Lecture")!="Lecture"||seen[k]||!m)return;seen[k]=1;const Y=y[+m[2]]=y[+m[2]]||{};(Y[m[1]]=Y[m[1]]||{t:sz[c.Level]||0,c:[]}).c.push([c.Course,(pr[k]||[]).join(" / ")])});
  return{y,rooms:r.Rooms.map(x=>x.Room),profs:[...new Set(Object.values(pr).flat())].sort()}}
 const yslotsOf=y=>S.slots.filter(s=>s.yr==y).sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
 function exportJSON(){
