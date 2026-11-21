@@ -60,7 +60,7 @@ input.pf{width:100%;border:0;background:none;text-align:center;color:var(--ink)}
 <div class="grow"></div><span class="saved">محفوظ محلياً</span>
 <button class="btn" data-a="clear">مسح الجدول</button><button class="btn" data-a="impd">استيراد البيانات الأصلية</button><button class="btn" data-a="imps">استيراد جدول الامتحانات</button><button class="btn pri" data-a="exp">تنزيل جدول الامتحانات</button><input type="file" id="fileD" accept=".json,application/json" hidden><input type="file" id="fileS" accept=".json,application/json" hidden></header>
 <nav class="tabsr" id="tabs"></nav>
-<div class="tool"><div class="bar"><b>موعد جديد</b><input type="date" id="sd"><input type="time" id="sf" value="09:00"><span>إلى</span><input type="time" id="st" value="12:00"><button class="pri" data-a="slot">+ إضافة موعد</button></div><span class="pill" id="prog"></span><button class="btn" data-a="xlsx">تصدير Excel</button><button class="btn" data-a="pk">كشوف التوقيعات والأغلفة</button></div>
+<div class="tool"><div class="bar"><b>موعد جديد</b><input type="date" id="sd"><input type="time" id="sf" value="10:00"><span>إلى</span><input type="time" id="st" value="13:00"><button class="pri" data-a="slot">+ إضافة موعد</button></div><span class="pill" id="prog"></span><button class="btn" data-a="xlsx">تصدير Excel</button><button class="btn" data-a="pk">كشوف التوقيعات والأغلفة</button></div>
 <div class="wrap"><aside class="side" id="side"></aside><div class="main" id="main"></div></div>
 <datalist id="rl"></datalist><datalist id="pl"></datalist><div id="rdd"></div><div id="toast"></div><div id="pk"></div>
 <script>
@@ -75,6 +75,7 @@ const YN=["","الاولى","الثانية","الثالثة","الرابعة"];
 const norm=s=>s.replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/(^|\s)ال/g,"$1").replace(/\s+/g," ").trim();
 const rk=s=>String(s||"").replace(/[٠-٩]/g,c=>c.charCodeAt(0)-1632).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-1776).replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[\s\-_.]+/g,"").toLowerCase();
 const tm=t=>{const[a,b]=t.split(":");return a*60+ +b};
+const t12=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"ص":"م")},trg=(a,b)=>t12(a)+" الى "+t12(b);
 const fd=d=>{const[y,m,x]=d.split("-");return +x+"/"+ +m+"/"+y};
 const dn=d=>new Date(d+"T12:00:00").toLocaleDateString("ar-EG",{weekday:"long"});
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -83,10 +84,10 @@ const tot=(d,y=S.yr)=>S.tot[y+d]??D.y[y]?.[d]?.t??0;
 const asg=(e,d)=>e.rows.filter(r=>r.d==d).reduce((a,r)=>a+r.n,0);
 const sl=id=>S.slots.find(s=>s.id==id),ex=id=>S.exams.find(e=>e.id==id);
 const yslots=()=>S.slots.filter(s=>s.yr==S.yr);
-function placed(d,n,y=S.yr){const k=norm(n);for(const e of S.exams){const s=sl(e.slot);if(s&&s.yr==y&&e.key==k&&e.depts.includes(d))return fd(s.date)+" "+s.from}return""}
+function placed(d,n,y=S.yr){const k=norm(n);for(const e of S.exams){const s=sl(e.slot);if(s&&s.yr==y&&e.key==k&&e.depts.includes(d))return fd(s.date)+" "+t12(s.from)}return""}
 function conf(room,e){const s=sl(e.slot),k=rk(room),o=[];if(!k)return o;
  S.exams.forEach(x=>{if(x.id==e.id)return;const t=sl(x.slot);if(!t||t.date!=s.date||tm(t.from)>=tm(s.to)||tm(s.from)>=tm(t.to))return;
-  x.rows.forEach(r=>{if(rk(r.r)==k)o.push(`${x.name} (الفرقة ${YN[t.yr]} · ${r.d}، ${r.n} طالب، ${t.from}–${t.to})`)})});return o}
+  x.rows.forEach(r=>{if(rk(r.r)==k)o.push(`${x.name} (الفرقة ${YN[t.yr]} · ${r.d}، ${r.n} طالب، ${trg(t.from,t.to)})`)})});return o}
 const ovl=(a,b)=>a.date==b.date&&tm(a.from)<tm(b.to)&&tm(b.from)<tm(a.to);
 function clash(yr,d,key,so){return S.exams.filter(x=>{const t=sl(x.slot);return t&&t.yr==yr&&x.depts.includes(d)&&x.key!=key&&ovl(t,so)}).map(x=>x.name)}
 function blocked(s,c=ui.pick){const p=c&&D.y[S.yr]?.[c.d]?.c[c.i];return p?clash(S.yr,c.d,norm(p[0]),s).length:0}
@@ -122,7 +123,7 @@ function table(){
   if(!all.length)all.push(`<td colspan="5" class="empty">اسحب مادة إلى هنا</td>`);
   nrows+=all.length+1;
   all.forEach((b,i)=>{
-   sh+=`<tr class="slot${bl?" blk":""}${i||si?"":" first"}" data-s="${s.id}">${i||si?"":"@@DAY@@"}${i?"":`<td class="tm" rowspan="${all.length+1}">${s.from} الى ${s.to}<button class="x" data-a="delslot" data-s="${s.id}" title="حذف الموعد">✕</button></td>`}${b}</tr>`});
+   sh+=`<tr class="slot${bl?" blk":""}${i||si?"":" first"}" data-s="${s.id}">${i||si?"":"@@DAY@@"}${i?"":`<td class="tm" rowspan="${all.length+1}">${trg(s.from,s.to)}<button class="x" data-a="delslot" data-s="${s.id}" title="حذف الموعد">✕</button></td>`}${b}</tr>`});
   sh+=`<tr class="np slot${bl?" blk":""}" data-s="${s.id}"><td colspan="5" class="dz" data-a="put" data-s="${s.id}">${bl?"⛔ تعارض: هذا القسم لديه امتحان آخر في نفس الوقت":ui.pick?"اضغط لوضع المادة المحددة هنا":"⬇ اسحب مادة إلى هنا"}</td></tr>`});
   const f=g.items[0],dc=`<td rowspan="${nrows}">${dn(g.date)}</td><td rowspan="${nrows}">${ui.ed==f.id?`<input type="date" class="sdt" data-s="${f.id}" value="${g.date}"><button class="pri" data-a="editok" style="padding:2px 10px;margin-inline-start:4px">OK</button><button class="x" data-a="editno">✕</button>`:`${fd(g.date)}<button class="x" data-a="editdate" data-s="${f.id}" title="تعديل التاريخ">✎</button>`}</td>`;
   h+=`<tbody class="day">${sh.replace("@@DAY@@",()=>dc)}</tbody>`});
@@ -157,7 +158,7 @@ function applyRoomEdit(b){const u=ui.er,e=u&&ex(u.e),row=e&&e.rows[u.i];if(!row)
  row.r=r;row.n=n;ui.er=null;save();render()}
 document.addEventListener("input",ev=>{if(!ev.target.classList||!ev.target.classList.contains("er"))return;const b=$("[data-a=erok]");if(b){delete b.dataset.ok;b.textContent="OK"}const m=$(".en-note");if(m)m.textContent=""});
 document.addEventListener("keydown",ev=>{const t=ev.target;if(!t.classList||!(t.classList.contains("er")||t.classList.contains("en"))||ev.defaultPrevented)return;if(ev.key=="Enter"){ev.preventDefault();$("[data-a=erok]").click()}else if(ev.key=="Escape"){ui.er=null;render()}});
-function slotConflict(yr,date,from,to,ignore){for(const o of S.slots){if(o.yr!=yr||o.date!=date||ignore.includes(o.id))continue;if(o.from==from&&o.to==to)return"⛔ هذا الموعد موجود بالفعل في نفس اليوم";if(tm(from)<tm(o.to)&&tm(o.from)<tm(to))return`⛔ الموعد يتداخل مع موعد موجود (${o.from} الى ${o.to}) في نفس اليوم`}return""}
+function slotConflict(yr,date,from,to,ignore){for(const o of S.slots){if(o.yr!=yr||o.date!=date||ignore.includes(o.id))continue;if(o.from==from&&o.to==to)return"⛔ هذا الموعد موجود بالفعل في نفس اليوم";if(tm(from)<tm(o.to)&&tm(o.from)<tm(to))return`⛔ الموعد يتداخل مع موعد موجود (${trg(o.from,o.to)}) في نفس اليوم`}return""}
 function applyDate(sid,val){const s0=sl(sid),grp=S.slots.filter(s=>s.yr==s0.yr&&s.date==s0.date);if(val==s0.date){ui.ed=null;render();return}
  const ids=grp.map(s=>s.id);
  for(const s of grp){const cx=slotConflict(s.yr,val,s.from,s.to,ids);if(cx){ui.ed=null;render();return say(cx,5000)}
@@ -237,7 +238,7 @@ function levelSheet(y){
     put(d0,8,d);mrg(8,d0,r-1)});
    put(es0,4,e.name);put(es0,5,e.profs.join(" / "));mrg(4,es0,r-1);mrg(5,es0,r-1)});
   if(r==st)r++;
-  put(st,1,dn(s.date));put(st,2,fd(s.date));put(st,3,`${s.from} الى ${s.to}`);mrg(1,st,r-1);mrg(2,st,r-1);mrg(3,st,r-1)});
+  put(st,1,dn(s.date));put(st,2,fd(s.date));put(st,3,trg(s.from,s.to));mrg(1,st,r-1);mrg(2,st,r-1);mrg(3,st,r-1)});
  const cell=(row,c,v,sty)=>{const ref=L[c-1]+row;return v===undefined||v===""?`<c r="${ref}" s="${sty}"/>`:typeof v=="number"?`<c r="${ref}" s="${sty}"><v>${v}</v></c>`:`<c r="${ref}" s="${sty}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`};
  let rows=`<row r="1" ht="26" customHeight="1">${[1,2,3,4,5,6,7,8].map(c=>cell(1,c,c==1?"الفرقة "+YN[y]:"",3)).join("")}</row>`;
  mg.unshift("A1:H1");
@@ -304,7 +305,7 @@ class Sh{constructor(){this.g=[];this.mg=[];this.h=[]}
 function sigSheet(label,recs,multi){const sh=new Sh();let r=1;
  sh.merge(r,1,r,9,`جدول أعمال لجان الامتحانات  –  قسم ${label}`,"t");sh.h[r++]=28;
  grp(recs,x=>x.date+"|"+x.from+"|"+x.to).forEach(b=>{const f=b[0];
-  sh.merge(r,1,r,9,`التاريخ: ${fd(f.date)}    اليوم: ${dn(f.date)}    الفترة: ${f.from} الى ${f.to}    رئيس اللجنة:  _______________`,"d");sh.h[r++]=22;
+  sh.merge(r,1,r,9,`التاريخ: ${fd(f.date)}    اليوم: ${dn(f.date)}    الفترة: ${trg(f.from,f.to)}    رئيس اللجنة:  _______________`,"d");sh.h[r++]=22;
   const ra=r,rb=r+1;
   sh.merge(ra,7,ra,8,"تسليم الكراسات","h");sh.put(rb,7,"ممتلئه","hs");sh.put(rb,8,"فارغ","hs");
   [[1,"المقرر"],[2,"الفرقة"],[3,"القاعة"],[4,"عدد الكراسات"],[5,"المراقب"],[6,"التوقيع"],[9,"التوقيع"]].forEach(([c,t])=>sh.merge(ra,c,rb,c,t,"h"));
@@ -351,7 +352,7 @@ function printDoc(html){const f=document.createElement("iframe");f.style.cssText
 function printCovers(){const R=packRecs();if(!R.length)return say("لا توجد امتحانات موزعة على قاعات لإنشاء أغلفتها");
  const logo=P.logo?`<img src="${esc(P.logo)}" alt="logo">`:"",
  fr=(a,x,b,y)=>`<div class="field-row"><div class="field"><span class="field-label">${a}:</span><span class="field-value">${x}</span></div><div class="field"><span class="field-label">${b}:</span><span class="field-value">${y}</span></div></div>`;
- const pages=R.map(x=>`<section class="cover"><div class="top-bar"><div class="institute">وزارة التعليم العالي<br>المعهد التكنولوجي العالي بني سويف<br>قرار وزاري (1964)</div><div class="logo-box">${logo}</div><div class="dept-box">القسم: ${esc(x.dept)}<br>الفرقة: ${YN[x.yr]}</div></div><div class="main-title">${esc(P.title)}</div><div class="fields">${fr("اسم المقرر",esc(x.subject),"التاريخ",fd(x.date))}${fr("دكتور المقرر",esc(x.prof),"اليوم",dn(x.date))}${fr("القاعة",esc(x.room),"الساعة",`${x.from} الى ${x.to}`)}${fr("عدد النسخ",x.n,"عدد الطلاب","")}</div></section>`).join("");
+ const pages=R.map(x=>`<section class="cover"><div class="top-bar"><div class="institute">وزارة التعليم العالي<br>المعهد التكنولوجي العالي بني سويف<br>قرار وزاري (1964)</div><div class="logo-box">${logo}</div><div class="dept-box">القسم: ${esc(x.dept)}<br>الفرقة: ${YN[x.yr]}</div></div><div class="main-title">${esc(P.title)}</div><div class="fields">${fr("اسم المقرر",esc(x.subject),"التاريخ",fd(x.date))}${fr("دكتور المقرر",esc(x.prof),"اليوم",dn(x.date))}${fr("القاعة",esc(x.room),"الساعة",trg(x.from,x.to))}${fr("عدد النسخ",x.n,"عدد الطلاب","")}</div></section>`).join("");
  say("جاري تجهيز الأغلفة… اختر «حفظ بصيغة PDF» من نافذة الطباعة",5000);
  printDoc(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>exam-covers</title><style>${COVER_CSS}</style></head><body>${pages}</body></html>`)}
 function pkRender(){const n=packRecs().length,miss=S.exams.reduce((a,e)=>a+e.depts.filter(d=>!e.rows.some(r=>r.d==d)).length,0);
