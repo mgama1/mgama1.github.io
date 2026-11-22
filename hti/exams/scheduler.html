@@ -45,7 +45,7 @@ input.pf{width:100%;border:0;background:none;text-align:center;color:var(--ink)}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none}#toast.on{opacity:1}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}.side{position:static;max-height:260px}}
 @media print{.top,.tabsr,.tool,.side,.np,.x{display:none!important}.wrap{display:block;padding:0}.main{border:0}body{background:#fff}th,.chip{background:#fff!important;color:#000!important}th,td{border-color:#000}}
-#pk{position:fixed;inset:0;z-index:80;background:rgba(20,30,45,.45);display:none;align-items:center;justify-content:center;padding:16px}#pk.on{display:flex}
+#pk,#xl{position:fixed;inset:0;z-index:80;background:rgba(20,30,45,.45);display:none;align-items:center;justify-content:center;padding:16px}#pk.on,#xl.on{display:flex}
 .pkc{background:var(--card);border-radius:14px;width:min(520px,100%);max-height:100%;overflow:auto;box-shadow:0 12px 40px rgba(0,0,0,.25)}
 .pkh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);font-size:16px;color:var(--pri)}
 .pkc section{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px;align-items:flex-start}.pkc section:last-child{border:0}
@@ -53,7 +53,7 @@ input.pf{width:100%;border:0;background:none;text-align:center;color:var(--ink)}
 .pkc label{display:flex;flex-direction:column;gap:4px;width:100%;font-size:12px;color:var(--mut)}.pkc label input{border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink)}
 .pkl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--mut)}.pkl img{height:40px}
 .pkw{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:6px 10px;margin:12px 18px 0;font-size:12px}
-.pri:disabled{opacity:.5;cursor:default}@media print{#pk{display:none!important}}
+.pri:disabled{opacity:.5;cursor:default}@media print{#pk,#xl{display:none!important}}
 </style></head><body>
 <header class="top"><div class="brand"><b>HTI</b><span>محرر جدول الامتحانات</span></div>
 <span class="pill">المواعيد:<b id="pS">0</b></span><span class="pill">الامتحانات:<b id="pE">0</b></span><span class="pill" id="pL">غير موزّع:<b>0</b></span>
@@ -62,7 +62,7 @@ input.pf{width:100%;border:0;background:none;text-align:center;color:var(--ink)}
 <nav class="tabsr" id="tabs"></nav>
 <div class="tool"><div class="bar"><b>موعد جديد</b><input type="date" id="sd"><input type="time" id="sf" value="10:00"><span>إلى</span><input type="time" id="st" value="13:00"><button class="pri" data-a="slot">+ إضافة موعد</button></div><span class="pill" id="prog"></span><button class="btn" data-a="xlsx">تصدير Excel</button><button class="btn" data-a="pk">كشوف التوقيعات والأغلفة</button></div>
 <div class="wrap"><aside class="side" id="side"></aside><div class="main" id="main"></div></div>
-<datalist id="rl"></datalist><datalist id="pl"></datalist><div id="rdd"></div><div id="toast"></div><div id="pk"></div>
+<datalist id="rl"></datalist><datalist id="pl"></datalist><div id="rdd"></div><div id="toast"></div><div id="pk"></div><div id="xl"></div>
 <script>
 let D={y:{},rooms:[],profs:[]};try{const x=JSON.parse(localStorage.getItem("hti-data-v1"));if(x&&x.y)D=x}catch(e){}
 const KEY="hti-exams-v1";let S=null;
@@ -175,7 +175,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-a]");if(
   if(!date||!from||!to||tm(from)>=tm(to))return say("اختر التاريخ ووقت بداية ونهاية صحيحين");
   const cx=slotConflict(S.yr,date,from,to,[]);if(cx)return say(cx,5000);
   S.slots.push({id:uid(),yr:S.yr,date,from,to});save();render()}
- else if(a=="editdate"){ui.ed=q.s;render();const i=$(".sdt");i&&i.focus()}else if(a=="editno"){ui.ed=null;render()}else if(a=="editroom"){ui.er={e:q.e,i:+q.i};ui.add=ui.pick=null;render()}else if(a=="erno"){ui.er=null;render()}else if(a=="erok"){applyRoomEdit(b)}else if(a=="editok"){const e=$(".sdt");if(!e||!e.value)say("اختر تاريخاً أولاً");else applyDate(e.dataset.s,e.value)}else if(a=="xlsx")exportXLSX();else if(a=="exp")exportJSON();else if(a=="impd")$("#fileD").click();else if(a=="imps")$("#fileS").click();else if(a=="clear"){if(confirm("مسح كل المواعيد والامتحانات؟")){S.slots=[];S.exams=[];ui.add=null;save();render()}}
+ else if(a=="editdate"){ui.ed=q.s;render();const i=$(".sdt");i&&i.focus()}else if(a=="editno"){ui.ed=null;render()}else if(a=="editroom"){ui.er={e:q.e,i:+q.i};ui.add=ui.pick=null;render()}else if(a=="erno"){ui.er=null;render()}else if(a=="erok"){applyRoomEdit(b)}else if(a=="editok"){const e=$(".sdt");if(!e||!e.value)say("اختر تاريخاً أولاً");else applyDate(e.dataset.s,e.value)}else if(a=="xlsx"){xlRender();$("#xl").classList.add("on")}else if(a=="exp")exportJSON();else if(a=="impd")$("#fileD").click();else if(a=="imps")$("#fileS").click();else if(a=="clear"){if(confirm("مسح كل المواعيد والامتحانات؟")){S.slots=[];S.exams=[];ui.add=null;save();render()}}
  else if(a=="pick"){ui.pick=ui.pick&&ui.pick.d==q.d&&ui.pick.i==q.i?null:{d:q.d,i:+q.i};render()}
  else if(a=="put"){if(ui.pick)place(q.s,ui.pick.d,ui.pick.i);else say("اسحب مادة إلى هنا أو اضغط على مادة من القائمة أولاً")}
  else if(a=="addroom"){ui.add={e:q.e,d:q.d};render()}
@@ -219,7 +219,7 @@ window.addEventListener("scroll",()=>{if(rddI&&document.contains(rddI)){const b=
 
 function crc32(b){let t=crc32.t;if(!t){t=crc32.t=[];for(let n=0,c;n<256;n++){c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}let r=-1;for(let i=0;i<b.length;i++)r=t[(r^b[i])&255]^(r>>>8);return(r^-1)>>>0}
 function zipStore(files){const enc=new TextEncoder(),parts=[],cen=[],u16=v=>[v&255,v>>8&255],u32=v=>[v&255,v>>8&255,v>>16&255,v>>24&255];let off=0;
- files.forEach(([name,str])=>{const nb=enc.encode(name),db=enc.encode(str),crc=crc32(db);
+ files.forEach(([name,str])=>{const nb=enc.encode(name),db=typeof str=="string"?enc.encode(str):str,crc=crc32(db);
   const lh=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(db.length),...u32(db.length),...u16(nb.length),...u16(0)]);
   parts.push(lh,nb,db);
   cen.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(db.length),...u32(db.length),...u16(nb.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),nb);
@@ -227,10 +227,10 @@ function zipStore(files){const enc=new TextEncoder(),parts=[],cen=[],u16=v=>[v&2
  const cs=cen.reduce((a,x)=>a+x.length,0),end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(cs),...u32(off),...u16(0)]);
  return new Blob([...parts,...cen,end],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
 const xe=s=>String(s).replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g,"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function levelSheet(y){
+function levelSheet(y,lg){
  const ss=S.slots.filter(s=>s.yr==y).sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));if(!ss.length)return null;
  const g=[],mg=[],L="ABCDEFGH",put=(r,c,v)=>{(g[r]=g[r]||[])[c]=v},mrg=(c,a,b)=>{if(b>a)mg.push(`${L[c-1]}${a}:${L[c-1]}${b}`)};
- let r=3;
+ const O=4;let r=3+O;
  ss.forEach(s=>{const st=r,es=S.exams.filter(x=>x.slot==s.id);
   es.forEach(e=>{const es0=r;
    (e.depts.length?e.depts:[""]).forEach(d=>{const rs=e.rows.filter(x=>x.d==d),n=Math.max(rs.length,1),d0=r;
@@ -240,22 +240,37 @@ function levelSheet(y){
   if(r==st)r++;
   put(st,1,dn(s.date));put(st,2,fd(s.date));put(st,3,trg(s.from,s.to));mrg(1,st,r-1);mrg(2,st,r-1);mrg(3,st,r-1)});
  const cell=(row,c,v,sty)=>{const ref=L[c-1]+row;return v===undefined||v===""?`<c r="${ref}" s="${sty}"/>`:typeof v=="number"?`<c r="${ref}" s="${sty}"><v>${v}</v></c>`:`<c r="${ref}" s="${sty}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`};
- let rows=`<row r="1" ht="26" customHeight="1">${[1,2,3,4,5,6,7,8].map(c=>cell(1,c,c==1?"الفرقة "+YN[y]:"",3)).join("")}</row>`;
- mg.unshift("A1:H1");
- rows+=`<row r="2" ht="22" customHeight="1">${["اليوم","التاريخ","الوقت","اسم المادة","استاذ المادة","المكان","عدد الطلاب","القسم"].map((t,i)=>cell(2,i+1,t,2)).join("")}</row>`;
- for(let i=3;i<r;i++)rows+=`<row r="${i}" ht="22" customHeight="1">${[1,2,3,4,5,6,7,8].map(c=>cell(i,c,(g[i]||[])[c],1)).join("")}</row>`;
+ const AR=["وزارة التعليم العالي","المعهد التكنولوجي العالي بني سويف","قرار وزاري (1964)","لجنة الجداول"],EN="Ministry Of Higher Education\nHigher Technological Institute Beni Suef";
+ let rows="";
+ for(let i=1;i<=O;i++){const c=[];for(let k=1;k<=8;k++)c.push(k==1?cell(i,1,AR[i-1],4):k==6&&i==1?cell(i,6,EN,5):cell(i,k,"",k>=6?5:k<=3?4:0));rows+=`<row r="${i}" ht="20" customHeight="1">${c.join("")}</row>`}
+ mg.push("A1:C1","A2:C2","A3:C3","A4:C4","F1:H4");
+ rows+=`<row r="${O+1}" ht="26" customHeight="1">${[1,2,3,4,5,6,7,8].map(c=>cell(O+1,c,c==1?"الفرقة "+YN[y]:"",3)).join("")}</row>`;
+ mg.unshift(`A${O+1}:H${O+1}`);
+ rows+=`<row r="${O+2}" ht="22" customHeight="1">${["اليوم","التاريخ","الوقت","اسم المادة","استاذ المادة","المكان","عدد الطلاب","القسم"].map((t,i)=>cell(O+2,i+1,t,2)).join("")}</row>`;
+ for(let i=3+O;i<r;i++)rows+=`<row r="${i}" ht="22" customHeight="1">${[1,2,3,4,5,6,7,8].map(c=>cell(i,c,(g[i]||[])[c],1)).join("")}</row>`;
+ const SG=[[1,3,"المنسق الاكاديمي"],[4,4,"الامين العام"],[5,6,"المشرف على وكالة المعهد"],[7,8,"عميد المعهد"]],sr=r+1;
+ [[sr,26,1],[sr+1,60,0]].forEach(([rw,ht,tt])=>{let cs="";for(let c=1;c<=8;c++){const g=SG.find(x=>c>=x[0]&&c<=x[1]);cs+=cell(rw,c,tt&&c==g[0]?g[2]:"",6)}rows+=`<row r="${rw}" ht="${ht}" customHeight="1">${cs}</row>`});
+ SG.forEach(([a,b])=>{if(b>a){mg.push(`${L[a-1]}${sr}:${L[b-1]}${sr}`);mg.push(`${L[a-1]}${sr+1}:${L[b-1]}${sr+1}`)}});
  const W=[12,13,18,34,30,12,12,16];
- return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView rightToLeft="1" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>${W.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join("")}</cols><sheetData>${rows}</sheetData><mergeCells count="${mg.length}">${mg.map(m=>`<mergeCell ref="${m}"/>`).join("")}</mergeCells><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`}
-function exportXLSX(){
- const sh=[1,2,3,4].map(y=>({y,x:levelSheet(y)})).filter(s=>s.x);
+ return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView rightToLeft="1" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>${W.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join("")}</cols><sheetData>${rows}</sheetData><mergeCells count="${mg.length}">${mg.map(m=>`<mergeCell ref="${m}"/>`).join("")}</mergeCells><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/>${lg?'<drawing r:id="rId1"/>':""}</worksheet>`}
+async function exportXLSX(){
+ let lg=null;
+ if(P&&P.logo){try{const m=/^data:image\/(png|jpeg|jpg|gif);base64,(.+)$/.exec(P.logo);if(m){const im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=P.logo});const bin=atob(m[2]),by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);
+  const h=84,w=Math.round(im.naturalWidth*h/im.naturalHeight),tot=(34+30)*7+10,dw=34*7+5;let off=Math.max(0,Math.round((tot-w)/2)),col=3;if(off>dw){off-=dw;col=4}
+  lg={ext:m[1]=="jpg"?"jpeg":m[1],by,w,h,off,col}}}catch(e){lg=null}}
+ const sh=[1,2,3,4].map(y=>({y,x:levelSheet(y,lg)})).filter(s=>s.x);
  if(!sh.length)return say("لا توجد مواعيد لتصديرها");
  const NS='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
- styles=`${H}<styleSheet ${NS}><fonts count="3"><font><sz val="11"/><name val="DejaVu Sans"/></font><font><b/><sz val="11"/><name val="DejaVu Sans"/></font><font><b/><sz val="14"/><color rgb="FF0B5C9E"/><name val="DejaVu Sans"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE6EEF6"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" readingOrder="2"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`,
- files=[["[Content_Types].xml",`${H}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sh.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")}</Types>`],
+ styles=`${H}<styleSheet ${NS}><fonts count="3"><font><sz val="11"/><name val="DejaVu Sans"/></font><font><b/><sz val="11"/><name val="DejaVu Sans"/></font><font><b/><sz val="14"/><color rgb="FF0B5C9E"/><name val="DejaVu Sans"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE6EEF6"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border><border><left style="dotted"><color rgb="FF000000"/></left><right style="dotted"><color rgb="FF000000"/></right><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" readingOrder="2"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="right" vertical="center" readingOrder="2"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="1"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`,
+ files=[["[Content_Types].xml",`${H}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${lg?`<Default Extension="${lg.ext}" ContentType="image/${lg.ext}"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>`:""}${sh.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")}</Types>`],
  ["_rels/.rels",`${H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],
  ["xl/workbook.xml",`${H}<workbook ${NS} xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets>${sh.map((s,i)=>`<sheet name="${xe("الفرقة "+YN[s.y])}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join("")}</sheets></workbook>`],
  ["xl/_rels/workbook.xml.rels",`${H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sh.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join("")}<Relationship Id="rId${sh.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`],
- ["xl/styles.xml",styles],...sh.map((s,i)=>[`xl/worksheets/sheet${i+1}.xml`,s.x])],
+ ["xl/styles.xml",styles],...sh.map((s,i)=>[`xl/worksheets/sheet${i+1}.xml`,s.x]),
+ ...(lg?[...sh.map((s,i)=>[`xl/worksheets/_rels/sheet${i+1}.xml.rels`,`${H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`]),
+  ["xl/drawings/_rels/drawing1.xml.rels",`${H}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/logo.${lg.ext}"/></Relationships>`],
+  ["xl/drawings/drawing1.xml",`${H}<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><xdr:oneCellAnchor><xdr:from><xdr:col>${lg.col}</xdr:col><xdr:colOff>${lg.off*9525}</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>${3*9525}</xdr:rowOff></xdr:from><xdr:ext cx="${lg.w*9525}" cy="${lg.h*9525}"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="Logo"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${lg.w*9525}" cy="${lg.h*9525}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor></xdr:wsDr>`],
+  [`xl/media/logo.${lg.ext}`,lg.by]]:[])],
  a=document.createElement("a");a.href=URL.createObjectURL(zipStore(files));a.download=`exam-schedule-${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function lists(){$("#rl").innerHTML=D.rooms.map(r=>`<option value="${esc(r)}">`).join("");$("#pl").innerHTML=D.profs.map(r=>`<option value="${esc(r)}">`).join("")}lists();
 function convert(r){const pr={},sz={},y={},seen={};
@@ -362,12 +377,16 @@ function pkRender(){const n=packRecs().length,miss=S.exams.reduce((a,e)=>a+e.dep
  <label>عنوان الغلاف<input id="pkT" value="${esc(P.title)}"></label>
  <div class="pkl">الشعار:${P.logo?` <img src="${esc(P.logo)}" alt="logo"><button class="x" data-a="logod">حذف</button>`:""}<input type="file" id="pkF" accept="image/*"></div>
  <button class="pri" data-a="cvr"${n?"":" disabled"}>إنشاء الأغلفة (طباعة / حفظ PDF)</button><p>في نافذة الطباعة اختر «حفظ بصيغة PDF» وتأكد أن الورق A4 أفقي والهوامش «افتراضي».</p></section></div>`}
-document.addEventListener("click",ev=>{const t=ev.target;if(t.id=="pk")return t.classList.remove("on");const b=t.closest("[data-a]");if(!b)return;const a=b.dataset.a;
- if(a=="pk"){pkRender();$("#pk").classList.add("on")}else if(a=="pkx")$("#pk").classList.remove("on");else if(a=="sigx")exportSigs();else if(a=="cvr")printCovers();else if(a=="logod"){P.logo="";savePk();pkRender()}});
-document.addEventListener("keydown",ev=>{if(ev.key=="Escape")$("#pk").classList.remove("on")});
+function xlRender(){$("#xl").innerHTML=`<div class="pkc"><div class="pkh"><b>تصدير جدول الامتحانات (Excel)</b><button class="x" data-a="xlx">✕</button></div>
+ <section><h4>شعار المعهد</h4><p>يظهر في منتصف رأس كل ورقة. اختياري — اتركه فارغاً لتصدير الجدول بدون شعار.</p>
+ <div class="pkl">الشعار:${P.logo?` <img src="${esc(P.logo)}" alt="logo"><button class="x" data-a="xlogod">حذف</button>`:" <span>لم يتم اختيار شعار</span>"}<input type="file" id="xlF" accept="image/*"></div>
+ <button class="pri" data-a="xlgo">تنزيل ملف Excel</button></section></div>`}
+document.addEventListener("click",ev=>{const t=ev.target;if(t.id=="pk"||t.id=="xl")return t.classList.remove("on");const b=t.closest("[data-a]");if(!b)return;const a=b.dataset.a;
+ if(a=="xlx")$("#xl").classList.remove("on");else if(a=="xlgo"){$("#xl").classList.remove("on");exportXLSX()}else if(a=="xlogod"){P.logo="";savePk();xlRender();pkRender()}else if(a=="pk"){pkRender();$("#pk").classList.add("on")}else if(a=="pkx")$("#pk").classList.remove("on");else if(a=="sigx")exportSigs();else if(a=="cvr")printCovers();else if(a=="logod"){P.logo="";savePk();pkRender()}});
+document.addEventListener("keydown",ev=>{if(ev.key=="Escape"){$("#pk").classList.remove("on");$("#xl").classList.remove("on")}});
 document.addEventListener("input",ev=>{if(ev.target.id=="pkT"){P.title=ev.target.value;savePk()}});
-document.addEventListener("change",ev=>{const i=ev.target,f=i.id=="pkF"&&i.files[0];if(!f)return;const r=new FileReader();
- r.onload=()=>{const im=new Image();im.onload=()=>{let out=r.result;try{const nh=im.naturalHeight||330,nw=im.naturalWidth||330,h=Math.min(330,nh),cv=document.createElement("canvas");cv.width=Math.round(nw*h/nh);cv.height=h;cv.getContext("2d").drawImage(im,0,0,cv.width,h);out=cv.toDataURL("image/png")}catch(e){}P.logo=out;savePk();pkRender()};
+document.addEventListener("change",ev=>{const i=ev.target,f=(i.id=="pkF"||i.id=="xlF")&&i.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{const im=new Image();im.onload=()=>{let out=r.result;try{const nh=im.naturalHeight||330,nw=im.naturalWidth||330,h=Math.min(330,nh),cv=document.createElement("canvas");cv.width=Math.round(nw*h/nh);cv.height=h;cv.getContext("2d").drawImage(im,0,0,cv.width,h);out=cv.toDataURL("image/png")}catch(e){}P.logo=out;savePk();pkRender();xlRender()};
   im.onerror=()=>say("تعذر قراءة ملف الصورة");im.src=r.result};r.readAsDataURL(f);i.value=""});
 render();
 </script></body></html>
