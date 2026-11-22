@@ -24,7 +24,8 @@ button,input{font:inherit;color:inherit}button{cursor:pointer}
 .side h3{margin:0;padding:10px 14px;font-size:14px;background:#f8fafc;color:var(--pri);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;border-bottom:1px solid var(--line)}
 .side h3 label{font-size:11px;color:var(--mut);font-weight:400}.tot{width:58px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:2px 6px}
 .cr{margin:8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:grab;background:#fff;display:flex;flex-direction:column;gap:2px}
-.cr:hover{border-color:var(--pri)}.cr:active{cursor:grabbing}.cr small{color:var(--mut);font-size:12px}.cr.pick{outline:2px solid var(--pri)}
+.cr:hover{border-color:var(--pri)}.cr:active{cursor:grabbing}.ccl{font-size:12px;color:var(--mut)}.cc{width:58px;font:inherit;text-align:center;border:1px solid var(--line);border-radius:6px;padding:1px 2px;background:#fff;color:var(--ink)}.cc.ov{border-color:var(--amb);background:#fff8ec}
+.cr small{color:var(--mut);font-size:12px}.cr.pick{outline:2px solid var(--pri)}
 .cr.done{background:#f8fafc;opacity:.7}.cr i{font-size:11px;font-style:normal;background:var(--okbg);color:var(--ok);border-radius:10px;padding:1px 8px;align-self:flex-start}
 .main{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px}
 table{border-collapse:collapse;width:100%;min-width:860px}
@@ -67,7 +68,7 @@ input.pf{width:100%;border:0;background:none;text-align:center;color:var(--ink)}
 let D={y:{},rooms:[],profs:[]};try{const x=JSON.parse(localStorage.getItem("hti-data-v1"));if(x&&x.y)D=x}catch(e){}
 const KEY="hti-exams-v1";let S=null;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-S=S||{slots:[],exams:[],def:{},tot:{},yr:1};
+S=S||{slots:[],exams:[],def:{},tot:{},cc:{},yr:1};S.cc=S.cc||{};
 const ui={add:null,pick:null};
 const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -81,6 +82,8 @@ const dn=d=>new Date(d+"T12:00:00").toLocaleDateString("ar-EG",{weekday:"long"})
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const say=(t,ms=2600)=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(say.t);say.t=setTimeout(()=>e.classList.remove("on"),ms)};
 const tot=(d,y=S.yr)=>S.tot[y+d]??D.y[y]?.[d]?.t??0;
+const ck=(y,d,n)=>y+"|"+d+"|"+norm(n),ctot=(d,n,y=S.yr)=>S.cc[ck(y,d,n)]??tot(d,y);
+const etot=(e,d,y)=>ctot(d,(e.names&&e.names[d])||e.name,y??sl(e.slot)?.yr??S.yr);
 const asg=(e,d)=>e.rows.filter(r=>r.d==d).reduce((a,r)=>a+r.n,0);
 const sl=id=>S.slots.find(s=>s.id==id),ex=id=>S.exams.find(e=>e.id==id);
 const yslots=()=>S.slots.filter(s=>s.yr==S.yr);
@@ -102,7 +105,7 @@ function place(sid,d,i){const[name,prof]=D.y[S.yr][d].c[i],k=norm(name);let move
  e.depts.push(d);(e.names=e.names||{})[d]=name;(prof||"").split(" / ").filter(Boolean).forEach(p=>e.profs.includes(p)||e.profs.push(p));
  ui.add={e:e.id,d};ui.pick=null;save();render();
  say(e.depts.length>1?`تم دمج المادة مع ${e.depts.length-1} قسم/أقسام أخرى في خانة واحدة`:moved?"تم نقل المادة إلى هذا الموعد":"تمت الإضافة")}
-function suggest(room,e,d){const k=rk(room),y=sl(e.slot).yr,rem=tot(d,y)-asg(e,d),df=S.def[y+d];let a=null,b=null;
+function suggest(room,e,d){const k=rk(room),y=sl(e.slot).yr,rem=etot(e,d,y)-asg(e,d),df=S.def[y+d];let a=null,b=null;
  if(k)S.exams.forEach(x=>{const t=sl(x.slot);x.rows.forEach(r=>{if(rk(r.r)==k){b=r.n;if(t.yr==y&&r.d==d)a=r.n}})});
  const v=a??b??df,n=v?(rem>0?Math.min(v,rem):v):(rem>0?rem:"");return{n,v,src:a!=null?1:b!=null?2:0}}
 function addcell(e,d,rem){const u=ui.add;
@@ -116,7 +119,7 @@ function table(){
  const groups=[];ss.forEach(s=>{let g=groups[groups.length-1];if(!g||g.date!=s.date)groups.push(g={date:s.date,items:[]});g.items.push(s)});
  groups.forEach(g=>{let sh="",nrows=0;g.items.forEach((s,si)=>{const all=[],bl=blocked(s);
   S.exams.filter(x=>x.slot==s.id).forEach(e=>{const eg=[];
-   e.depts.forEach(d=>{const rs=e.rows.map((r,i)=>({r,i})).filter(x=>x.r.d==d),a=asg(e,d),t=tot(d),rem=t-a;const sa=rem>0||!rs.length||(ui.add&&ui.add.e==e.id&&ui.add.d==d);
+   e.depts.forEach(d=>{const rs=e.rows.map((r,i)=>({r,i})).filter(x=>x.r.d==d),a=asg(e,d),t=etot(e,d),rem=t-a;const sa=rem>0||!rs.length||(ui.add&&ui.add.e==e.id&&ui.add.d==d);
     const dc=`<td class="dp" rowspan="${rs.length+(sa?1:0)}">${esc(d)}<span class="chip ${rem==0?"ok":rem<0?"bad":"warn"}">${a}/${t}${rem>0?" · باقي "+rem:rem<0?" · زيادة "+-rem:" ✓"}</span><button class="x" data-a="deldept" data-e="${e.id}" data-d="${esc(d)}" title="حذف القسم من الامتحان">✕</button></td>`;
     rs.forEach((x,j)=>eg.push((ui.er&&ui.er.e==e.id&&ui.er.i==x.i?`<td><input class="er rr" data-e="${e.id}" data-d="${esc(x.r.d)}" data-i="${x.i}" data-o="${esc(x.r.r)}" value="${esc(x.r.r)}" placeholder="القاعة" autocomplete="off"></td><td><input class="en" type="number" min="1" value="${x.r.n}"><div><button class="pri" data-a="erok" style="padding:2px 10px">OK</button><button class="x" data-a="erno">✕</button></div><div class="en-note"></div></td>`:`<td>${esc(x.r.r)}${(()=>{const c=conf(x.r.r,e),du=dup(x.r.r,e,x.r.d,x.i);return du.length?`<span class="rw" title="القاعة مكررة لنفس القسم والفرقة في هذا الامتحان"> ⚠</span>`:c.length?`<span class="rw" title="${esc("القاعة مستخدمة في نفس الوقت بواسطة:\n"+c.join("\n"))}"> ⚠</span>`:""})()}<button class="x" data-a="editroom" data-e="${e.id}" data-i="${x.i}" title="تعديل القاعة والعدد">✎</button></td><td>${x.r.n}<button class="x" data-a="delrow" data-e="${e.id}" data-i="${x.i}">✕</button></td>`)+(j?"":dc)));
     if(sa)eg.push(addcell(e,d,rem)+(rs.length?"":dc))});
@@ -129,8 +132,8 @@ function table(){
   const f=g.items[0],dc=`<td rowspan="${nrows}">${dn(g.date)}</td><td rowspan="${nrows}">${ui.ed==f.id?`<input type="date" class="sdt" data-s="${f.id}" value="${g.date}"><button class="pri" data-a="editok" style="padding:2px 10px;margin-inline-start:4px">OK</button><button class="x" data-a="editno">✕</button>`:`${fd(g.date)}<button class="x" data-a="editdate" data-s="${f.id}" title="تعديل التاريخ">✎</button>`}</td>`;
   h+=`<tbody class="day">${sh.replace("@@DAY@@",()=>dc)}</tbody>`});
  return h+"</table>"}
-function side(){const Y=D.y[S.yr]||{};if(!Object.keys(Y).length)return`<div class="empty" style="padding:24px">لا توجد بيانات مواد. استخدم زر «استيراد البيانات الأصلية» أولاً.</div>`;return Object.keys(Y).map(d=>`<section><h3>${esc(d)}<label>عدد الطلاب <input class="tot" type="number" data-d="${esc(d)}" value="${tot(d)}"></label></h3>`+Y[d].c.map(([n,p],i)=>{const pl=placed(d,n),pk=ui.pick&&ui.pick.d==d&&ui.pick.i==i;
-  return `<div class="cr${pl?" done":""}${pk?" pick":""}" draggable="true" data-a="pick" data-d="${esc(d)}" data-i="${i}"><b>${esc(n)}</b><small>${esc(p||"— لا يوجد أستاذ محاضرة")}</small>${pl?`<i>✓ ${pl}</i>`:""}</div>`}).join("")+"</section>").join("")}
+function side(){const Y=D.y[S.yr]||{};if(!Object.keys(Y).length)return`<div class="empty" style="padding:24px">لا توجد بيانات مواد. استخدم زر «استيراد البيانات الأصلية» أولاً.</div>`;return Object.keys(Y).map(d=>`<section><h3>${esc(d)}<label>عدد الطلاب <input class="tot" type="number" data-d="${esc(d)}" value="${tot(d)}"></label></h3>`+Y[d].c.map(([n,p],i)=>{const pl=placed(d,n),pk=ui.pick&&ui.pick.d==d&&ui.pick.i==i,ov=S.cc[ck(S.yr,d,n)]!=null;
+  return `<div class="cr${pl?" done":""}${pk?" pick":""}" draggable="true" data-a="pick" data-d="${esc(d)}" data-i="${i}"><b>${esc(n)}</b><small>${esc(p||"— لا يوجد أستاذ محاضرة")}</small><label class="ccl">عدد الطلاب <input class="cc${ov?" ov":""}" type="number" min="0" data-a="noop" data-d="${esc(d)}" data-i="${i}" value="${ctot(d,n)}" title="عدد طلاب هذا المقرر فقط (الافتراضي للقسم: ${tot(d)})">${ov?`<button class="x" data-a="ccreset" data-d="${esc(d)}" data-i="${i}" title="إعادة العدد الافتراضي للقسم">↺</button>`:""}</label>${pl?`<i>✓ ${pl}</i>`:""}</div>`}).join("")+"</section>").join("")}
 function mergeDupSlots(){const keep={},drop=new Set();let ch=false;
  S.slots.forEach(s=>{const k=[s.yr,s.date,s.from,s.to].join("|");if(!keep[k]){keep[k]=s;return}
   const m=keep[k];ch=true;drop.add(s.id);
@@ -144,7 +147,7 @@ function render(){
  const cn=y=>{const Y=D.y[y]||{};let n=0,p=0;Object.keys(Y).forEach(d=>Y[d].c.forEach(([c])=>{n++;if(placed(d,c,y))p++}));return[p,n]};
  $("#tabs").innerHTML=[1,2,3,4].map(y=>`<button class="${y==S.yr?"on":""}" data-a="yr" data-y="${y}">الفرقة ${YN[y]}<em>${cn(y).join(" / ")}</em></button>`).join("");
  const[p,n]=cn(S.yr);$("#prog").textContent=`${p} / ${n} مادة تمت جدولتها`;
- let left=0;S.exams.forEach(e=>{const s=sl(e.slot);e.depts.forEach(d=>{const r=tot(d,s.yr)-asg(e,d);if(r>0)left+=r})});
+ let left=0;S.exams.forEach(e=>{const s=sl(e.slot);e.depts.forEach(d=>{const r=etot(e,d,s.yr)-asg(e,d);if(r>0)left+=r})});
  $("#pS").textContent=S.slots.length;$("#pE").textContent=S.exams.length;$("#pL").className="pill "+(left?"bad":"ok");$("#pL").innerHTML=`غير موزّع:<b>${left}</b>`;
  $("#side").innerHTML=side();$("#main").innerHTML=table();
  rddHide();if(ui.er&&!(ex(ui.er.e)&&ex(ui.er.e).rows[ui.er.i]))ui.er=null;if(ui.add){const r=$(".rr");r&&r.focus()}else if(ui.er){const r=$(".er");r&&(r.focus(),r.select())}}
@@ -169,7 +172,8 @@ document.addEventListener("keydown",ev=>{if(!ev.target.classList||!ev.target.cla
 document.addEventListener("change",ev=>{const t=ev.target;
  if(t.classList.contains("sdt"))return;
  if(t.classList.contains("pf")){ex(t.dataset.e).profs=t.value.split("/").map(x=>x.trim()).filter(Boolean);save()}
- if(t.classList.contains("tot")){S.tot[S.yr+t.dataset.d]=Math.max(0,+t.value||0);save();render()}});
+ if(t.classList.contains("cc")){const d=t.dataset.d,n=D.y[S.yr]?.[d]?.c[+t.dataset.i]?.[0];if(n!=null){const k=ck(S.yr,d,n),v=t.value.trim()==""?null:Math.max(0,Math.round(+t.value)||0);if(v==null||v==tot(d))delete S.cc[k];else S.cc[k]=v;save();render()}return}
+  if(t.classList.contains("tot")){S.tot[S.yr+t.dataset.d]=Math.max(0,+t.value||0);save();render()}});
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,q=b.dataset;
  if(a=="yr"){S.yr=+q.y;ui.add=ui.pick=null;save();render()}
  else if(a=="slot"){const date=$("#sd").value,from=$("#sf").value,to=$("#st").value;
@@ -184,10 +188,11 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-a]");if(
  else if(a=="addgo"){const f=b.closest(".af"),e=ex(f.dataset.e),d=f.dataset.d,r=f.querySelector(".rr").value.trim(),n=+f.querySelector(".rn").value;
   if(!r||!(n>0))return say("اكتب القاعة وعدد الطلاب");
   if((conf(r,e).length||dup(r,e,d).length)&&!b.dataset.ok){b.dataset.ok=1;b.textContent="إضافة رغم ذلك";return chk(f)}
-  const rem=tot(d)-asg(e,d),k=S.yr+d;e.rows.push({d,r,n});
+  const rem=etot(e,d)-asg(e,d),k=S.yr+d;e.rows.push({d,r,n});
   if(!(S.def[k]&&n<S.def[k]&&n==rem))S.def[k]=n;
-  ui.add=tot(d)-asg(e,d)>0?{e:e.id,d}:null;save();render()}
+  ui.add=etot(e,d)-asg(e,d)>0?{e:e.id,d}:null;save();render()}
  else if(a=="delrow"){ui.er=null;ex(q.e).rows.splice(+q.i,1);save();render()}
+ else if(a=="ccreset"){const n=D.y[S.yr]?.[q.d]?.c[+q.i]?.[0];if(n!=null){delete S.cc[ck(S.yr,q.d,n)];save();render()}}
  else if(a=="deldept"){dropExam(ex(q.e),q.d);save();render()}
  else if(a=="delexam"){S.exams=S.exams.filter(x=>x.id!=q.e);save();render()}
  else if(a=="delslot"){S.exams=S.exams.filter(x=>x.slot!=q.s);S.slots=S.slots.filter(x=>x.id!=q.s);save();render()}});
@@ -206,7 +211,8 @@ function rddShow(inp){const f=inp.closest(".af"),e=ex(f?f.dataset.e:inp.dataset.
  const b=inp.getBoundingClientRect();d.style.display="block";d.style.left=b.left+"px";d.style.top=(b.bottom+2)+"px";d.style.minWidth=Math.max(b.width,200)+"px"}
 function rddPick(v){const i=rddI;if(!i)return;i.value=v;i.dispatchEvent(new Event("input",{bubbles:true}));rddHide()}
 const isRR=t=>t.classList&&t.classList.contains("rr");
-document.addEventListener("focusin",ev=>{if(isRR(ev.target))rddShow(ev.target)});
+document.addEventListener("focusin",ev=>{if(isRR(ev.target))rddShow(ev.target);if(ev.target.classList&&ev.target.classList.contains("cc")){const r=ev.target.closest(".cr");if(r)r.draggable=false}});
+document.addEventListener("focusout",ev=>{if(ev.target.classList&&ev.target.classList.contains("cc")){const r=ev.target.closest(".cr");if(r)r.draggable=true}});
 document.addEventListener("click",ev=>{if(isRR(ev.target))rddShow(ev.target)});
 document.addEventListener("focusout",ev=>{if(isRR(ev.target))rddHide()});
 document.addEventListener("input",ev=>{if(isRR(ev.target))rddShow(ev.target)});
@@ -282,7 +288,7 @@ function convert(r){const pr={},sz={},y={},seen={};
 const yslotsOf=y=>S.slots.filter(s=>s.yr==y).sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
 function exportJSON(){
  const lv=[1,2,3,4].map(y=>({year:y,name:"الفرقة "+YN[y],slots:yslotsOf(y).map(s=>({id:s.id,date:s.date,day:new Date(s.date+"T12:00:00").toLocaleDateString("en-US",{weekday:"long"}),start:s.from,end:s.to,
-  exams:S.exams.filter(e=>e.slot==s.id).map(e=>({id:e.id,course:e.name,professors:e.profs,departments:e.depts.map(d=>({department:d,level:d+y,sourceCourse:(e.names||{})[d]||e.name,totalStudents:tot(d,y),assignedStudents:asg(e,d),unassignedStudents:tot(d,y)-asg(e,d),rooms:e.rows.filter(r=>r.d==d).map(r=>({room:r.r,students:r.n}))}))}))}))}));
+  exams:S.exams.filter(e=>e.slot==s.id).map(e=>({id:e.id,course:e.name,professors:e.profs,departments:e.depts.map(d=>({department:d,level:d+y,sourceCourse:(e.names||{})[d]||e.name,totalStudents:etot(e,d,y),assignedStudents:asg(e,d),unassignedStudents:etot(e,d,y)-asg(e,d),rooms:e.rows.filter(r=>r.d==d).map(r=>({room:r.r,students:r.n}))}))}))}))}));
  const flat=[];lv.forEach(l=>l.slots.forEach(s=>s.exams.forEach(e=>e.departments.forEach(d=>d.rooms.forEach(r=>flat.push({year:l.year,date:s.date,day:s.day,start:s.start,end:s.end,course:e.course,professors:e.professors,department:d.department,level:d.level,room:r.room,students:r.students}))))));
  const blob=new Blob([JSON.stringify({format:"hti-exam-schedule",version:1,exportedAt:new Date().toISOString(),levels:lv,assignments:flat,editorState:S,data:D},null,2)],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="exam-schedule-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();say("تم تنزيل ملف الجدول")}
@@ -291,7 +297,7 @@ pickFile("#fileD",o=>{if(o.format=="hti-exam-schedule")throw Error("هذا مل�
  if(!(o.Courses&&o.LevelsGroups&&o.InstructorTemplates&&o.Rooms))throw Error("ملف غير صالح: يجب أن يحتوي على Courses و LevelsGroups و InstructorTemplates و Rooms");
  D=convert(o);try{localStorage.setItem("hti-data-v1",JSON.stringify(D))}catch(e){}lists();say("تم استيراد المواد والأساتذة والقاعات")});
 pickFile("#fileS",o=>{if(o.format!="hti-exam-schedule"||!o.editorState)throw Error("هذا ليس ملف جدول امتحانات مُصدَّر من هذا المحرر");
- S=Object.assign({slots:[],exams:[],def:{},tot:{},yr:1},o.editorState);
+ S=Object.assign({slots:[],exams:[],def:{},tot:{},cc:{},yr:1},o.editorState);S.cc=S.cc||{};
  if(o.data&&o.data.y){D=o.data;try{localStorage.setItem("hti-data-v1",JSON.stringify(D))}catch(e){}lists()}
  else (o.levels||[]).forEach(l=>l.slots.forEach(s=>s.exams.forEach(e=>e.departments.forEach(d=>{const k=l.year+d.department;if(S.tot[k]==null&&d.totalStudents!=(D.y[l.year]?.[d.department]?.t??0))S.tot[k]=d.totalStudents}))));
  save();say("تم استيراد جدول الامتحانات")});
