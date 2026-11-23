@@ -79,7 +79,13 @@ const tm=t=>{const[a,b]=t.split(":");return a*60+ +b};
 const t12=t=>{const[h,m]=t.split(":").map(Number);return(h%12||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"ص":"م")},trg=(a,b)=>t12(a)+" الى "+t12(b);
 const fd=d=>{const[y,m,x]=d.split("-");return +x+"/"+ +m+"/"+y};
 const dn=d=>new Date(d+"T12:00:00").toLocaleDateString("ar-EG",{weekday:"long"});
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const dcmp=(a,b)=>String(a).localeCompare(String(b),"ar");
+function norder(){if(!S||!S.exams)return;const by=new Map();
+ S.exams.forEach((e,i)=>{(e.depts=e.depts||[]).sort(dcmp);if(!by.has(e.slot))by.set(e.slot,[]);by.get(e.slot).push(i)});
+ by.forEach(idx=>{const list=idx.map(i=>S.exams[i]);
+  list.sort((a,b)=>dcmp(a.depts.length?a.depts[0]:"\uffff",b.depts.length?b.depts[0]:"\uffff"));
+  idx.forEach((i,j)=>S.exams[i]=list[j])})}
+const save=()=>{norder();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const say=(t,ms=2600)=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(say.t);say.t=setTimeout(()=>e.classList.remove("on"),ms)};
 const tot=(d,y=S.yr)=>S.tot[y+d]??D.y[y]?.[d]?.t??0;
 const ck=(y,d,n)=>y+"|"+d+"|"+norm(n),ctot=(d,n,y=S.yr)=>S.cc[ck(y,d,n)]??tot(d,y);
@@ -113,6 +119,7 @@ function addcell(e,d,rem){const u=ui.add;
   return `<td colspan="2" class="np addc"><div class="af" data-e="${e.id}" data-d="${esc(d)}"><input class="rr" placeholder="القاعة" autocomplete="off"><input class="rn" type="number" min="1" value="${sug}"><button class="pri" data-a="addgo">إضافة</button><button class="x" data-a="addno">✕</button><div class="cm n">${df?"المقترح "+sug+" طالب (المعتاد لهذا القسم)":"اكتب القاعة وعدد الطلاب"}</div></div></td>`}
  return `<td colspan="2" class="np addc"><button class="ghost" data-a="addroom" data-e="${e.id}" data-d="${esc(d)}">+ قاعة${rem>0?" · باقي "+rem:""}</button></td>`}
 function table(){
+ norder();
  const ss=yslots().sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
  let h=`<table dir="rtl"><thead><tr><th colspan="8" class="tt">الفرقة ${YN[S.yr]}</th></tr><tr>${["اليوم","التاريخ","الوقت","اسم المادة","استاذ المادة","المكان","عدد الطلاب","القسم"].map(x=>`<th>${x}</th>`).join("")}</tr></thead>`;
  if(!ss.length)h+=`<tbody><tr><td colspan="8" class="empty" style="padding:40px">أضف موعداً من الأعلى (ولو موعداً واحداً مثل 09:00–12:00) ثم اسحب المواد من القائمة الجانبية إليه.</td></tr></tbody>`;
@@ -287,6 +294,7 @@ function convert(r){const pr={},sz={},y={},seen={};
  return{y,rooms:r.Rooms.map(x=>x.Room),profs:[...new Set(Object.values(pr).flat())].sort()}}
 const yslotsOf=y=>S.slots.filter(s=>s.yr==y).sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
 function exportJSON(){
+ norder();
  const lv=[1,2,3,4].map(y=>({year:y,name:"الفرقة "+YN[y],slots:yslotsOf(y).map(s=>({id:s.id,date:s.date,day:new Date(s.date+"T12:00:00").toLocaleDateString("en-US",{weekday:"long"}),start:s.from,end:s.to,
   exams:S.exams.filter(e=>e.slot==s.id).map(e=>({id:e.id,course:e.name,professors:e.profs,departments:e.depts.map(d=>({department:d,level:d+y,sourceCourse:(e.names||{})[d]||e.name,totalStudents:etot(e,d,y),assignedStudents:asg(e,d),unassignedStudents:etot(e,d,y)-asg(e,d),rooms:e.rows.filter(r=>r.d==d).map(r=>({room:r.r,students:r.n}))}))}))}))}));
  const flat=[];lv.forEach(l=>l.slots.forEach(s=>s.exams.forEach(e=>e.departments.forEach(d=>d.rooms.forEach(r=>flat.push({year:l.year,date:s.date,day:s.day,start:s.start,end:s.end,course:e.course,professors:e.professors,department:d.department,level:d.level,room:r.room,students:r.students}))))));
@@ -297,7 +305,7 @@ pickFile("#fileD",o=>{if(o.format=="hti-exam-schedule")throw Error("هذا مل�
  if(!(o.Courses&&o.LevelsGroups&&o.InstructorTemplates&&o.Rooms))throw Error("ملف غير صالح: يجب أن يحتوي على Courses و LevelsGroups و InstructorTemplates و Rooms");
  D=convert(o);try{localStorage.setItem("hti-data-v1",JSON.stringify(D))}catch(e){}lists();say("تم استيراد المواد والأساتذة والقاعات")});
 pickFile("#fileS",o=>{if(o.format!="hti-exam-schedule"||!o.editorState)throw Error("هذا ليس ملف جدول امتحانات مُصدَّر من هذا المحرر");
- S=Object.assign({slots:[],exams:[],def:{},tot:{},cc:{},yr:1},o.editorState);S.cc=S.cc||{};
+ S=Object.assign({slots:[],exams:[],def:{},tot:{},cc:{},yr:1},o.editorState);S.cc=S.cc||{};norder();
  if(o.data&&o.data.y){D=o.data;try{localStorage.setItem("hti-data-v1",JSON.stringify(D))}catch(e){}lists()}
  else (o.levels||[]).forEach(l=>l.slots.forEach(s=>s.exams.forEach(e=>e.departments.forEach(d=>{const k=l.year+d.department;if(S.tot[k]==null&&d.totalStudents!=(D.y[l.year]?.[d.department]?.t??0))S.tot[k]=d.totalStudents}))));
  save();say("تم استيراد جدول الامتحانات")});
