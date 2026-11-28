@@ -17,7 +17,6 @@
             --bg:            #f2f2f4;
             --bg-card:       #e8e8ec;
             --bg-deep:       #dcdce2;
-            --robot-frame:   #d0d0d8;
             --fg:            #141418;
             --fg-dim:        #48484e;
             --fg-faint:      #909098;
@@ -42,7 +41,6 @@
             --bg:            #111114;
             --bg-card:       #1a1a1f;
             --bg-deep:       #222228;
-            --robot-frame:   #15151a;
             --fg:            #e8e8ec;
             --fg-dim:        #a0a0aa;
             --fg-faint:      #5a5a64;
@@ -367,153 +365,53 @@
             transform: translateY(-2px);
         }
 
-        /* ─── ROBOT DIAGRAM ──────────────────────────────────────── */
-        .diagram {
-            position: relative;
-            height: 420px;
-            background: var(--bg-card);
-            border: 1px solid var(--rule);
-            border-radius: 2px;
-            overflow: hidden;
+        /* ─── PORTRAIT PLATE ─────────────────────────────────────── */
+        .plate {
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 460px;
             opacity: 0;
             animation: fadeUp .7s ease .3s forwards;
         }
-
-        /* grid lines */
-        .diagram::before {
-            content: '';
-            position: absolute; inset: 0;
-            background-image:
-                linear-gradient(var(--rule) 1px, transparent 1px),
-                linear-gradient(90deg, var(--rule) 1px, transparent 1px);
-            background-size: 28px 28px;
-            pointer-events: none;
+        .plate-img {
+            position: relative;
+            flex: 1;
+            min-height: 340px;
+            background: #141d28;
+            border: 1px solid var(--rule);
+            overflow: hidden;
         }
-
-        .diagram::after {
-            content: '';
+        .plate-img img {
             position: absolute;
-            left: 0; bottom: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent) 0%, transparent 65%);
-            opacity: .6;
+            left: 50%; bottom: 0;
+            width: 86%; height: auto;
+            transform: translateX(-50%);
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 16%);
+            -webkit-mask-composite: source-in;
+            mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 16%);
+            mask-composite: intersect;
         }
-
-        .diag-caption {
-            position: absolute;
-            top: 14px; left: 16px;
+        .plate-palette {
+            display: flex;
+            height: 8px;
+            margin-top: 14px;
+            border: 1px solid var(--rule);
+        }
+        .plate-palette span { display: block; height: 100%; }
+        .plate-note {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 10px;
             font-family: var(--ff-mono);
             font-size: .62rem;
-            letter-spacing: .1em;
+            letter-spacing: .06em;
             color: var(--fg-faint);
-            text-transform: uppercase;
-            z-index: 10;
         }
-        .diag-caption::before {
-            content: '→ ';
-            color: var(--blue);
-        }
-
-        /* corner crosshair decoration */
-        .diag-corner {
-            position: absolute;
-            bottom: 16px; right: 16px;
-            width: 20px; height: 20px;
-            z-index: 10;
-        }
-        .diag-corner::before,
-        .diag-corner::after {
-            content: '';
-            position: absolute;
-            background: var(--accent);
-            opacity: .4;
-        }
-        .diag-corner::before { right: 0; top: 0; bottom: 0; width: 1px; }
-        .diag-corner::after  { right: 0; top: 0; left: 0;  height: 1px; }
-
-        /* Robot arm */
-        #hover_cover {
-            position: relative; width: 100%; height: 100%; cursor: default;
-        }
-
-        #base {
-            position: absolute;
-            top: 80%; left: -60px;
-            width: 200px; height: 25px;
-            background: var(--robot-frame);
-            z-index: 5;
-            transform: scale(0.8) translateY(-50%);
-            transform-origin: left center;
-            border: 1px solid var(--rule);
-            border-radius: 2px;
-        }
-
-        #hover_cover:hover #bone01 { transform: rotate(-90deg); }
-        #hover_cover:hover #bone02 { transform: rotate(90deg); }
-
-        .bone {
-            position: relative;
-            width: 200px; height: 25px;
-            transform-origin: 15px 15px;
-            transition: 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            background: var(--robot-frame);
-            border: 1px solid var(--rule);
-            border-radius: 3px;
-        }
-
-        #bone01 { top: 0; left: 100%; transform: rotate(-180deg); }
-        #bone02 { top: 0; left: 170px; transform: rotate(0deg); }
-
-        .joint_base {
-            position: absolute; top: -50%; left: -3%;
-            width: 50px; height: 50px;
-        }
-
-        .joint {
-            position: absolute; width: 100%; height: 100%;
-            background: var(--bg-deep);
-            border-radius: 50%; z-index: 2;
-            border: 1px solid var(--accent-dim);
-        }
-
-        .joint::after {
-            content: '';
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 30%; height: 30%;
-            background: var(--bg-card);
-            border-radius: 50%;
-            border: 2px solid var(--accent-dim);
-        }
-
-        .key {
-            position: absolute; top: 40%; left: -10%;
-            width: 120%; height: 20%;
-            background: var(--bg-deep);
-            border-radius: 1px;
-        }
-        .key._01 { transform: rotate(0deg); }
-        .key._02 { transform: rotate(45deg); }
-        .key._03 { transform: rotate(90deg); }
-        .key._04 { transform: rotate(135deg); }
-
-        #screen_base {
-            background: var(--robot-frame);
-            position: absolute; bottom: -80px; left: 50px;
-            width: 250px; height: 300px;
-            border-radius: 2px;
-            border: 1px solid var(--rule);
-            box-shadow: 0 16px 48px var(--shadow);
-        }
-
-        .screen {
-            position: relative; margin: 10px auto;
-            width: 90%; height: 90%;
-            background-color: var(--bg-deep);
-            background-image: url("mepixled.jpg");
-            background-position: center; background-size: cover;
-            border: 1px solid var(--rule);
-        }
+        .plate-note a { color: var(--blue); transition: color .2s; }
+        .plate-note a:hover { color: var(--accent); }
 
         /* ─── SECTION COMMONS ────────────────────────────────────── */
         .section {
@@ -1119,33 +1017,16 @@
             </div>
         </div>
 
-        <div class="diagram">
-            <div class="diag-caption">I approximately look like</div>
-            <div class="diag-corner"></div>
-            <div id="hover_cover">
-                <div id="base">
-                    <div class="bone" id="bone01">
-                        <div class="joint_base">
-                            <div class="joint">
-                                <div class="key _01"></div><div class="key _02"></div>
-                                <div class="key _03"></div><div class="key _04"></div>
-                            </div>
-                        </div>
-                        <div class="bone" id="bone02">
-                            <div class="joint_base">
-                                <div class="joint">
-                                    <div class="key _01"></div><div class="key _02"></div>
-                                    <div class="key _03"></div><div class="key _04"></div>
-                                </div>
-                            </div>
-                            <div id="screen_base">
-                                <div class="screen"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <figure class="plate">
+            <div class="plate-img">
+                <img src="me.jpg" width="840" height="840" alt="Portrait of Mahmoud Gamal">
             </div>
-        </div>
+            <div class="plate-palette"><span style="flex:51;background:#131d28" title="#131d28"></span><span style="flex:27;background:#1d1c1d" title="#1d1c1d"></span><span style="flex:9;background:#a58060" title="#a58060"></span><span style="flex:6;background:#d8b38d" title="#d8b38d"></span><span style="flex:6;background:#584539" title="#584539"></span></div>
+            <div class="plate-note">
+                <span>Fig. 0 — The author</span>
+                <a href="https://mgama1.github.io/color_palette/" target="_blank">k-means palette ↗</a>
+            </div>
+        </figure>
     </section>
 
     <section class="section reveal">
